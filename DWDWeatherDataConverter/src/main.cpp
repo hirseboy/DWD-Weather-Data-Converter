@@ -7,11 +7,13 @@
 #include <QStyleOptionViewItem>
 
 #include <QtExt_Directories.h>
+#include <QtExt_LanguageHandler.h>
 
 #include "DWDMainWindow.h"
 #include "DWDMessageHandler.h"
 
 #include "DWDConstants.h"
+#include "DWDSettings.h"
 
 /*! qDebug() message handler function, redirects debug messages to IBK::IBK_Message(). */
 void qDebugMsgHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
@@ -28,8 +30,19 @@ int main(int argc, char* argv[]) {
 	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 	QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
+	QtExt::Directories::appname = "DWDWeatherDataConverter";
+	QtExt::Directories::devdir = "DWDWeatherDataConverter";
+
+
+	const QString ProgramVersionName = QString("DWDWeatherDataConverter %1").arg(VERSION);
+
+	DWDSettings settings(ORG_NAME, ProgramVersionName);
+	settings.setDefaults();
+	settings.read();
+
 	QApplication a( argc, argv );
 
+	QtExt::LanguageHandler::instance().installTranslator(QtExt::LanguageHandler::langId());
 	// install message handler to catch qDebug()
 	qInstallMessageHandler(qDebugMsgHandler);
 
