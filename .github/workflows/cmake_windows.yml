@@ -25,8 +25,9 @@ jobs:
       with:
         aqtversion: '==3.1.*'
         version: '5.15.2'
-        host: 'win64_msvc2019_64'
+        host: 'windows'
         target: 'desktop'
+        arch: 'win64_msvc2019_64'
 
     - name: Create Build Directory
       run: mkdir "${{github.workspace}}\build\cmake"
