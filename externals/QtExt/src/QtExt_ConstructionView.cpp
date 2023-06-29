@@ -1,3 +1,38 @@
+/*	QtExt - Qt-based utility classes and functions (extends Qt library)
+
+	Copyright (c) 2014-today, Institut für Bauklimatik, TU Dresden, Germany
+
+	Primary authors:
+	  Heiko Fechner    <heiko.fechner -[at]- tu-dresden.de>
+	  Andreas Nicolai
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+	der GNU General Public License, wie von der Free Software Foundation,
+	Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+	veröffentlichten Version, weiter verteilen und/oder modifizieren.
+
+	Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+	OHNE JEDE GEWÄHR,; sogar ohne die implizite
+	Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+	Siehe die GNU General Public License für weitere Einzelheiten.
+
+	Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+	Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
+*/
+
 #include "QtExt_ConstructionView.h"
 
 #include <QSvgGenerator>
@@ -26,7 +61,8 @@ ConstructionView::ConstructionView(QWidget *parent) :
 	m_diagramScene(new ConstructionGraphicsScene(true, this)),
 	m_margins(5),
 	m_resolution(1.0),
-	m_selectedLayer(-1)
+	m_selectedLayer(-1),
+	m_visibleItems(ConstructionGraphicsScene::VI_All)
 {
 	QSizePolicy p(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	p.setHorizontalStretch(1);
@@ -52,16 +88,50 @@ ConstructionView::~ConstructionView() {
 	delete m_diagramScene;
 }
 
-void ConstructionView::setData(QPaintDevice* paintDevice, const QVector<ConstructionLayer>& layers, double resolution) {
+void ConstructionView::setData(QPaintDevice* paintDevice, const QVector<ConstructionLayer>& layers, double resolution,
+							   int visibleItems) {
 	m_inputData = layers;
 	m_resolution = resolution;
 	m_device = paintDevice;
+	m_visibleItems = visibleItems;
 	Q_ASSERT(m_device);
+//	setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+	updateView();
+}
+
+void ConstructionView::clearLineMarkers() {
+	m_diagramScene->clearLineMarkers();
+	updateView();
+}
+
+void ConstructionView::addLinemarker(double pos, const QPen& pen, const QString& name) {
+	m_diagramScene->addLinemarker(pos, pen, name);
+	updateView();
+}
+
+void ConstructionView::setAreaMarker(const ConstructionGraphicsScene::AreaMarker& am) {
+	m_diagramScene->setAreaMarker(am);
+}
+
+void ConstructionView::removeAreaMarker() {
+	m_diagramScene->removeAreaMarker();
+}
+
+void ConstructionView::updateView() {
 	int w = width();
 	int h = height();
 	QRect frame(m_margins, m_margins, w - m_margins * 2, h - m_margins * 2);
-	m_diagramScene->setup(frame, m_device, m_resolution, m_inputData);
+	m_diagramScene->setup(frame, m_device, m_resolution, m_inputData, m_leftSideLabel, m_rightSideLabel, m_visibleItems);
 	show();
+//	m_diagramScene->update();
+}
+
+void ConstructionView::setBackground(const QColor& bkgColor) {
+	m_diagramScene->setBackground(bkgColor);
+}
+
+void ConstructionView::markLayer(int layerIndex) {
+	m_diagramScene->markLayer(layerIndex);
 }
 
 void ConstructionView::clear() {
@@ -77,7 +147,7 @@ void ConstructionView::resizeEvent( QResizeEvent * event) {
 	if( std::abs(diffSize.width()) > m_margins - 1 ||  std::abs(diffSize.height()) > m_margins - 1) {
 		QRect frame(QPoint(0,0), event->size());
 		frame = frame.adjusted(m_margins, m_margins, m_margins * -1, m_margins * -1);
-		m_diagramScene->setup(frame, m_device, m_resolution, m_inputData);
+		m_diagramScene->setup(frame, m_device, m_resolution, m_inputData, m_leftSideLabel, m_rightSideLabel, m_visibleItems);
 	}
 }
 
@@ -99,7 +169,7 @@ void ConstructionView::print(QPrinter* printer) {
 	QPainter painter;
 	painter.begin(printer);
 	ConstructionGraphicsScene sketch(true, printer);
-	sketch.setup(frame, printer, 1.0, m_inputData);
+	sketch.setup(frame, printer, 1.0, m_inputData, m_leftSideLabel, m_rightSideLabel, m_visibleItems);
 
 	sketch.render(&painter);
 	painter.end();
@@ -119,7 +189,7 @@ QPixmap ConstructionView::createPixmap() {
 	painter.begin(&pixmap);
 
 	ConstructionGraphicsScene sketch(true, &pixmap);
-	sketch.setup(frame, &pixmap, 1.0, m_inputData);
+	sketch.setup(frame, &pixmap, 1.0, m_inputData, m_leftSideLabel, m_rightSideLabel, m_visibleItems);
 
 	sketch.render(&painter);
 
@@ -146,7 +216,7 @@ void ConstructionView::createSvg(QIODevice * outputDevice) {
 	QPainter painter;
 	painter.begin(&generator);
 	ConstructionGraphicsScene sketch(true, &generator);
-	sketch.setup(frame, &generator, 1.0, m_inputData);
+	sketch.setup(frame, &generator, 1.0, m_inputData, m_leftSideLabel, m_rightSideLabel, m_visibleItems);
 
 	sketch.render(&painter);
 	painter.end();
@@ -222,7 +292,9 @@ void ConstructionView::sceneSelectionChanged() {
 	if(items.size() == 1)
 		index = items.front()->data(0).toInt();
 	m_selectedLayer = index;
-	emit layerSelected(m_selectedLayer);
+	// only emit selection change, if index is != -1
+	if (m_selectedLayer != -1)
+		emit layerSelected(m_selectedLayer);
 }
 
 void ConstructionView::sceneDoubleClicked() {

@@ -1,3 +1,38 @@
+/*	QtExt - Qt-based utility classes and functions (extends Qt library)
+
+	Copyright (c) 2014-today, Institut für Bauklimatik, TU Dresden, Germany
+
+	Primary authors:
+	  Heiko Fechner    <heiko.fechner -[at]- tu-dresden.de>
+	  Andreas Nicolai
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+	der GNU General Public License, wie von der Free Software Foundation,
+	Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+	veröffentlichten Version, weiter verteilen und/oder modifizieren.
+
+	Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+	OHNE JEDE GEWÄHR,; sogar ohne die implizite
+	Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+	Siehe die GNU General Public License für weitere Einzelheiten.
+
+	Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+	Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
+*/
+
 #ifndef QtExt_MaterialTableProxyModelH
 #define QtExt_MaterialTableProxyModelH
 
@@ -47,6 +82,12 @@ public slots:
 	/*! Set a new string for material producer filter. Set empty string for no filtering.*/
 	void setProducerFilter(QString);
 
+	/*! Set a new string for material source filter. Set empty string for no filtering.*/
+	void setSourceFilter(QString);
+
+	/*! Set a new string for comment filter. Set empty string for no filtering.*/
+	void setCommentFilter(QString);
+
 	/*! Sets a new filter for showing deprecated materials.	*/
 	void setShowDeprecatedFilter(bool showDeprecated);
 
@@ -71,6 +112,18 @@ private:
 		a '*' is set at begin and end of the string for correct wildcard filtering (see filterAcceptsRow)
 	*/
 	QString m_producerFilter;
+
+	/*! String for material source filter.
+		if string is empty, no filtering\n
+		a '*' is set at begin and end of the string for correct wildcard filtering (see filterAcceptsRow)
+	*/
+	QString m_sourceFilter;
+
+	/*! String for comment filter.
+		if string is empty, no filtering\n
+		a '*' is set at begin and end of the string for correct wildcard filtering (see filterAcceptsRow)
+	*/
+	QString m_commentFilter;
 
 	/*! If true also deprecated or removed materials will be shown.*/
 	bool	m_showDeprecatedFilter;

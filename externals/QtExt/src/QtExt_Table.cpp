@@ -1,14 +1,36 @@
-/*	Authors: H. Fechner, A. Nicolai
+/*	QtExt - Qt-based utility classes and functions (extends Qt library)
 
-	This file is part of the QtExt Library.
-	All rights reserved.
+	Copyright (c) 2014-today, Institut für Bauklimatik, TU Dresden, Germany
 
-	This software is copyrighted by the principle author(s).
-	The right to reproduce the work (copy all or part of the source code),
-	modify the source code or documentation, compile it to form object code,
-	and the sole right to copy the object code thereby produced is hereby
-	retained for the author(s) unless explicitely granted by the author(s).
+	Primary authors:
+	  Heiko Fechner    <heiko.fechner -[at]- tu-dresden.de>
+	  Andreas Nicolai
 
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+	der GNU General Public License, wie von der Free Software Foundation,
+	Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+	veröffentlichten Version, weiter verteilen und/oder modifizieren.
+
+	Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+	OHNE JEDE GEWÄHR,; sogar ohne die implizite
+	Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+	Siehe die GNU General Public License für weitere Einzelheiten.
+
+	Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+	Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
 */
 
 #include <numeric>
@@ -29,12 +51,13 @@
 
 namespace QtExt {
 
-Table::Table(QTextDocument* textDocument, QSize size, QObject *parent) :
+Table::Table(QTextDocument* textDocument, bool adaptive, QSize size, QObject *parent) :
 	QObject(parent),
 	m_textDocument(textDocument),
 	m_textDocumentOwner(false),
 	m_cols(0),
 	m_rows(0),
+	m_headerRows(0),
 	m_spacing(2),
 	m_margin(2),
 	m_outerFrameWidth(0.0),
@@ -42,7 +65,8 @@ Table::Table(QTextDocument* textDocument, QSize size, QObject *parent) :
 	m_background(Qt::transparent),
 	m_size(size),
 	m_scale(1.0),
-	m_adjusted(false)
+	m_adjusted(false),
+	m_adaptive(adaptive)
 {
 	if( m_textDocument == nullptr) {
 		m_textDocument = new QTextDocument;
@@ -55,6 +79,22 @@ Table::~Table() {
 		delete m_textDocument;
 }
 
+void Table::set(const TablePrepare& prep) {
+	clear();
+	setColumnsRows(prep.m_cols, prep.m_rows, prep.m_headerCount);
+	setOuterFrameWidth(prep.m_outerFrameWidth);
+	setInnerFrameWidth(prep.m_innerFrameWidth);
+	setMargin(prep.m_margin);
+	setTableSize(QSize(prep.m_width, -1));
+	setBackgroundColor(Qt::white, true);
+	if(prep.m_headerCount > 0) {
+		for( unsigned int i=0; i<colCount(); ++i) {
+			cell(i,prep.m_headerCount-1).setBorderWidth(QtExt::TableCell::BottomBorder, prep.m_outerFrameWidth);
+		}
+	}
+}
+
+
 void Table::clear() {
 	m_cells.clear();
 	m_HLines.clear();
@@ -64,6 +104,7 @@ void Table::clear() {
 	m_adjusted = false;
 	m_cols = 0;
 	m_rows = 0;
+	m_headerRows = 0;
 	m_scale = 1.0;
 	m_spacing = 2;
 	m_margin = 2;
@@ -85,7 +126,10 @@ void Table::setTableSize(QSize size) {
 	emit changed();
 }
 
-void Table::setColumnsRows(unsigned int cols, unsigned int rows) {
+void Table::setColumnsRows(unsigned int cols, unsigned int rows, unsigned int headerRows) {
+	// set here because has no influence on sizing
+	m_headerRows = headerRows;
+
 	// no change - no adjustment necessary
 	if( m_cols == cols && m_rows == rows)
 		return;
@@ -102,11 +146,12 @@ void Table::setColumnsRows(unsigned int cols, unsigned int rows) {
 //	emit changed();
 }
 
-void Table::setCellText(unsigned int col, unsigned int row, const QString& text) {
+void Table::setCellText(unsigned int col, unsigned int row, const QString& text, Qt::Alignment alignment) {
 	Q_ASSERT(col < m_cols);
 	Q_ASSERT(row < m_rows);
 
 	m_cells[col][row].setText(text);
+	m_cells[col][row].setAlignment(alignment);
 	m_adjusted = false;
 	emit changed();
 }
@@ -269,6 +314,28 @@ void Table::setColumnSizeFormat(unsigned int col, CellSizeFormater::FormatType f
 	}
 }
 
+void Table::setFixedColumnSizes(std::vector<qreal> sizes) {
+	m_adjusted = false;
+	qreal width = m_size.width();
+	unsigned int count = std::min((size_t)m_cols, sizes.size());
+	for(size_t i=0; i<m_cols; ++i) {
+		if(i<sizes.size()) {
+			if(sizes[i] <= 0) {
+				m_columnWidths[i].m_format = CellSizeFormater::AutoMinimum;
+			}
+			else {
+				m_columnWidths[i].m_format = CellSizeFormater::Fixed;
+				m_columnWidths[i].m_fixedSize = width * sizes[i] / 100.0;
+			}
+		}
+		else {
+			m_columnWidths[i].m_format = CellSizeFormater::AutoMinimum;
+		}
+	}
+	emit changed();
+}
+
+
 void Table::setRowSizeFormat(unsigned int row, CellSizeFormater::FormatType format, qreal fixedSize) {
 	Q_ASSERT(row < m_rows);
 	// currently only these two types are supported
@@ -331,6 +398,21 @@ void Table::setInnerFrameWidth(qreal width) {
 	}
 }
 
+void Table::setColumnBorderWidth(unsigned int leftCol, unsigned int rowStart, unsigned int rowEnd, qreal lineWidth) {
+	Q_ASSERT( rowStart < m_rows);
+	Q_ASSERT( rowEnd < m_rows);
+	Q_ASSERT( leftCol < m_cols);
+
+	if(leftCol == m_cols-1)
+		return;
+
+	for(unsigned int ri=rowStart; ri<=rowEnd; ++ri) {
+		m_cells[leftCol][ri].setBorderWidth(TableCell::RightBorder, lineWidth);
+		m_cells[leftCol+1][ri].setBorderWidth(TableCell::LeftBorder, lineWidth);
+	}
+}
+
+
 QFont Table::defaultFont() const {
 	return m_textDocument->defaultFont();
 }
@@ -366,10 +448,11 @@ qreal Table::cellHeightSpace(const TableCell& cell) const {
 }
 
 void Table::setPaintProperties() {
+	TextFrameInformations::m_pixelStep = std::max(m_rows / 20, 5u);
 	for( unsigned int c=0; c<m_cols; ++c) {
 		// set text properties from text document
 		for( unsigned int r=0; r<m_rows; ++r) {
-			m_cells[c][r].setPaintProperties(m_textDocument);
+			m_cells[c][r].setPaintProperties(m_textDocument, m_adaptive);
 		}
 	}
 }
@@ -377,28 +460,28 @@ void Table::setPaintProperties() {
 void Table::calcMaxCellWidthsUnmerged(QVector<qreal>& maxCellWidthsUnmerged) {
 	maxCellWidthsUnmerged.resize((int)m_cols);
 	for( unsigned int c=0; c<m_cols; ++c) {
-		// get column width
-		qreal tmw(0);
-		// for fixed column width
-		if( m_columnWidths[(int)c].m_format == CellSizeFormater::Fixed) {
-			tmw = m_columnWidths[(int)c].m_fixedSize;
-		}
-		// for automatic look for maximum cell width in the current column
-		else {
-			for( unsigned int r=0; r<m_rows; ++r) {
-				TableCell& cell = m_cells[c][r];
-				if( !cell.merged()) {
-					QSizeF textSize = cell.textSize(-1);
-					tmw = std::max(tmw, textSize.width());
-				}
-			}
-		}
 		// look for maximum sum of left and right margins in current column
 		qreal maxMarginSum = 0;
 		for( unsigned int r=0; r<m_rows; ++r) {
 			const TableCell& cell = m_cells[c][r];
 			if( !cell.merged()) {
 				maxMarginSum = std::max(maxMarginSum, qreal(cell.leftMargin() + cell.rightMargin()));
+			}
+		}
+		// get column width
+		qreal tmw(0);
+		// for fixed column width
+		if( m_columnWidths[(int)c].m_format == CellSizeFormater::Fixed) {
+			tmw = m_columnWidths[(int)c].m_fixedSize - (2 * m_spacing + maxMarginSum) * m_scale;;
+		}
+		// for automatic look for maximum cell width in the current column
+		else {
+			for( unsigned int r=0; r<m_rows; ++r) {
+				TableCell& cell = m_cells[c][r];
+				if( !cell.merged()) {
+					QSizeF textSize = cell.textSize(-1, m_adaptive);
+					tmw = std::max(tmw, textSize.width());
+				}
 			}
 		}
 		maxCellWidthsUnmerged[(int)c] = tmw + (2 * m_spacing + maxMarginSum) * m_scale;
@@ -412,24 +495,29 @@ void Table::calcCellRectsMergedFromText(QVector<qreal>& maxCellWidthsUnmerged) {
 		MergedCells& mc = m_mergedCells[i];
 		qreal mw(0.0);
 		// calc total width for all columns in range
-		for( unsigned int c=mc.firstCol; c<=mc.lastCol;++c)
+		int notFixedCols = 0;
+		for( unsigned int c=mc.firstCol; c<=mc.lastCol;++c) {
 			mw += maxCellWidthsUnmerged[(int)c];
+			if(m_columnWidths[c].m_format != CellSizeFormater::Fixed)
+				++notFixedCols;
+		}
 
 		TableCell& leftTopCell = m_cells[mc.firstCol][mc.firstRow];
 		TableCell& rightTopCell = m_cells[mc.lastCol][mc.firstRow];
 		qreal widthMarginSum = leftTopCell.leftMargin() + rightTopCell.rightMargin();
 
-		QSizeF textSize = leftTopCell.textSize(-1);
+		QSizeF textSize = leftTopCell.textSize(-1, m_adaptive);
 
 		// fits the current text into the merged cell range?
 		// calc difference between necessary space for text and current cell width
 		qreal wdiff = mw - (2.0 * m_spacing + widthMarginSum) * m_scale - textSize.width();
 		// make all columns in range bigger in order to create enough space
 		if( wdiff < 0) {
-			qreal additional = wdiff / (mc.lastCol - mc.firstCol + 1) * -1.0;
+			qreal additional = wdiff / notFixedCols * -1.0;
 			mw = 0.0;
 			for( unsigned int c=mc.firstCol; c<=mc.lastCol;++c) {
-				maxCellWidthsUnmerged[(int)c] += additional;
+				if(m_columnWidths[c].m_format != CellSizeFormater::Fixed)
+					maxCellWidthsUnmerged[(int)c] += additional;
 				mw += maxCellWidthsUnmerged[(int)c];
 			}
 		}
@@ -516,10 +604,10 @@ void Table::calcMaxCellHeightsUnmerged(QVector<qreal>& maxCellHeightUnmerged) {
 			if( !cell.merged()) {
 				QSizeF textSize;
 				if(cell.verticalText()) {
-					textSize = cell.textSize(-1);
+					textSize = cell.textSize(-1, m_adaptive);
 				}
 				else {
-					textSize = cell.textSize(m_columnWidths[(int)c].m_size - cellWidthSpace(cell));
+					textSize = cell.textSize(m_columnWidths[(int)c].m_size - cellWidthSpace(cell), m_adaptive);
 				}
 				tmh = std::max(tmh, textSize.height());
 				maxMarginSum = std::max(maxMarginSum, cell.topMargin() + cell.bottomMargin());
@@ -538,10 +626,10 @@ void Table::calcCellRectsHeightMergedFromRowHeights(QVector<qreal>& maxCellHeigh
 			mh += maxCellHeightUnmerged[(int)r];
 		QSizeF textSize;
 		if(cell.verticalText()) {
-			textSize = cell.textSize(-1);
+			textSize = cell.textSize(-1, m_adaptive);
 		}
 		else {
-			textSize = cell.textSize(mc.m_cellRect.width());
+			textSize = cell.textSize(mc.m_cellRect.width(), m_adaptive);
 		}
 		qreal textHeight = textSize.height();
 		qreal topMargin = cell.topMargin();
@@ -731,9 +819,9 @@ void  Table::setCellTextRects() {
 
 				QSizeF textSize;
 				if(currentCell.verticalText())
-					textSize = currentCell.textSize(maxTextRect.height());
+					textSize = currentCell.textSize(maxTextRect.height(), m_adaptive);
 				else
-					textSize = currentCell.textSize(maxTextRect.width());
+					textSize = currentCell.textSize(maxTextRect.width(), m_adaptive);
 				QRectF trect(maxTextRect.topLeft(), textSize);
 //				if(currentCell.verticalText())
 //					trect = trect.transposed();
@@ -752,9 +840,9 @@ void Table::setCellTextRectsMerged() {
 		QSizeF textSize;
 		TableCell& leftTopCell = m_cells[mc.firstCol][mc.firstRow];
 		if( leftTopCell.verticalText())
-			textSize = m_cells[mc.firstCol][mc.firstRow].textSize(maxTextRect.height());
+			textSize = m_cells[mc.firstCol][mc.firstRow].textSize(maxTextRect.height(), m_adaptive);
 		else
-			textSize = m_cells[mc.firstCol][mc.firstRow].textSize(maxTextRect.width());
+			textSize = m_cells[mc.firstCol][mc.firstRow].textSize(maxTextRect.width(), m_adaptive);
 		QRectF trect(maxTextRect.topLeft(), textSize);
 
 		mc.m_textRect = trect;
@@ -771,6 +859,7 @@ void Table::adjust(QPaintDevice* paintDevice) {
 	m_scale = paintDevice->logicalDpiX() / QApplication::desktop()->screen()->logicalDpiX();
 
 	setPaintProperties();
+
 
 	// Take text rectangles for all cells without width constraint and
 	// creates a list of maximum cell width of each column
@@ -839,7 +928,6 @@ void Table::adjust(QPaintDevice* paintDevice) {
 		mhTotal += m_rowHeights[r].m_size;
 	}
 	m_size.setHeight(mhTotal + 2 * m_margin * m_scale);
-
 	// set all cell rects
 	setCellRects();
 
@@ -887,7 +975,9 @@ void Table::paintCellText(unsigned int col, unsigned int row, QPainter* painter,
 		return;
 
 	QRectF cellRect = currentCell.cellRect();
+	// text rect depends on vertical setting
 	QRectF textRect =  currentCell.textRect();
+	// max rect is always horizontal
 	QRectF maxTextRect =  currentCell.maxTextRect();
 	int mindex = mergeIndex(col, row);
 	// if cell is part of merging area take cell and text rect from this
@@ -900,29 +990,61 @@ void Table::paintCellText(unsigned int col, unsigned int row, QPainter* painter,
 
 	// calculate rect and positions
 	qreal xpos(maxTextRect.left());
+	qreal xposRight = maxTextRect.right();
 	qreal ypos(maxTextRect.top());
+
+	qreal maxWidth = maxTextRect.width();
+	qreal maxHeight = maxTextRect.height();
+
+	qreal textWidth = textRect.width();
+	qreal textHeight = textRect.height();
+	bool tooLarge;
+	if(currentCell.verticalText())
+		tooLarge = textHeight > cellRect.width();
+	else
+		tooLarge = textWidth > cellRect.width();
+
 	Qt::Alignment align = currentCell.alignment();
-	if( align.testFlag(Qt::AlignHCenter) || align.testFlag(Qt::AlignCenter))
-		xpos = maxTextRect.left() + (maxTextRect.width() - textRect.width()) / 2.0;
-	if( align.testFlag(Qt::AlignRight))
-		xpos = maxTextRect.right() - textRect.width();
-	if( align.testFlag(Qt::AlignBottom))
-		ypos = maxTextRect.bottom() - textRect.height();
-	if( align.testFlag(Qt::AlignVCenter))
-		ypos = (maxTextRect.height() - textRect.height()) / 2.0 + maxTextRect.top();
+
 	if(currentCell.verticalText()) {
-		ypos += textRect.height();
+		QRectF mrt = maxTextRect.transposed();
+		ypos += textHeight; // now top aligned
+
+		if( align.testFlag(Qt::AlignHCenter) || align.testFlag(Qt::AlignCenter))
+			xpos = xpos + (mrt.width() - textWidth) / 2.0;
+		if( align.testFlag(Qt::AlignRight)) {
+			if(!tooLarge)
+				xpos = xposRight - textWidth;
+		}
+		if( align.testFlag(Qt::AlignBottom))
+			ypos = mrt.bottom();
+
+		if( align.testFlag(Qt::AlignVCenter))
+			ypos = (mrt.height() - textHeight) / 2.0 + ypos;
+
+	}
+	else {
+		if( align.testFlag(Qt::AlignHCenter) || align.testFlag(Qt::AlignCenter))
+			xpos = xpos + (maxWidth - textWidth) / 2.0;
+		if( align.testFlag(Qt::AlignRight)) {
+			if(!tooLarge)
+				xpos = xposRight - textWidth;
+		}
+		if( align.testFlag(Qt::AlignBottom))
+			ypos = maxTextRect.bottom() - textHeight;
+		if( align.testFlag(Qt::AlignVCenter))
+			ypos = (maxTextRect.height() - textHeight) / 2.0 + maxTextRect.top();
 	}
 
 	// calculation of offset
-	qreal voffset = currentCell.verticalOffset() * textRect.height();
+	qreal voffset = currentCell.verticalOffset() * textHeight;
 	ypos += voffset;
 
 	// set document properties
 	if(currentCell.verticalText())
-		m_textDocument->setTextWidth(textRect.height());
+		m_textDocument->setTextWidth(textHeight);
 	else
-		m_textDocument->setTextWidth(textRect.width());
+		m_textDocument->setTextWidth(textWidth);
 	m_textDocument->setDocumentMargin(0);
 	text = "<meta charset=\"utf-8\"/>" + text;
 	m_textDocument->setHtml(text);
@@ -937,7 +1059,14 @@ void Table::paintCellText(unsigned int col, unsigned int row, QPainter* painter,
 	QTextOption optionOrg = option;
 	option.setAlignment(align);
 	m_textDocument->setDefaultTextOption(option);
-	m_textDocument->drawContents(painter);
+	if(tooLarge) {
+		QRectF rect = maxTextRect.translated(-maxTextRect.x(), -maxTextRect.y());
+		if(currentCell.verticalText())
+			rect = rect.transposed();
+		m_textDocument->drawContents(painter, rect);
+	}
+	else
+		m_textDocument->drawContents(painter);
 	m_textDocument->setDefaultTextOption(optionOrg);
 	painter->restore();
 }
@@ -986,6 +1115,8 @@ QRectF Table::tableRect(QPaintDevice* paintDevice, qreal width) {
 	QRectF result;
 	if( !paintDevice)
 		return result;
+	if(m_VLines.empty() || m_VLines.back().empty())
+		return result;
 
 	if( width <= 0)
 		width = paintDevice->width();
@@ -994,6 +1125,7 @@ QRectF Table::tableRect(QPaintDevice* paintDevice, qreal width) {
 	if( !m_adjusted) {
 		adjust(paintDevice);
 	}
+
 	qreal localeWidth = m_VLines.back().front().m_line.x1() - m_VLines.front().front().m_line.x1();
 	qreal localeHeight = m_VLines.front().back().m_line.y2() - m_VLines.front().front().m_line.y1();
 	result.setSize(QSizeF(localeWidth, localeHeight));
@@ -1001,6 +1133,9 @@ QRectF Table::tableRect(QPaintDevice* paintDevice, qreal width) {
 }
 
 QSizeF Table::tableSize() const {
+	if(m_VLines.empty() || m_VLines.back().empty())
+		return QSizeF();
+
 	qreal localeWidth = m_VLines.back().front().m_line.x1() - m_VLines.front().front().m_line.x1();
 	qreal localeHeight = m_VLines.front().back().m_line.y2() - m_VLines.front().front().m_line.y1();
 	return QSizeF(localeWidth, localeHeight);
@@ -1011,9 +1146,9 @@ void Table::drawTable(QPainter* painter, const QPointF& pos) {
 	if( m_rows <= 0 || m_cols <= 0)
 		return;
 
-	Q_ASSERT(painter != NULL);
+	Q_ASSERT(painter != nullptr);
 	QPaintDevice* device = painter->device();
-	Q_ASSERT(device != NULL);
+	Q_ASSERT(device != nullptr);
 
 	painter->fillRect(QRectF(pos, m_size), m_background);
 
@@ -1040,6 +1175,61 @@ void Table::drawTable(QPainter* painter, const QPointF& pos) {
 	}
 }
 
+std::vector<unsigned int> Table::fittingTableRows(QPaintDevice* paintDevice, qreal hfirst, qreal hrest) const {
+	// makes no sense to draw an empty table
+	if( m_rows <= 0 || m_cols <= 0)
+		return std::vector<unsigned int>(1, 0);
+
+	QSizeF size = tableSize();
+
+	if(size.height() <= hfirst)
+		return std::vector<unsigned int>(1, m_rows);
+
+	qreal headerHeight = 0;
+	for(unsigned int i=0; i<m_headerRows; ++i) {
+		headerHeight += m_cells[0][i].cellRect().height();
+	}
+	headerHeight += m_outerFrameWidth;
+
+	std::vector<unsigned int> res;
+	qreal dividedTableHeight = headerHeight;
+	for(unsigned int i = m_headerRows; i<m_rows; ++i) {
+		qreal currentHeight = m_cells[0][i].cellRect().height();
+		dividedTableHeight += currentHeight;
+		if(res.size() == 0 && (dividedTableHeight + m_outerFrameWidth) >= hfirst) {
+			res.push_back(i-1);
+			dividedTableHeight = headerHeight + currentHeight;
+		}
+		else if(res.size() > 0 && (dividedTableHeight + m_outerFrameWidth) >= hrest) {
+			res.push_back(i-1);
+			dividedTableHeight = headerHeight + currentHeight;
+		}
+	}
+	res.push_back(m_rows-1);
+	return res;
+}
+
+std::vector<Table*> Table::fittingTables(QPaintDevice* paintDevice, qreal hfirst, qreal hrest) {
+	std::vector<unsigned int> tableRows = fittingTableRows(paintDevice, hfirst, hrest);
+	std::vector<Table*> res;
+	if(tableRows.size() == 1) {
+		res.push_back(this);
+		return res;
+	}
+
+	int startRow = 0;
+	for(int i=0; i<tableRows.size(); ++i) {
+		int endRow = tableRows[i];
+		res.push_back(createSubTable(startRow, endRow));
+		Q_ASSERT(res.back() != nullptr);
+		res.back()->adjust(paintDevice);
+		startRow = endRow + 1;
+	}
+
+	return res;
+}
+
+
 void Table::frameRect(Table& table, int cLeft, int cRight, int rTop, int rBottom, int lineWidth) {
 	for( int i=rTop; i<=rBottom; ++i) {
 		table.cell(cLeft, i).setBorderWidth(QtExt::TableCell::LeftBorder, lineWidth);
@@ -1051,5 +1241,52 @@ void Table::frameRect(Table& table, int cLeft, int cRight, int rTop, int rBottom
 	}
 }
 
+Table* Table::createSubTable(unsigned int startRow, unsigned int endRow) {
+	if( startRow > endRow || startRow >= m_rows || endRow >= m_rows)
+		return nullptr;
+
+	Table* table = new Table(m_textDocument, m_adaptive, m_size, parent());
+	unsigned int rowCount = endRow-startRow+1;
+	int usedHeaderRows = 0;
+	if(startRow <= m_headerRows-1) {
+		usedHeaderRows = (startRow - m_headerRows) * -1;
+		rowCount += m_headerRows - usedHeaderRows;
+	}
+	rowCount += m_headerRows - usedHeaderRows;
+	table->setColumnsRows(m_cols, rowCount, m_headerRows);
+
+	table->m_textDocumentOwner = false;
+	table->m_spacing = m_spacing;
+	table->m_margin = m_margin;
+	table->m_outerFrameWidth = m_outerFrameWidth;
+	table->m_innerFrameWidth = m_innerFrameWidth;
+	table->m_background = m_background;
+	table->m_scale = m_scale;
+	table->m_adjusted = false;
+	table->m_columnWidths = m_columnWidths;
+
+	for(unsigned int ci=0; ci<table->m_cols; ++ci) {
+//		if(m_headerRows > 0)
+//			table->m_HLines[ci][0] = m_HLines[ci][0];
+		for(unsigned int ri=0; ri<m_headerRows; ++ri) {
+			table->m_rowHeights[ri] = m_rowHeights[ri];
+			table->m_cells[ci][ri] = m_cells[ci][ri];
+//			table->m_VLines[ci][ri] = m_VLines[ci][ri];
+//			table->m_HLines[ci][ri+1] = m_HLines[ci][ri+1];
+		}
+		unsigned int realStartRow = startRow;
+		if(startRow <= m_headerRows -1) {
+			realStartRow += usedHeaderRows;
+		}
+		unsigned int newTableRow = m_headerRows;
+		for(unsigned int ri=realStartRow; ri<=endRow; ++ri) {
+			table->m_rowHeights[newTableRow] = m_rowHeights[ri];
+			table->m_cells[ci][newTableRow] = m_cells[ci][ri];
+//			table->m_VLines[ci][ri] = m_VLines[ci][ri];
+			++newTableRow;
+		}
+	}
+	return table;
+}
 
 } // namespace QtExt

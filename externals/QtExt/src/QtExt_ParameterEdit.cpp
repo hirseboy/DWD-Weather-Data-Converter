@@ -1,14 +1,36 @@
-/*	Authors: H. Fechner, A. Nicolai
+/*	QtExt - Qt-based utility classes and functions (extends Qt library)
 
-	This file is part of the QtExt Library.
-	All rights reserved.
+	Copyright (c) 2014-today, Institut für Bauklimatik, TU Dresden, Germany
 
-	This software is copyrighted by the principle author(s).
-	The right to reproduce the work (copy all or part of the source code),
-	modify the source code or documentation, compile it to form object code,
-	and the sole right to copy the object code thereby produced is hereby
-	retained for the author(s) unless explicitely granted by the author(s).
+	Primary authors:
+	  Heiko Fechner    <heiko.fechner -[at]- tu-dresden.de>
+	  Andreas Nicolai
 
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+	der GNU General Public License, wie von der Free Software Foundation,
+	Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+	veröffentlichten Version, weiter verteilen und/oder modifizieren.
+
+	Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+	OHNE JEDE GEWÄHR,; sogar ohne die implizite
+	Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+	Siehe die GNU General Public License für weitere Einzelheiten.
+
+	Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+	Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
 */
 
 #include "QtExt_ParameterEdit.h"
@@ -28,7 +50,7 @@ namespace QtExt {
 
 ParameterEdit::ParameterEdit(QWidget *parent) :
 	ValidatingLineEdit(parent),
-	m_buddyUnitCombo(NULL)
+	m_buddyUnitCombo(nullptr)
 {
 }
 
@@ -93,7 +115,7 @@ void ParameterEdit::setFromParameter(const IBK::Parameter & param, const IBK::Un
 void ParameterEdit::setFromParameter(const IBK::Parameter & param) {
 	m_displayUnit.clear();
 	if (m_buddyUnitCombo) {
-		m_displayUnit = IBK::Unit(m_buddyUnitCombo->currentText().toUtf8().data());
+		m_displayUnit = IBK::Unit(m_buddyUnitCombo->currentText().toStdString());
 	}
 	// check if parameter is set
 	if (param.name.empty()) {
@@ -148,7 +170,7 @@ void ParameterEdit::unitChanged(QString unit) {
 	bool ok = isValidNumber(val);
 	if (ok) {
 		IBK::Unit oldUnit = m_displayUnit;
-		IBK::Unit newUnit(unit.toUtf8().data());
+		IBK::Unit newUnit(unit.toStdString());
 		IBK::UnitList::instance().convert(oldUnit, newUnit, val);
 		blockSignals(true);
 		setValue( val );
@@ -160,11 +182,11 @@ void ParameterEdit::unitChanged(QString unit) {
 }
 
 void ParameterEdit::setBuddyUnitCombo(QComboBox * comboBox, const IBK::Unit & unit) {
-	if (m_buddyUnitCombo != NULL) {
+	if (m_buddyUnitCombo != nullptr) {
 		disconnect(m_buddyUnitCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(unitChanged(QString)));
 	}
 	m_buddyUnitCombo = comboBox;
-	if (m_buddyUnitCombo != NULL) {
+	if (m_buddyUnitCombo != nullptr) {
 		m_buddyUnitCombo->clear();
 		populateUnitCombo(m_buddyUnitCombo, unit);
 		connect(m_buddyUnitCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(unitChanged(QString)));
@@ -174,7 +196,7 @@ void ParameterEdit::setBuddyUnitCombo(QComboBox * comboBox, const IBK::Unit & un
 
 void ParameterEdit::setUnit(const IBK::Unit & unit) {
 	const char * const FUNC_ID = "[ParameterEdit::setUnit]";
-	if (m_buddyUnitCombo == NULL)
+	if (m_buddyUnitCombo == nullptr)
 		throw IBK::Exception("UnitCombo buddy not set.", FUNC_ID);
 
 	m_buddyUnitCombo->blockSignals(true);
@@ -195,7 +217,7 @@ void ParameterEdit::populateUnitCombo(QComboBox * combo, const IBK::Unit & u) {
 	std::vector<IBK::Unit> units;
 	IBK::UnitList::instance().convertible_units(units, u);
 	for (unsigned int i=0; i<units.size(); ++i)
-		combo->addItem(QString::fromUtf8(units[i].name().c_str()),units[i].id());
+		combo->addItem(QString::fromStdString(units[i].name()), units[i].id());
 }
 
 } // namespace QtExt

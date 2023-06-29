@@ -1,17 +1,37 @@
-/*	Authors: H. Fechner, A. Nicolai
+/*	QtExt - Qt-based utility classes and functions (extends Qt library)
 
-	This file is part of the QtExt Library.
-	All rights reserved.
+	Copyright (c) 2014-today, Institut für Bauklimatik, TU Dresden, Germany
 
-	This software is copyrighted by the principle author(s).
-	The right to reproduce the work (copy all or part of the source code),
-	modify the source code or documentation, compile it to form object code,
-	and the sole right to copy the object code thereby produced is hereby
-	retained for the author(s) unless explicitely granted by the author(s).
+	Primary authors:
+	  Heiko Fechner    <heiko.fechner -[at]- tu-dresden.de>
+	  Andreas Nicolai
 
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+	der GNU General Public License, wie von der Free Software Foundation,
+	Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+	veröffentlichten Version, weiter verteilen und/oder modifizieren.
+
+	Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+	OHNE JEDE GEWÄHR,; sogar ohne die implizite
+	Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+	Siehe die GNU General Public License für weitere Einzelheiten.
+
+	Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+	Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
 */
-
-// Original source code from Qt5 examples
 
 #include <QAction>
 #include <QApplication>
@@ -33,8 +53,6 @@
 #include <QVBoxLayout>
 
 #include "QtExt_RichTextEditWidget.h"
-
-const QString rsrcPath = ":/master";
 
 namespace QtExt {
 
@@ -109,27 +127,27 @@ QString RichTextEditWidget::htmlText() const {
 void RichTextEditWidget::setupEditActions() {
 	QToolBar *tb = addToolBar(tr("Edit Actions"));
 
-	const QIcon undoIcon = QIcon::fromTheme("edit-undo", QIcon(rsrcPath + "/editundo.png"));
+	const QIcon undoIcon = QIcon::fromTheme("edit-undo", QIcon(":/gfx/master/editundo.png"));
 	actionUndo = tb->addAction(undoIcon, tr("&Undo"), this, SLOT(undo()));
 	actionUndo->setShortcut(QKeySequence::Undo);
 
-	const QIcon redoIcon = QIcon::fromTheme("edit-redo", QIcon(rsrcPath + "/editredo.png"));
+	const QIcon redoIcon = QIcon::fromTheme("edit-redo", QIcon(":/gfx/master/editredo.png"));
 	actionRedo = tb->addAction(redoIcon, tr("&Redo"), this, SLOT(redo()));
 	actionRedo->setPriority(QAction::LowPriority);
 	actionRedo->setShortcut(QKeySequence::Redo);
 
 #ifndef QT_NO_CLIPBOARD
-	const QIcon cutIcon = QIcon::fromTheme("edit-cut", QIcon(rsrcPath + "/editcut.png"));
+	const QIcon cutIcon = QIcon::fromTheme("edit-cut", QIcon(":/gfx/master/editcut.png"));
 	actionCut = tb->addAction(cutIcon, tr("Cu&t"), this, SLOT(cut()));
 	actionCut->setPriority(QAction::LowPriority);
 	actionCut->setShortcut(QKeySequence::Cut);
 
-	const QIcon copyIcon = QIcon::fromTheme("edit-copy", QIcon(rsrcPath + "/editcopy.png"));
+	const QIcon copyIcon = QIcon::fromTheme("edit-copy", QIcon(":/gfx/master/editcopy.png"));
 	actionCopy = tb->addAction(copyIcon, tr("&Copy"), this, SLOT(copy()));
 	actionCopy->setPriority(QAction::LowPriority);
 	actionCopy->setShortcut(QKeySequence::Copy);
 
-	const QIcon pasteIcon = QIcon::fromTheme("edit-paste", QIcon(rsrcPath + "/editpaste.png"));
+	const QIcon pasteIcon = QIcon::fromTheme("edit-paste", QIcon(":/gfx/master/editpaste.png"));
 	actionPaste = tb->addAction(pasteIcon, tr("&Paste"), this, SLOT(paste()));
 	actionPaste->setPriority(QAction::LowPriority);
 	actionPaste->setShortcut(QKeySequence::Paste);
@@ -142,7 +160,7 @@ void RichTextEditWidget::setupTextActions()
 {
 	QToolBar *tb = addToolBar(tr("Format Actions"));
 
-	const QIcon boldIcon = QIcon::fromTheme("format-text-bold", QIcon(rsrcPath + "/textbold.png"));
+	const QIcon boldIcon = QIcon::fromTheme("format-text-bold", QIcon(":/gfx/master/textbold.png"));
 	actionTextBold = tb->addAction(boldIcon, tr("&Bold"), this, SLOT(textBold()));
 	actionTextBold->setShortcut(Qt::CTRL + Qt::Key_B);
 	actionTextBold->setPriority(QAction::LowPriority);
@@ -151,7 +169,7 @@ void RichTextEditWidget::setupTextActions()
 	actionTextBold->setFont(bold);
 	actionTextBold->setCheckable(true);
 
-	const QIcon italicIcon = QIcon::fromTheme("format-text-italic", QIcon(rsrcPath + "/textitalic.png"));
+	const QIcon italicIcon = QIcon::fromTheme("format-text-italic", QIcon(":/gfx/master/textitalic.png"));
 	actionTextItalic = tb->addAction(italicIcon, tr("&Italic"), this, SLOT(textItalic()));
 	actionTextItalic->setPriority(QAction::LowPriority);
 	actionTextItalic->setShortcut(Qt::CTRL + Qt::Key_I);
@@ -160,7 +178,7 @@ void RichTextEditWidget::setupTextActions()
 	actionTextItalic->setFont(italic);
 	actionTextItalic->setCheckable(true);
 
-	const QIcon underlineIcon = QIcon::fromTheme("format-text-underline", QIcon(rsrcPath + "/textunder.png"));
+	const QIcon underlineIcon = QIcon::fromTheme("format-text-underline", QIcon(":/gfx/master/textunder.png"));
 	actionTextUnderline = tb->addAction(underlineIcon, tr("&Underline"), this, SLOT(textUnderline()));
 	actionTextUnderline->setShortcut(Qt::CTRL + Qt::Key_U);
 	actionTextUnderline->setPriority(QAction::LowPriority);
@@ -169,22 +187,22 @@ void RichTextEditWidget::setupTextActions()
 	actionTextUnderline->setFont(underline);
 	actionTextUnderline->setCheckable(true);
 
-	const QIcon leftIcon = QIcon::fromTheme("format-justify-left", QIcon(rsrcPath + "/textleft.png"));
+	const QIcon leftIcon = QIcon::fromTheme("format-justify-left", QIcon(":/gfx/master/textleft.png"));
 	actionAlignLeft = new QAction(leftIcon, tr("&Left"), this);
 	actionAlignLeft->setShortcut(Qt::CTRL + Qt::Key_L);
 	actionAlignLeft->setCheckable(true);
 	actionAlignLeft->setPriority(QAction::LowPriority);
-	const QIcon centerIcon = QIcon::fromTheme("format-justify-center", QIcon(rsrcPath + "/textcenter.png"));
+	const QIcon centerIcon = QIcon::fromTheme("format-justify-center", QIcon(":/gfx/master/textcenter.png"));
 	actionAlignCenter = new QAction(centerIcon, tr("C&enter"), this);
 	actionAlignCenter->setShortcut(Qt::CTRL + Qt::Key_E);
 	actionAlignCenter->setCheckable(true);
 	actionAlignCenter->setPriority(QAction::LowPriority);
-	const QIcon rightIcon = QIcon::fromTheme("format-justify-right", QIcon(rsrcPath + "/textright.png"));
+	const QIcon rightIcon = QIcon::fromTheme("format-justify-right", QIcon(":/gfx/master/textright.png"));
 	actionAlignRight = new QAction(rightIcon, tr("&Right"), this);
 	actionAlignRight->setShortcut(Qt::CTRL + Qt::Key_R);
 	actionAlignRight->setCheckable(true);
 	actionAlignRight->setPriority(QAction::LowPriority);
-	const QIcon fillIcon = QIcon::fromTheme("format-justify-fill", QIcon(rsrcPath + "/textjustify.png"));
+	const QIcon fillIcon = QIcon::fromTheme("format-justify-fill", QIcon(":/gfx/master/textjustify.png"));
 	actionAlignJustify = new QAction(fillIcon, tr("&Justify"), this);
 	actionAlignJustify->setShortcut(Qt::CTRL + Qt::Key_J);
 	actionAlignJustify->setCheckable(true);
@@ -229,11 +247,15 @@ void RichTextEditWidget::setupTextActions()
 	typedef void (QComboBox::*QComboIntSignal)(int);
 	connect(comboListFormat, static_cast<QComboIntSignal>(&QComboBox::activated), this, &RichTextEditWidget::textStyle);
 
-	typedef void (QComboBox::*QComboStringSignal)(const QString &);
 	comboFont = new QFontComboBox(tb);
 	tb->addWidget(comboFont);
-	connect(comboFont, static_cast<QComboStringSignal>(&QComboBox::activated), this, &RichTextEditWidget::textFamily);
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+	connect(comboFont, &QComboBox::textActivated, this, &RichTextEditWidget::textFamily);
+#else
+	typedef void (QComboBox::*QComboStringSignal)(const QString &);
+	connect(comboFont, static_cast<QComboStringSignal>(&QComboBox::activated), this, &RichTextEditWidget::textFamily);
+#endif
 	comboSize = new QComboBox(tb);
 	comboSize->setObjectName("comboSize");
 	tb->addWidget(comboSize);
@@ -244,7 +266,11 @@ void RichTextEditWidget::setupTextActions()
 		comboSize->addItem(QString::number(size));
 	comboSize->setCurrentIndex(standardSizes.indexOf(QApplication::font().pointSize()));
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+	connect(comboSize, &QComboBox::textActivated, this, &RichTextEditWidget::textSize);
+#else
 	connect(comboSize, static_cast<QComboStringSignal>(&QComboBox::activated), this, &RichTextEditWidget::textSize);
+#endif
 }
 
 void RichTextEditWidget::textBold() {

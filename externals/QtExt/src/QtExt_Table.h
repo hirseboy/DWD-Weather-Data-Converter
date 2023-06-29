@@ -1,14 +1,36 @@
-/*	Authors: H. Fechner, A. Nicolai
+/*	QtExt - Qt-based utility classes and functions (extends Qt library)
 
-	This file is part of the QtExt Library.
-	All rights reserved.
+	Copyright (c) 2014-today, Institut für Bauklimatik, TU Dresden, Germany
 
-	This software is copyrighted by the principle author(s).
-	The right to reproduce the work (copy all or part of the source code),
-	modify the source code or documentation, compile it to form object code,
-	and the sole right to copy the object code thereby produced is hereby
-	retained for the author(s) unless explicitely granted by the author(s).
+	Primary authors:
+	  Heiko Fechner    <heiko.fechner -[at]- tu-dresden.de>
+	  Andreas Nicolai
 
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+	der GNU General Public License, wie von der Free Software Foundation,
+	Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+	veröffentlichten Version, weiter verteilen und/oder modifizieren.
+
+	Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+	OHNE JEDE GEWÄHR,; sogar ohne die implizite
+	Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+	Siehe die GNU General Public License für weitere Einzelheiten.
+
+	Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+	Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
 */
 
 #ifndef QtExt_TableH
@@ -31,6 +53,42 @@ class QTextDocument;
 
 namespace QtExt {
 
+class TablePrepare {
+public:
+	TablePrepare() :
+		m_cols(1),
+		m_rows(2),
+		m_outerFrameWidth(1),
+		m_innerFrameWidth(1),
+		m_margin(0),
+		m_width(100),
+		m_backGround(Qt::white),
+		m_headerCount(1)
+	{}
+
+	void setSize(unsigned int cols, unsigned int rows, unsigned int headerRows) {
+		m_cols = cols;
+		m_rows = rows;
+		m_headerCount = headerRows;
+	}
+
+	TablePrepare get(unsigned int cols, unsigned int rows, unsigned int headerRows, qreal width) {
+		TablePrepare res = *this;
+		res.setSize(cols, rows, headerRows);
+		res.m_width = width;
+		return res;
+	}
+
+	unsigned int	m_cols;
+	unsigned int	m_rows;
+	qreal			m_outerFrameWidth;
+	qreal			m_innerFrameWidth;
+	qreal			m_margin;
+	double			m_width;
+	QColor			m_backGround;
+	bool			m_headerCount;
+};
+
 
 /*! \brief Class Table allows to create and draw a table with HTML-formated text.*/
 class Table : public QObject
@@ -44,7 +102,7 @@ public:
 		\param size Table size.
 		\param parent Parent object is responsible for delete.
 	*/
-	Table(QTextDocument* textDocument, QSize size = QSize(), QObject *parent = 0);
+	Table(QTextDocument* textDocument, bool adaptive, QSize size = QSize(), QObject *parent = 0);
 
 	/*! Destructor.
 		Deletes m_textDocument if necessary.
@@ -54,11 +112,14 @@ public:
 //	/*! Clones the actual table.*/
 //	Table* clone() const;
 
+	/*! Set the table from given prepare object.*/
+	void set(const TablePrepare& prep);
+
 	/*! Sets the table size.
 		\param cols Column count.
 		\param rows Row count.
 	*/
-	void setColumnsRows(unsigned int cols, unsigned int rows);
+	void setColumnsRows(unsigned int cols, unsigned int rows, unsigned int headerRows = 0);
 
 	/*! Set the visible table rectangle (width and height).*/
 	void setTableSize(QSize size);
@@ -77,7 +138,7 @@ public:
 		\param row Row.
 		\param text Simple text or HTML sequence.
 	*/
-	void setCellText(unsigned int col, unsigned int row, const QString& text);
+	void setCellText(unsigned int col, unsigned int row, const QString& text, Qt::Alignment alignment = Qt::AlignLeft);
 
 	/*! Returns the cell spacing.*/
 	qreal spacing() const;
@@ -164,6 +225,11 @@ public:
 	*/
 	void setColumnSizeFormat(unsigned int col, CellSizeFormater::FormatType format, qreal fixedSize = 0);
 
+	/*! Set all columns to fixed formats which have a size in the given vector greater than 0.
+		The size must be given in percent (of the current width).
+	*/
+	void setFixedColumnSizes(std::vector<qreal> sizes);
+
 	/*! Set the size format type for the given row.
 		\param row Row index.
 		\param format New format type. Only CellSizeFormater::Fixed and CellSizeFormater::AutoMinimum are supported.
@@ -201,6 +267,14 @@ public:
 	*/
 	void setInnerFrameWidth(qreal width);
 
+	/*! Set the border line width between two cols in a given row range.
+		\param leftCol Index of left column (right border will be changed)
+		\param rowStart First row
+		\param rowEnd Last row
+		\param lineWidth Width of the border line. Use 0 for delting border
+	*/
+	void setColumnBorderWidth(unsigned int leftCol, unsigned int rowStart, unsigned int rowEnd, qreal lineWidth);
+
 	/*! Returns the default font.*/
 	QFont defaultFont() const;
 
@@ -235,6 +309,17 @@ public:
 	/*! Returns the internal text document.*/
 	const QTextDocument* textDocument() const { return m_textDocument; }
 
+	/*! Calculates how many tables are necessary in order to fit on areas with the given size.
+		It return a vector of indexes of end rows for each sub table.
+	*/
+	std::vector<unsigned int> fittingTableRows(QPaintDevice* paintDevice, qreal hfirst, qreal hrest) const;
+
+	/*! Create number of tables which fits in the given heights.*/
+	std::vector<Table*> fittingTables(QPaintDevice* paintDevice, qreal hfirst, qreal hrest);
+
+	/*! Return if the adaptive mode is switched on.*/
+	bool adaptive() const { return m_adaptive; }
+
 	/*! Draw a frame around the given cell area with given width.*/
 	static void frameRect(Table& table, int cLeft, int cright, int rTop, int rBottom, int lineWidth);
 
@@ -247,6 +332,7 @@ private:
 	bool									m_textDocumentOwner;	///< True if the class instance is owner of the text document.
 	unsigned int							m_cols;					///< Coumn count.
 	unsigned int							m_rows;					///< Row count.
+	unsigned int							m_headerRows;			///< Number of header rows
 	std::vector<std::vector<TableCell> >	m_cells;				///< Cell array.
 	QVector<CellSizeFormater>				m_columnWidths;			///< Column format vector.
 	QVector<CellSizeFormater>				m_rowHeights;			///< Row format vector.
@@ -261,6 +347,7 @@ private:
 	QVector<QVector<LineProperties> >		m_VLines;				///< Vertical line array.
 	qreal									m_scale;				///< Scale factor from screen resolution to paint device resoultion.
 	bool									m_adjusted;				///< Saves the adjustment state.
+	bool									m_adaptive;				///< Table cells are adaptive or not
 
 	/*! Returns the surrounding text rectangle for the given text.
 		\param text Text string.
@@ -401,6 +488,9 @@ private:
 		Call of setCellRects before this function.
 	*/
 	void calcVerticalLines();
+
+	/*! Create a table which contains only the rows from startRow to endRow and the header rows.*/
+	Table* createSubTable(unsigned int startRow, unsigned int endRow);
 };
 
 /*! @file QtExt_Table.h

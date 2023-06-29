@@ -1,14 +1,36 @@
-/*	Authors: H. Fechner, A. Nicolai
+/*	QtExt - Qt-based utility classes and functions (extends Qt library)
 
-	This file is part of the QtExt Library.
-	All rights reserved.
+	Copyright (c) 2014-today, Institut für Bauklimatik, TU Dresden, Germany
 
-	This software is copyrighted by the principle author(s).
-	The right to reproduce the work (copy all or part of the source code),
-	modify the source code or documentation, compile it to form object code,
-	and the sole right to copy the object code thereby produced is hereby
-	retained for the author(s) unless explicitely granted by the author(s).
+	Primary authors:
+	  Heiko Fechner    <heiko.fechner -[at]- tu-dresden.de>
+	  Andreas Nicolai
 
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+	der GNU General Public License, wie von der Free Software Foundation,
+	Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+	veröffentlichten Version, weiter verteilen und/oder modifizieren.
+
+	Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+	OHNE JEDE GEWÄHR,; sogar ohne die implizite
+	Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+	Siehe die GNU General Public License für weitere Einzelheiten.
+
+	Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+	Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
 */
 
 #ifndef QtExt_AutoUpdaterH
@@ -85,17 +107,20 @@ namespace QtExt {
 class AutoUpdater : public QObject {
 	Q_OBJECT
 public:
-	explicit AutoUpdater(QObject *parent = 0);
+	explicit AutoUpdater(QObject *parent = nullptr);
 
+#if defined(Q_OS_WIN)
 	/*! Call this function from main.cpp to check if a downloaded update installer is available on the specified
-		location and run the installation if possible.
-		If such an update file exists, it is checked if it was installed already (file + .run) exists. In this
-		case the downloaded file and .run info file is removed. Otherwise, the update process is
-		started and the .run file is created.
+		location.
+		In fact, any executable in the given path is treated like an update installer, moved to a temporary directory
+		and executed in a new process.
+		To ensure that really only the correct executable file is run, you may pass an md5hash of the file's content.
+		Then, the function will open all *.exe files in the
 		\return Returns true, if a process with the update file was started (in this case the calling program should
 			terminate right away).
 	*/
-	static bool installUpdateWhenAvailable(const QString & localPath);
+	static bool installUpdateWhenAvailable(const QString & localPath, const std::string & md5hash = "");
+#endif // defined(Q_OS_WIN)
 
 
 	/*! Attempts to download the update-info file from a given URL and returns true if
@@ -114,8 +139,13 @@ public:
 			it failed), that shows new version and change log (downloaded separately). If false, function emits the signal
 			updateInfoRetrieved(). The receiver of the signal can then check and compare the version number and either
 			start the update dialog manually, or show any other means of update notification.
-		\param downloadFilePath Path, where downloaded update install shall be stored in.
+		\param downloadFilePath Path, where downloaded update install shall be stored in. Filename will be the same as the downloaded file.
 		\param newestRejectedVersion Only applicable when "interactive=false", i.e. when
+
+		\warning On Windows it is possible, that the current user of DELPHIN does not have install privileges. When installing
+			the update, the user account is switched and the user-specific application download path changes. As such,
+			the downloaded update_xxx.exe file is not found and not deleted by the admin user. As a consequence, next time
+			the user runs DELPHIN he/she is requested to update again. To avoid this, the file is first renamed before run.
 	*/
 	void checkForUpdateInfo(const QString & url, const char * const LONG_VERSION, bool interactive, QString downloadFilePath,
 							QString newestRejectedVersion);
@@ -130,7 +160,11 @@ public:
 		Updates m_newestRejectedVersion when update was skipped.
 	*/
 	static void showUpdateDialog(QWidget * parent, QString currentVersion, QString newVersion,
-								 QString changeLogText, QString downloadUrl, QString downloadFilePath, bool & rejected);
+								 QString changeLogText, QString downloadUrl, QString downloadFilePath,
+								 std::string & downloadedFileMD5, bool & rejected);
+
+	/*! MD5 hash of downloaded file (empty if nothing was downloaded). */
+	std::string				m_downloadedFileMD5;
 
 signals:
 	/*! Signals is emitted when checkForUpdateInfo() was called in non-interactive mode.

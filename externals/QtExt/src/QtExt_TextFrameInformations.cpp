@@ -1,14 +1,36 @@
-/*	Authors: H. Fechner, A. Nicolai
+/*	QtExt - Qt-based utility classes and functions (extends Qt library)
 
-	This file is part of the QtExt Library.
-	All rights reserved.
+	Copyright (c) 2014-today, Institut für Bauklimatik, TU Dresden, Germany
 
-	This software is copyrighted by the principle author(s).
-	The right to reproduce the work (copy all or part of the source code),
-	modify the source code or documentation, compile it to form object code,
-	and the sole right to copy the object code thereby produced is hereby
-	retained for the author(s) unless explicitely granted by the author(s).
+	Primary authors:
+	  Heiko Fechner    <heiko.fechner -[at]- tu-dresden.de>
+	  Andreas Nicolai
 
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+	der GNU General Public License, wie von der Free Software Foundation,
+	Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+	veröffentlichten Version, weiter verteilen und/oder modifizieren.
+
+	Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+	OHNE JEDE GEWÄHR,; sogar ohne die implizite
+	Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+	Siehe die GNU General Public License für weitere Einzelheiten.
+
+	Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+	Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
 */
 
 #include <memory>
@@ -26,19 +48,20 @@
 
 namespace QtExt {
 
+int TextFrameInformations::m_pixelStep = 5;
+
 TextFrameInformations::TextFrameInformations() :
-		m_textDocument(0)
+	m_textDocument(0)
 {
 }
 
-TextFrameInformations::TextFrameInformations(QTextDocument* textDocument, const QString& text) :
+TextFrameInformations::TextFrameInformations(QTextDocument* textDocument, const QString& text, bool adaptive) :
 		m_textDocument(0)
 {
-	set(textDocument, text);
+	set(textDocument, text, adaptive);
 }
 
 TextFrameInformations::~TextFrameInformations() {
-//	delete m_textDocument;
 }
 
 TextFrameInformations::TextFrameInformations(const TextFrameInformations& src)  :
@@ -92,21 +115,18 @@ bool checkValidLayout(QTextDocument* textDocument) {
 }
 
 
-void TextFrameInformations::set(QTextDocument* textDocument, const QString& text) {
+void TextFrameInformations::set(QTextDocument* textDocument, const QString& text, bool adaptive) {
 	m_textDocument = textDocument;
 	Q_ASSERT(m_textDocument != 0);
-	if( text != m_text) {
-		m_infoVect.clear();
-		m_text = text;
-	}
-	else {
+	if( text == m_text)
 		return;
-	}
+
+	m_infoVect.clear();
+	m_text = text;
 
 	// No text - no rect needed
-	if( text.isEmpty()) {
+	if( text.isEmpty())
 		return;
-	}
 
 	m_textDocument->setHtml(m_text);
 	m_textDocument->setDocumentMargin(0);
@@ -116,20 +136,25 @@ void TextFrameInformations::set(QTextDocument* textDocument, const QString& text
 	qreal iwidth = m_textDocument->idealWidth();		// forces creating of layout and text lines
 	QSizeF textSize = totalTextSize(m_textDocument);
 	int linecount = m_textDocument->lineCount();
-	m_infoVect.push_back(TextFrameInfo(linecount, textSize.height(), textSize.width(), 1e10));
+	m_infoVect.emplace_back(TextFrameInfo(linecount, textSize.height(), textSize.width(), 1e10));
+
+	if(!adaptive)
+		return;
 
 	// now look for other widths
 	qreal currentHeight = textSize.height();
 	int i = textSize.width();
-	while( i>1) {
+	while( i>10) {
 		m_textDocument->setTextWidth(i - 1);
 		qreal lastiwidth = iwidth;
 		iwidth = m_textDocument->idealWidth();		// forces creating of layout and text lines
 		textSize = totalTextSize(m_textDocument);
 		if(currentHeight < textSize.height()) {
 			++linecount;
-			m_infoVect.push_back(TextFrameInfo(linecount, textSize.height(), textSize.width(), m_infoVect.back().m_minWidth - 1));
+			m_infoVect.emplace_back(TextFrameInfo(linecount, textSize.height(), textSize.width(), m_infoVect.back().m_minWidth - 1));
 			currentHeight = textSize.height();
+			if(linecount > 5)
+				break;
 		}
 		else {
 			m_infoVect.back().m_minWidth = textSize.width();
@@ -138,24 +163,24 @@ void TextFrameInformations::set(QTextDocument* textDocument, const QString& text
 			i = iwidth;
 		}
 		else {
-			--i;
+			i -= m_pixelStep;
 		}
 	}
 }
 
-void TextFrameInformations::setInternal() {
-	set(m_textDocument, m_text);
+void TextFrameInformations::setInternal(bool adaptive) {
+	set(m_textDocument, m_text, adaptive);
 }
 
 
-TextFrameInformations::TextFrameInfo TextFrameInformations::sizeForMaximumWidth(qreal maxWidth) {
+TextFrameInformations::TextFrameInfo TextFrameInformations::sizeForMaximumWidth(qreal maxWidth, bool adaptive) {
 	if( m_text.isEmpty())
 		return TextFrameInformations::TextFrameInfo::nonValid(0);
 
 	// create internal vector if not already done
 	// first only for maximum width
 	if( m_infoVect.empty())
-		setInternal();
+		setInternal(adaptive);
 
 	// if internal vector is already empty somthing serious is wrong
 	if( m_infoVect.empty())
@@ -167,15 +192,18 @@ TextFrameInformations::TextFrameInfo TextFrameInformations::sizeForMaximumWidth(
 	}
 
 	// look for existing size object which can be drawn into given width
+	int lastValidInfoIndex = -1;
 	for( size_t i=0, count=m_infoVect.size(); i<count; ++i) {
 		const TextFrameInfo& info = m_infoVect[i];
 		if(info.isValid()) {
-
+			lastValidInfoIndex = i;
 			if(info.m_maxWidth > maxWidth && info.m_minWidth <= maxWidth)
 				return info;
 
 		}
 	}
+	if(lastValidInfoIndex >= 0)
+		return m_infoVect[lastValidInfoIndex];
 
 	return TextFrameInformations::TextFrameInfo::nonValid(0);
 }

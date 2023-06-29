@@ -3,13 +3,14 @@
 
 #include <QObject>
 
-#include <IBK_Time.h>>
+#include <IBK_Time.h>
 
 namespace DM {
 
+/*! Class that contains all data needed for displaying
+	data point inside the graphics map. */
 class Data
 {
-
 
 public:
 
@@ -22,8 +23,8 @@ public:
 		NUM_DT
 	};
 
-	/*! Constructor. */
-	Data();
+	/*! Default Constructor. */
+	Data() {}
 
 	/*! Constructor. */
 	Data(const QString &str, const IBK::Time &minDate, const IBK::Time &maxDate,
@@ -47,11 +48,15 @@ public:
 
 	/*! Latitude of Data Point. */
 	double						m_latitude = 0.0;
+
 	/*! Longitude of Data Point. */
 	double						m_longitude = 0.0;
 
 	/*! Data type of item. */
 	DataType					m_type = NUM_DT;
+
+	/*! Current distance. */
+	double						m_currentDistance = 50;
 };
 
 }

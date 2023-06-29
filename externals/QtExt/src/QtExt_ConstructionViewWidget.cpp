@@ -1,3 +1,38 @@
+/*	QtExt - Qt-based utility classes and functions (extends Qt library)
+
+	Copyright (c) 2014-today, Institut für Bauklimatik, TU Dresden, Germany
+
+	Primary authors:
+	  Heiko Fechner    <heiko.fechner -[at]- tu-dresden.de>
+	  Andreas Nicolai
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+	der GNU General Public License, wie von der Free Software Foundation,
+	Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+	veröffentlichten Version, weiter verteilen und/oder modifizieren.
+
+	Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+	OHNE JEDE GEWÄHR,; sogar ohne die implizite
+	Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+	Siehe die GNU General Public License für weitere Einzelheiten.
+
+	Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+	Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
+*/
+
 #include "QtExt_ConstructionViewWidget.h"
 #include "ui_QtExt_ConstructionViewWidget.h"
 
@@ -27,15 +62,34 @@ ConstructionViewWidget::~ConstructionViewWidget() {
 	delete ui;
 }
 
-void ConstructionViewWidget::setData(const QVector<ConstructionLayer>& layers, bool fixed) {
+void ConstructionViewWidget::setData(const QVector<ConstructionLayer>& layers, bool fixed,
+									 QString	leftSideLabel,
+									 QString	rightSideLabel,
+									 int visibleItems)
+{
 	m_fixed = fixed;
 	enableToolBar(false);
-	ui->graphicsView->setData(this, layers, 1.0);
-	ui->graphicsView->update();
+	ui->graphicsView->m_leftSideLabel = leftSideLabel;
+	ui->graphicsView->m_rightSideLabel = rightSideLabel;
+	ui->graphicsView->setData(this, layers, 1.0, visibleItems);
+}
+
+
+void ConstructionViewWidget::updateView() {
+	ui->graphicsView->updateView();
 }
 
 void ConstructionViewWidget::setToolbarVisible(bool visible) {
 	m_toolBar->setVisible(visible);
+}
+
+void ConstructionViewWidget::setBackground(const QColor& bkgColor) {
+	ui->graphicsView->setBackground(bkgColor);
+}
+
+
+void ConstructionViewWidget::markLayer(int layerIndex) {
+	ui->graphicsView->markLayer(layerIndex);
 }
 
 void ConstructionViewWidget::clear() {
@@ -66,7 +120,7 @@ void ConstructionViewWidget::setupUI() {
 #endif
 	Q_ASSERT(screen != nullptr);
 	qreal dpi = screen->logicalDotsPerInch();
-	if(dpi <= 100) {
+	if (dpi <= 100) {
 		m_toolBar->setFixedHeight(34);
 		m_toolBar->setIconSize(QSize(32,32));
 	}
@@ -106,11 +160,19 @@ void ConstructionViewWidget::on_actionRemove_layer_triggered() {
 }
 
 void ConstructionViewWidget::on_actionMove_layer_left_triggered() {
-	emit moveLayer(ui->graphicsView->selectedLayer(), true);
+	int selectedLayerIndex = ui->graphicsView->selectedLayer();
+	emit moveLayer(selectedLayerIndex, true);
+	if(selectedLayerIndex > 0)
+		--selectedLayerIndex;
+	ui->graphicsView->selectLayer(selectedLayerIndex);
 }
 
 void ConstructionViewWidget::on_actionMove_layer_right_triggered() {
+	int selectedLayerIndex = ui->graphicsView->selectedLayer();
 	emit moveLayer(ui->graphicsView->selectedLayer(), false);
+	if(selectedLayerIndex < ui->graphicsView->layers().size())
+		++selectedLayerIndex;
+	ui->graphicsView->selectLayer(selectedLayerIndex);
 }
 
 void ConstructionViewWidget::onLayerSelected(int index) {

@@ -1319,6 +1319,8 @@ void ClimateDataLoader::writeClimateDataIBK(const IBK::Path & fname) {
 	}
 
 	IBK::write_vector_binary(out, m_dataTimePoints);
+
+	out.close();
 }
 
 
@@ -1372,6 +1374,7 @@ void ClimateDataLoader::writeClimateDataTSV(const IBK::Path & fname) {
 			out << std::endl;
 		}
 	}
+	out.close();
 }
 
 void ClimateDataLoader::writeClimateDataEPW(const IBK::Path & fname) {
@@ -1463,8 +1466,6 @@ void ClimateDataLoader::writeClimateDataEPW(const IBK::Path & fname) {
 
 		// data columns
 		out << "," << m_data[Temperature][i];
-		double debugDirk = m_data[Temperature][i];
-		double debugDirk2 = m_data[RelativeHumidity][i];
 		double dewPTemp = IBK::f_dew_DIN1(m_data[Temperature][i] + 273.15, m_data[RelativeHumidity][i]/100.0);
 		out << "," << dewPTemp - 273.15;
 

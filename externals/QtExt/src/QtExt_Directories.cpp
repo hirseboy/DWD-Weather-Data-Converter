@@ -1,3 +1,38 @@
+/*	QtExt - Qt-based utility classes and functions (extends Qt library)
+
+	Copyright (c) 2014-today, Institut für Bauklimatik, TU Dresden, Germany
+
+	Primary authors:
+	  Heiko Fechner    <heiko.fechner -[at]- tu-dresden.de>
+	  Andreas Nicolai
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+	der GNU General Public License, wie von der Free Software Foundation,
+	Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+	veröffentlichten Version, weiter verteilen und/oder modifizieren.
+
+	Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+	OHNE JEDE GEWÄHR,; sogar ohne die implizite
+	Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+	Siehe die GNU General Public License für weitere Einzelheiten.
+
+	Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+	Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
+*/
+
 #include "QtExt_Directories.h"
 
 #include <QCoreApplication>
@@ -15,52 +50,55 @@
 namespace QtExt {
 
 // You need to set values to these variables early on in your main.cpp
-QString Directories::appname; // for example "Therakles"
-QString Directories::devdir; // for example "TheraklesApp"
+QString Directories::appname;		// for example "Therakles"
+QString Directories::devdir;		// for example "TheraklesApp"
+QString Directories::packagename;	// for example "therakles" or "therakles-pro"
 
 /*! Utility function for conversion of a QString to a trimmed std::string in utf8 encoding. */
 inline std::string QString2trimmedUtf8(const QString & str) {
-	return str.trimmed().toUtf8().data();
+	return str.trimmed().toStdString();
 }
 
 
 QString Directories::resourcesRootDir() {
 	QString installPath = qApp->applicationDirPath();
 
-#ifdef IBK_DEPLOYMENT
+#if defined(IBK_DEPLOYMENT) || defined(IBK_BUILDING_DEBIAN_PACKAGE)
 	// deployment mode
 
 #if defined(Q_OS_WIN)
 	// in Deployment mode, resources are below install directory
 	return installPath + "/resources";
 #elif defined(Q_OS_MAC)
-	// in deployment mode, we have them in <appname>.app/Contents/resources
-	return installPath + "/../resources";
+	// in deployment mode, we have them in <appname>.app/Contents/Resources
+	// where install path is <appname>.app/MacOS
+	return installPath + "/../Resources";
 #elif defined(Q_OS_UNIX)
 
-	// in deployment mode, we have them, for example, in "/usr/share/<appname>" or "/usr/local/share/<appname>"
-	// when app is installed system-wide
+#ifdef IBK_BUILDING_DEBIAN_PACKAGE
 
-	// otherwise, for local install, we have them inside the app archive directory structure
+	// we install to /usr/bin/<appname>
+	// and the package data is in
+	//               /usr/share/<packagename>
+	return installPath + "/../share/" + packagename;
 
-	QString resRootPath;
-	if (installPath.indexOf("/usr/bin") == 0)
-		resRootPath = "/usr/share/" + appname;
-	else if (installPath.indexOf("/usr/local/bin") == 0)
-		resRootPath = "/usr/local/share/" + appname;
-	else
-		resRootPath = installPath + "/../resources";
-	return resRootPath;
-#endif
+#else // IBK_BUILDING_DEBIAN_PACKAGE
+
+	return installPath + "/../resources";
+
+#endif // IBK_BUILDING_DEBIAN_PACKAGE
+
+#endif // defined(Q_OS_UNIX)
 
 
 #else // IBK_DEPLOYMENT
 
 	// development (IDE) mode
 
-	// resources are expected in devname/resources directory
+	// resources are expected in devdir/resources directory
 #if defined(Q_OS_MAC)
-	return QFileInfo(installPath + "/../../../../../" + devdir + "/resources").absoluteFilePath();
+	// in development mode, we have the resources outside the bundle
+	return QFileInfo(installPath + "/../../../../" + devdir + "/resources").absoluteFilePath();
 #else
 	return QFileInfo(installPath + "/../../" + devdir + "/resources").absoluteFilePath();
 #endif
@@ -97,8 +135,24 @@ QString Directories::databasesDir() {
 }
 
 
-QString Directories::translationsDir() {
-	return resourcesRootDir() + "/translations";
+
+QString Directories::translationsFilePath(const QString & langID) {
+#ifdef IBK_BUILDING_DEBIAN_PACKAGE
+	QString installPath = qApp->applicationDirPath();
+	return installPath + QString("/../share/locale/%1/LC_MESSAGES/"+appname+".qm").arg(langID);
+#else // IBK_BUILDING_DEBIAN_PACKAGE
+	return resourcesRootDir() + QString("/translations/"+appname+"_%1.qm").arg(langID);
+#endif // IBK_BUILDING_DEBIAN_PACKAGE
+}
+
+
+QString Directories::qtTranslationsFilePath(const QString & langID) {
+#if defined(Q_OS_LINUX)
+	return QString("/usr/share/qt5/translations/qt_%1.qm").arg(langID);
+#else
+	// in all other cases the qt_xx.qm files are located in the resources path
+	return resourcesRootDir() + QString("/translations/qt_%1.qm").arg(langID);
+#endif
 }
 
 
@@ -203,22 +257,18 @@ bool Directories::checkForWriteAccess(const QString & newFileName) {
 QString Directories::updateFilePath() {
 	// In user-data-dir 'updates' check for
 #ifdef _WIN32
-	QDir userDir(Directories::userDataDir() + "/updates");
-
-#ifdef _WIN64
-	QString updateFile = userDir.absoluteFilePath("update_win64.exe");
-#else
-	QString updateFile = userDir.absoluteFilePath("update.exe");
-#endif
-	return updateFile;
+	// on Windows, we store user data unter %HOME%/AppData/Local
+	QString fname = QDir::toNativeSeparators(QDir::home().absolutePath() + "/AppData/Local/" + appname + "/updates");
+	return fname;
 #elif defined(Q_OS_MAC)
 	// "version" will be replaced by new version number
-	return QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)+"/" + appname + "_version.dmg";
+	return QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
 #else
 	// "version" will be replaced by new version number
-	return QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)+"/" + appname + "_version.7z";
+	return QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
 #endif
 }
+
 
 // helper function to remove a complete directory hierarchie
 bool Directories::removeDirRecursively(const QString & directory) {

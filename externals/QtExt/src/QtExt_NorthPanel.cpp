@@ -1,14 +1,36 @@
-/*	Authors: H. Fechner, A. Nicolai
+/*	QtExt - Qt-based utility classes and functions (extends Qt library)
 
-	This file is part of the QtExt Library.
-	All rights reserved.
+	Copyright (c) 2014-today, Institut für Bauklimatik, TU Dresden, Germany
 
-	This software is copyrighted by the principle author(s).
-	The right to reproduce the work (copy all or part of the source code),
-	modify the source code or documentation, compile it to form object code,
-	and the sole right to copy the object code thereby produced is hereby
-	retained for the author(s) unless explicitely granted by the author(s).
+	Primary authors:
+	  Heiko Fechner    <heiko.fechner -[at]- tu-dresden.de>
+	  Andreas Nicolai
 
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+	der GNU General Public License, wie von der Free Software Foundation,
+	Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+	veröffentlichten Version, weiter verteilen und/oder modifizieren.
+
+	Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+	OHNE JEDE GEWÄHR,; sogar ohne die implizite
+	Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+	Siehe die GNU General Public License für weitere Einzelheiten.
+
+	Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+	Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
 */
 
 #include "QtExt_NorthPanel.h"
@@ -30,8 +52,6 @@
 #include <QCoreApplication>
 #include <QToolButton>
 #include <QDebug>
-
-//#include "QtExt_Constants.h"
 
 
 namespace QtExt {
@@ -56,12 +76,12 @@ NorthPanel::NorthPanel( QWidget * parent) :
 	m_progressAbortButton = new QtExt::IconButton(m_progressWidget);
 	m_progressAbortButton->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum);
 	m_progressAbortButton->setNormalIcons(
-		QPixmap(QString::fromUtf8(":/master/delete_16x16/02_delete_inactive.png")),
-		QPixmap(QString::fromUtf8(":/master/delete_16x16/03_delete_active.png")),
+		QPixmap(QString::fromUtf8(":/gfx/panels/delete_16x16/02_delete_inactive.png")),
+		QPixmap(QString::fromUtf8(":/gfx/panels/delete_16x16/03_delete_active.png")),
 		QPixmap()
 	);
 	m_progressAbortButton->setCheckedIcons(
-		QPixmap(QString::fromUtf8(":/master/delete_16x16/04_delete_pressed.png")),
+		QPixmap(QString::fromUtf8(":/gfx/panels/delete_16x16/04_delete_pressed.png")),
 		QPixmap(),
 		QPixmap()
 	);
@@ -94,7 +114,7 @@ NorthPanel::NorthPanel( QWidget * parent) :
 	/// \todo customize label and Logo
 	m_labelLogo = new QLabel("place UserLogo");
 	m_labelLogo->setTextInteractionFlags( Qt::NoTextInteraction );
-	m_labelLogo->setPixmap ( QPixmap(QString::fromUtf8(":/master/Delphin_Logo_headline/Version_2/Delphin_Logo_no_background/Delphin_Logo_headline_no_background_50x195.png" ) ) );
+	m_labelLogo->setPixmap ( QPixmap(QString::fromUtf8(":/gfx/panels/Delphin_Logo_headline/Version_2/Delphin_Logo_no_background/Delphin_Logo_headline_no_background_50x195.png" ) ) );
 
 	QGridLayout * gridlay = new QGridLayout;
 	// logo is placed in the top left (column 0, rows 1 and 2)
@@ -118,7 +138,11 @@ NorthPanel::NorthPanel( QWidget * parent) :
 	m_labelLogo->setVisible( true );
 	m_progressWidget->setVisible(false);
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+	unsigned int npHeight = qMax(50, m_labelLogo->pixmap(Qt::ReturnByValue).height());
+#else
 	unsigned int npHeight = qMax(50, m_labelLogo->pixmap()->height());
+#endif
 	resize(100, npHeight);
 	setMinimumHeight(npHeight);
 	setMaximumHeight(npHeight);

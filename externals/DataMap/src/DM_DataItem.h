@@ -1,34 +1,64 @@
-#ifndef DM_DATAITEM_H
-#define DM_DATAITEM_H
+#ifndef DM_DataItemH
+#define DM_DataItemH
 
-#include <QObject>
-#include <QGraphicsEllipseItem>
-#include <QPointF>
-
-#include <IBK_Time.h>
+#include <QGraphicsItem>
+#include <QAbstractItemModel>
 
 #include "DM_Data.h"
 
-
 namespace DM {
 
-/*! Class for all Graphics Items in Scene. */
-class DataItem : public QGraphicsEllipseItem
+/*! Custom Graphics Item for visualizing data. */
+class DataItem : public QGraphicsItem
 {
 public:
+	DataItem(QGraphicsItem* parent = nullptr)
+		: QGraphicsItem(parent)
+	{
+		// You could add initialization code here if needed.
+	}
 
-	DataItem() {}
+	/*! Constructor. */
+	DataItem(const QPointF &pos, const Data &data, const QColor &color, double &size):
+		QGraphicsItem(nullptr),
+		m_position(pos),
+		m_color(color),
+		m_size(size),
+		m_data(data)
+	{}
 
-	DataItem(const QRectF rect, const QString &str, const IBK::Time &minDate, const IBK::Time &maxDate,
-			 const double &lat, const double &lon, const Data::DataType & type, int radius = 10);
+	/*! Data of Item. */
+	const Data& data() const;
 
-	/*! Moves the item to a current position. */
-	void moveItem(const QPointF &pos);
+	QRectF boundingRect() const;
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+
+	/*! Maximum distance. */
+	double		*m_maximumDistance = nullptr;
+
+	/*! Min Date */
+	IBK::Time	*m_minDate;
+
+	/*! Max Date */
+	IBK::Time	*m_maxDate;
+
+private:
+	/*! Position of data item. */
+	QPointF		m_position;
+
+	/*! Color of data point. */
+	QColor		m_color;
+
+	/*! Height of data point. */
+	double		m_size;
 
 	/*! Data of graphics item. */
-	Data					m_data;
+	Data		m_data;
+
+	double		m_width = 3;
 
 };
 
 }
+
 #endif // DM_DATAITEM_H

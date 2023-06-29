@@ -1,20 +1,43 @@
-/*	Authors: H. Fechner, A. Nicolai
+/*	QtExt - Qt-based utility classes and functions (extends Qt library)
 
-	This file is part of the QtExt Library.
-	All rights reserved.
+	Copyright (c) 2014-today, Institut für Bauklimatik, TU Dresden, Germany
 
-	This software is copyrighted by the principle author(s).
-	The right to reproduce the work (copy all or part of the source code),
-	modify the source code or documentation, compile it to form object code,
-	and the sole right to copy the object code thereby produced is hereby
-	retained for the author(s) unless explicitely granted by the author(s).
+	Primary authors:
+	  Heiko Fechner    <heiko.fechner -[at]- tu-dresden.de>
+	  Andreas Nicolai
 
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+	der GNU General Public License, wie von der Free Software Foundation,
+	Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+	veröffentlichten Version, weiter verteilen und/oder modifizieren.
+
+	Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+	OHNE JEDE GEWÄHR,; sogar ohne die implizite
+	Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+	Siehe die GNU General Public License für weitere Einzelheiten.
+
+	Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+	Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
 */
 
 #include "QtExt_ValueInputComboBox.h"
 
 #include <QMessageBox>
 #include <QLineEdit>
+#include <QKeyEvent>
 
 #include "QtExt_Style.h"
 #include "QtExt_Locale.h"
@@ -22,8 +45,20 @@
 
 namespace QtExt {
 
+bool ValueInputComboBox::eventFilter(QObject* obj, QEvent* event) {
+	if (event->type()==QEvent::KeyPress) {
+		QKeyEvent* key = static_cast<QKeyEvent*>(event);
+		if ( (key->key()==Qt::Key_Enter) || (key->key()==Qt::Key_Return) ) {
+			m_enterPressed = true;
+			return false;
+		}
+	}
+	return false;
+}
+
 ValueInputComboBox::ValueInputComboBox(QWidget *parent) :
-	QComboBox(parent)
+	QComboBox(parent),
+	m_enterPressed(false)
 {
 	QPalette palEdit;
 	palEdit.setColor(QPalette::Base, Style::EditFieldBackground);
@@ -39,6 +74,8 @@ ValueInputComboBox::ValueInputComboBox(QWidget *parent) :
 			this, SLOT(onActivated(int)));
 	connect(this, SIGNAL(currentTextChanged(QString)),
 			this, SLOT(onCurrentTextChanged(const QString&)));
+
+	installEventFilter(this);
 }
 
 
@@ -172,9 +209,14 @@ double ValueInputComboBox::value() const {
 		return value;
 }
 
-
 void ValueInputComboBox::onActivated(int index) {
-	setEditText( QString("%L1").arg( itemData(index).toDouble()) );
+	if(m_enterPressed) {
+		m_enterPressed = false;
+		return;
+	}
+	int itemCount = count();
+	if(index < itemCount)
+		setEditText( QString("%L1").arg( itemData(index).toDouble()) );
 }
 
 

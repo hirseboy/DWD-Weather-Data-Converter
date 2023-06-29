@@ -2397,7 +2397,6 @@ QFtp::~QFtp()
 QT_END_NAMESPACE
 
 #include "qftp.moc"
-
 #include "moc_qftp.cpp"
 
 #endif // QT_NO_FTP

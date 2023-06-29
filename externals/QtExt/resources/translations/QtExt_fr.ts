@@ -186,41 +186,46 @@
 <context>
     <name>QtExt::AutoUpdateDialog</name>
     <message>
-        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="115"/>
+        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="118"/>
         <source>Download error</source>
         <translation>Erreur de téléchargement</translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="115"/>
+        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="118"/>
         <source>Couldn&apos;t download update installer.</source>
         <translation>Impossible de télécharger l&apos;installateur de la mise à jour.</translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="131"/>
-        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="138"/>
-        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="143"/>
-        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="152"/>
+        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="142"/>
+        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="149"/>
+        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="158"/>
+        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="167"/>
         <source>Download complete</source>
         <translation>Téléchargement terminé</translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="131"/>
+        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="142"/>
         <source>The update installer could not be stored on the machine, possibly through access restrictions. Please download and install the update manually.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="138"/>
+        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="150"/>
         <source>The software updater has downloaded the update installer (to &apos;%1&apos;).
 You must restart the program to apply the update!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="163"/>
+        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="152"/>
+        <source>Close PostProc and install update</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="178"/>
         <source>Skip update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="164"/>
+        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="179"/>
         <source>Would you like to skip this update and and not be reminded again for this version?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -229,13 +234,13 @@ You must restart the program to apply the update!</source>
         <translation type="vanished">La mise à jour a été intallée. Vous devez redémarrer le programme pour qu&apos;elle soit prise en compte !</translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="143"/>
+        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="158"/>
         <source>The software updater has downloaded the new software package in %1.
 The disk image will now be mounted (you may need to enable third party app downloads in the security settings).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="152"/>
+        <location filename="../../src/QtExt_AutoUpdateDialog.cpp" line="167"/>
         <source>The software updater has downloaded the new software package in %1.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -243,22 +248,22 @@ The disk image will now be mounted (you may need to enable third party app downl
 <context>
     <name>QtExt::AutoUpdater</name>
     <message>
-        <location filename="../../src/QtExt_AutoUpdater.cpp" line="99"/>
+        <location filename="../../src/QtExt_AutoUpdater.cpp" line="184"/>
         <source>Connection error</source>
         <translation>Erreur de connection</translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_AutoUpdater.cpp" line="99"/>
+        <location filename="../../src/QtExt_AutoUpdater.cpp" line="184"/>
         <source>Could not retrieve update information.</source>
         <translation>Impossible de récupérer les informations de la mise à jour.</translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_AutoUpdater.cpp" line="187"/>
+        <location filename="../../src/QtExt_AutoUpdater.cpp" line="272"/>
         <source>No update available</source>
         <translation>Pas de mise à jour disponible</translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_AutoUpdater.cpp" line="189"/>
+        <location filename="../../src/QtExt_AutoUpdater.cpp" line="274"/>
         <source>There is currently no update available for this software and platform/OS.</source>
         <translation>Il n&apos;y a actuellement aucune mise à jour disponible pour ce logiciel et plateforme/OS.</translation>
     </message>
@@ -427,7 +432,7 @@ The disk image will now be mounted (you may need to enable third party app downl
     </message>
     <message>
         <location filename="../../src/QtExt_LanguageStringEditWidget3.ui" line="32"/>
-        <source>Third language</source>
+        <source>Third language:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -454,7 +459,7 @@ The disk image will now be mounted (you may need to enable third party app downl
         <translation type="unfinished">Formulaire</translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.ui" line="22"/>
+        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.ui" line="38"/>
         <source>Category Filter</source>
         <translation type="unfinished"></translation>
     </message>
@@ -464,7 +469,17 @@ The disk image will now be mounted (you may need to enable third party app downl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.ui" line="129"/>
+        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.ui" line="97"/>
+        <source>Data source filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.ui" line="104"/>
+        <source>Comment filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.ui" line="149"/>
         <source>Selected Material:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -474,19 +489,19 @@ The disk image will now be mounted (you may need to enable third party app downl
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.ui" line="157"/>
+        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.ui" line="177"/>
         <source>Remarks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.ui" line="142"/>
-        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.cpp" line="179"/>
-        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.cpp" line="202"/>
+        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.ui" line="162"/>
+        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.cpp" line="196"/>
+        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.cpp" line="219"/>
         <source>Nothing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.cpp" line="126"/>
+        <location filename="../../src/QtExt_MaterialDatabaseSelectionWidget.cpp" line="143"/>
         <source>All</source>
         <translation type="unfinished"></translation>
     </message>
@@ -680,27 +695,28 @@ The disk image will now be mounted (you may need to enable third party app downl
 <context>
     <name>Settings</name>
     <message>
-        <location filename="../../src/QtExt_Settings.cpp" line="173"/>
+        <location filename="../../src/QtExt_Settings.cpp" line="210"/>
         <source>Missing user preferences</source>
         <translation>Préférences de l&apos;utilisateur manquantes</translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_Settings.cpp" line="173"/>
+        <location filename="../../src/QtExt_Settings.cpp" line="210"/>
         <source>Please open the preferences dialog and specify a text editor first!</source>
         <translation>Veuillez d&apos;abord ouvrir le dialogue des préférences et spécifier un éditeur de texte !</translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_Settings.cpp" line="180"/>
+        <location filename="../../src/QtExt_Settings.cpp" line="217"/>
         <source>Error starting external application</source>
         <translation>Erreur au démarrage de l&apos;application externe</translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_Settings.cpp" line="180"/>
+        <location filename="../../src/QtExt_Settings.cpp" line="217"/>
         <source>Text editor &apos;%1&apos; could not be started.</source>
         <translation>L&apos;éditeur de texte &apos;%1&apos; n&apos;a pas pu être démarré.</translation>
     </message>
     <message>
-        <location filename="../../src/QtExt_Settings.cpp" line="192"/>
+        <location filename="../../src/QtExt_Settings.cpp" line="229"/>
+        <location filename="../../src/QtExt_Settings.cpp" line="242"/>
         <source>Do not show this dialog again.</source>
         <translation>Ne plus montrer cette boîte de dialogue.</translation>
     </message>

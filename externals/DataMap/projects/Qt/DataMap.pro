@@ -29,8 +29,8 @@ INCLUDEPATH +=	\
 	../../../QtExt/src
 
 SOURCES += \
-	../../src/DM_Data.cpp \
-	../../src/DM_DataItem.cpp \
+    ../../src/DM_DataItem.cpp \
+    ../../src/DM_DataItemGroup.cpp \
 	../../src/DM_GraphicsView.cpp \
 	../../src/DM_MapDialog.cpp \
 	../../src/DM_Scene.cpp
@@ -39,6 +39,7 @@ HEADERS += \
 	../../src/DM_Conversions.h \
 	../../src/DM_Data.h \
 	../../src/DM_DataItem.h \
+	../../src/DM_DataItemGroup.h \
 	../../src/DM_GraphicsView.h \
 	../../src/DM_MapDialog.h \
 	../../src/DM_Scene.h

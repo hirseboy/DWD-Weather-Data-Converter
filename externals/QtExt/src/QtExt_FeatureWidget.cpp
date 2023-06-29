@@ -1,14 +1,36 @@
-/*	Authors: H. Fechner, A. Nicolai
+/*	QtExt - Qt-based utility classes and functions (extends Qt library)
 
-	This file is part of the QtExt Library.
-	All rights reserved.
+	Copyright (c) 2014-today, Institut für Bauklimatik, TU Dresden, Germany
 
-	This software is copyrighted by the principle author(s).
-	The right to reproduce the work (copy all or part of the source code),
-	modify the source code or documentation, compile it to form object code,
-	and the sole right to copy the object code thereby produced is hereby
-	retained for the author(s) unless explicitely granted by the author(s).
+	Primary authors:
+	  Heiko Fechner    <heiko.fechner -[at]- tu-dresden.de>
+	  Andreas Nicolai
 
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+	Dieses Programm ist Freie Software: Sie können es unter den Bedingungen
+	der GNU General Public License, wie von der Free Software Foundation,
+	Version 3 der Lizenz oder (nach Ihrer Wahl) jeder neueren
+	veröffentlichten Version, weiter verteilen und/oder modifizieren.
+
+	Dieses Programm wird in der Hoffnung bereitgestellt, dass es nützlich sein wird, jedoch
+	OHNE JEDE GEWÄHR,; sogar ohne die implizite
+	Gewähr der MARKTFÄHIGKEIT oder EIGNUNG FÜR EINEN BESTIMMTEN ZWECK.
+	Siehe die GNU General Public License für weitere Einzelheiten.
+
+	Sie sollten eine Kopie der GNU General Public License zusammen mit diesem
+	Programm erhalten haben. Wenn nicht, siehe <https://www.gnu.org/licenses/>.
 */
 
 #include "QtExt_FeatureWidget.h"
@@ -35,98 +57,98 @@ FeatureWidget::FeatureWidget(QWidget * parent, QWidget * content, int visibleBut
 {
 	m_shadeButton = new IconButton(this);
 	m_shadeButton->setNormalIcons(
-		QPixmap(QString::fromUtf8(":/master/arrow_16x16/right/background/arrow_right_middle.png")),
-		QPixmap(QString::fromUtf8(":/master/arrow_16x16/right/background/arrow_right_light.png")),
-		QPixmap(QString::fromUtf8(":/master/arrow_16x16/right/background/arrow_right_light.png"))
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/arrow_16x16/right/background/arrow_right_middle.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/arrow_16x16/right/background/arrow_right_light.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/arrow_16x16/right/background/arrow_right_light.png"))
 	);
 	m_shadeButton->setCheckedIcons(
-		QPixmap(QString::fromUtf8(":/master/arrow_16x16/down/background/arrow_down_middle_background.png")),
-		QPixmap(QString::fromUtf8(":/master/arrow_16x16/down/background/arrow_down_light_background.png")),
-		QPixmap(QString::fromUtf8(":/master/arrow_16x16/down/background/arrow_down_light_background.png"))
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/arrow_16x16/down/background/arrow_down_middle_background.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/arrow_16x16/down/background/arrow_down_light_background.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/arrow_16x16/down/background/arrow_down_light_background.png"))
 	);
 	m_shadeButton->setCheckable(true);
 	connect(m_shadeButton, SIGNAL(clicked(bool)), this, SLOT(on_shadeButton_clicked(bool)));
 
 	m_recycleButton = new IconButton(this);
 	m_recycleButton->setNormalIcons(
-		QPixmap(QString::fromUtf8(":/master/recycle_16x16/03_recycle_enabled_background_16x16.png")),
-		QPixmap(QString::fromUtf8(":/master/recycle_16x16/04_recycle_hover_background_16x16.png")),
-		QPixmap(QString::fromUtf8(":/master/recycle_16x16/01_recycle_disabled_background_16x16.png"))
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/recycle_16x16/03_recycle_enabled_background_16x16.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/recycle_16x16/04_recycle_hover_background_16x16.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/recycle_16x16/01_recycle_disabled_background_16x16.png"))
 	);
 
 	m_recycleButton->setCheckedIcons(
-		QPixmap(QString::fromUtf8(":/master/recycle_16x16/")),
-		QPixmap(QString::fromUtf8(":/master/recycle_16x16/05_recycle_enabled_checked_background_16x16.png")),
-		QPixmap(QString::fromUtf8(":/master/recycle_16x16/06_recycle_hover_checked_background_16x16.png"))
+		QPixmap(),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/recycle_16x16/05_recycle_enabled_checked_background_16x16.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/recycle_16x16/06_recycle_hover_checked_background_16x16.png"))
 	);
 
 	connect(m_recycleButton, SIGNAL(clicked()), this, SLOT(on_recycleButton_clicked()));
 
 	m_copyButton = new IconButton(this);
 	m_copyButton->setNormalIcons(
-		QPixmap(QString::fromUtf8(":/master/copy_16x16/circular/03_copy_enabled_background_16x16.png")),
-		QPixmap(QString::fromUtf8(":/master/copy_16x16/circular/04_copy_hover_background_16x16.png")),
-		QPixmap(QString::fromUtf8(":/master/copy_16x16/circular/01_copy_disabled_background_16x16.png"))
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/copy_16x16/circular/03_copy_enabled_background_16x16.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/copy_16x16/circular/04_copy_hover_background_16x16.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/copy_16x16/circular/01_copy_disabled_background_16x16.png"))
 	);
 	m_copyButton->setCheckedIcons(
-		QPixmap(QString::fromUtf8(":/master/copy_16x16/circular/")),
-		QPixmap(QString::fromUtf8(":/master/copy_16x16/circular/05_copy_enabled_checked_background_16x16.png")),
-		QPixmap(QString::fromUtf8(":/master/copy_16x16/circular/06_copy_hover_checked_background_16x16.png"))
+		QPixmap(),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/copy_16x16/circular/05_copy_enabled_checked_background_16x16.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/copy_16x16/circular/06_copy_hover_checked_background_16x16.png"))
 	);
 	connect(m_copyButton, SIGNAL(clicked()), this, SLOT(on_copyButton_clicked()));
 
 	m_plusButton = new IconButton(this);
 	m_plusButton->setNormalIcons(
-		QPixmap(QString::fromUtf8(":/master/plus_16x16/03_plus_enabled_background_16x16.png")),
-		QPixmap(QString::fromUtf8(":/master/plus_16x16/04_plus_hover_background_16x16.png")),
-		QPixmap(QString::fromUtf8(":/master/plus_16x16/01_plus_disabled_background_16x16.png"))
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/plus_16x16/03_plus_enabled_background_16x16.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/plus_16x16/04_plus_hover_background_16x16.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/plus_16x16/01_plus_disabled_background_16x16.png"))
 	);
 	m_plusButton->setCheckedIcons(
-		QPixmap(QString::fromUtf8(":/master/plus_16x16/")),
-		QPixmap(QString::fromUtf8(":/master/plus_16x16/05_plus_enabled_checked_background_16x16.png")),
-		QPixmap(QString::fromUtf8(":/master/plus_16x16/06_plus_hover_checked_background_16x16.png"))
+		QPixmap(),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/plus_16x16/05_plus_enabled_checked_background_16x16.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/plus_16x16/06_plus_hover_checked_background_16x16.png"))
 	);
 	connect(m_plusButton, SIGNAL(clicked()), this, SLOT(on_plusButton_clicked()));
 
 	m_minusButton = new IconButton(this);
 	m_minusButton->setShortCut(QKeySequence(Qt::Key_Delete));
 	m_minusButton->setNormalIcons(
-		QPixmap(QString::fromUtf8(":/master/minus_16x16/03_minus_enabled_background_16x16.png")),
-		QPixmap(QString::fromUtf8(":/master/minus_16x16/04_minus_hover_background_16x16.png")),
-		QPixmap(QString::fromUtf8(":/master/minus_16x16/01_minus_disabled_background_16x16.png"))
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/minus_16x16/03_minus_enabled_background_16x16.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/minus_16x16/04_minus_hover_background_16x16.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/minus_16x16/01_minus_disabled_background_16x16.png"))
 	);
 	m_minusButton->setCheckedIcons(
-		QPixmap(QString::fromUtf8(":/master/minus_16x16/")),
-		QPixmap(QString::fromUtf8(":/master/minus_16x16/05_minus_enabled_checked_background_16x16.png")),
-		QPixmap(QString::fromUtf8(":/master/minus_16x16/06_minus_hover_checked_background_16x16.png"))
+		QPixmap(),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/minus_16x16/05_minus_enabled_checked_background_16x16.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/minus_16x16/06_minus_hover_checked_background_16x16.png"))
 	);
 	connect(m_minusButton, SIGNAL(clicked()), this, SLOT(on_minusButton_clicked()));
 
 	m_moveUpButton = new IconButton(this);
 	m_moveUpButton->setShortCut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Up));
 	m_moveUpButton->setNormalIcons(
-		QPixmap(QString::fromUtf8(":/master/moveButtons_16x16/up.png")),
-		QPixmap(QString::fromUtf8(":/master/moveButtons_16x16/up.png")),
-		QPixmap(QString::fromUtf8(":/master/moveButtons_16x16/up-disabled.png"))
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/moveButtons_16x16/up.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/moveButtons_16x16/up.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/moveButtons_16x16/up-disabled.png"))
 	);
 	m_moveUpButton->setCheckedIcons(
-		QPixmap(QString::fromUtf8(":/master/moveButtons_16x16/up.png")),
-		QPixmap(QString::fromUtf8(":/master/moveButtons_16x16/up.png")),
-		QPixmap(QString::fromUtf8(":/master/moveButtons_16x16/up-disabled.png"))
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/moveButtons_16x16/up.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/moveButtons_16x16/up.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/moveButtons_16x16/up-disabled.png"))
 	);
 	connect(m_moveUpButton, SIGNAL(clicked()), this, SLOT(on_moveUpButton_clicked()));
 
 	m_moveDownButton = new IconButton(this);
 	m_moveDownButton->setShortCut(QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_Up));
 	m_moveDownButton->setNormalIcons(
-		QPixmap(QString::fromUtf8(":/master/moveButtons_16x16/down.png")),
-		QPixmap(QString::fromUtf8(":/master/moveButtons_16x16/down.png")),
-		QPixmap(QString::fromUtf8(":/master/moveButtons_16x16/down-disabled.png"))
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/moveButtons_16x16/down.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/moveButtons_16x16/down.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/moveButtons_16x16/down-disabled.png"))
 	);
 	m_moveDownButton->setCheckedIcons(
-		QPixmap(QString::fromUtf8(":/master/moveButtons_16x16/down.png")),
-		QPixmap(QString::fromUtf8(":/master/moveButtons_16x16/down.png")),
-		QPixmap(QString::fromUtf8(":/master/moveButtons_16x16/down-disabled.png"))
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/moveButtons_16x16/down.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/moveButtons_16x16/down.png")),
+		QPixmap(QString::fromUtf8(":/gfx/featureWidget/moveButtons_16x16/down-disabled.png"))
 	);
 	connect(m_moveDownButton, SIGNAL(clicked()), this, SLOT(on_moveDownButton_clicked()));
 

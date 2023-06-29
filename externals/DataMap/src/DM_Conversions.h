@@ -49,20 +49,35 @@ static void convertPosToCoordinates(const QPointF pos, const double &mapHeight, 
 
 static QColor colorFromDataType(const Data::DataType &dt) {
 
+	QColor color;
 	/*! Map with colors of data. */
 	switch (dt) {
 		case Data::DT_TemperatureAndHumidity:
-			return QColor("#9B2915");
+			color = QColor("#AA0000");
+		break;
 		case Data::DT_Precipitation:
-			return QColor("#c7f9cc");
+			color = QColor("#008000");
+		break;
 		case Data::DT_Solar:
-			return QColor("#E9B44C");
+			color = QColor("#E9B44C");
+		break;
 		case Data::DT_Wind:
-			return QColor("#004E98");
+			color = QColor("#004E98");
+		break;
 		case Data::DT_Pressure:
-			return QColor("#1C110A");
+			color = QColor("#D45500");
+		case Data::NUM_DT:
+		break;
 	}
-	return QColor();
+
+//	colorData[DWDDataType::D_Solar]				= QColor("#E9B44C");
+//	colorData[DWDDataType::D_Precipitation]		= QColor("#008000");
+//	colorData[DWDDataType::D_Pressure]			= QColor("#D45500");
+//	colorData[DWDDataType::D_TemperatureAndHumidity] = QColor("#AA0000");
+//	colorData[DWDDataType::D_Wind]				= QColor("#004E98");
+
+	color.setAlpha(240);
+	return color;
 }
 
 

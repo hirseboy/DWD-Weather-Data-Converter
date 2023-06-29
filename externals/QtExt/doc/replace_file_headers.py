@@ -9,7 +9,7 @@
 # Syntax: replace_file_headers.py <directory>
 #
 # Expected to be run from doc directory, relative ../src to source files.
-# Expects the file LICENSE to be present in the current directory.
+# Expects the file SRC_HEADER_LICENSE to be present in the current directory.
 
 import sys
 import os
@@ -46,7 +46,7 @@ def process_header(hdr, licenseText):
 		if len(className) != 0:
 			# check if classname and hdr_guard match
 			if NAMESPACE_PREFIX + className + 'H' != hdr_guard:
-				print 'WARNING: mismatch of class name "'+className+'" ('+NAMESPACE_PREFIX + className + ') and file name for file: '''+ hdr+''
+				print('WARNING: mismatch of class name "'+className+'" ('+NAMESPACE_PREFIX + className + ') and file name for file: '''+ hdr+'')
 				
 		# now create new file content
 		new_content = ""
@@ -77,9 +77,9 @@ def process_header(hdr, licenseText):
 		hdr_file.close()
 		hdr_file = open(hdr, 'w')
 		hdr_file.write(new_content)
-	except IOError as (errno, strerror):
-		print 'Cannot open file (check permissions)', hdr
-		print "I/O error({0}): {1}".format(errno, strerror)
+	except IOError as e:
+		print("Cannot open file '{}' (check permissions)".format(hdr))
+		print("I/O error: {}".format(e))
 
 def process_cpp(cpp, licenseText):
 	# open file and read all lines
@@ -109,16 +109,16 @@ def process_cpp(cpp, licenseText):
 		cpp_file.close()
 		cpp_file = open(cpp, 'w')
 		cpp_file.write(new_content)
-	except IOError as (errno, strerror):
-		print 'Cannot open file (check permissions)', hdr
-		print "I/O error({0}): {1}".format(errno, strerror)
+	except IOError as e:
+		print("Cannot open file '{}' (check permissions)".format(hdr))
+		print("I/O error: {}".format(e))
 
 
 
 # *** MAIN PROGRAM ***
 
 # read LICENSE file
-fobj = open('LICENSE')
+fobj = open('SRC_HEADER_LICENSE')
 licenseTextLines = fobj.readlines()
 fobj.close()
 del fobj
@@ -133,7 +133,7 @@ licenseText = licenseText + "*/\n"
 
 # glob all header files in the directory
 root = "../src"
-print 'Processing files in directory: ' + root
+print('Processing files in directory: ' + root)
 headers = glob.glob(root + "/*.h");
 # process all files
 for hdr in headers:
