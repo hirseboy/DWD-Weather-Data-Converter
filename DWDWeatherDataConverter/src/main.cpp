@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QProxyStyle>
 #include <QStyleOptionViewItem>
+#include <QSplashScreen>
 
 #include <QtExt_Directories.h>
 #include <QtExt_LanguageHandler.h>
@@ -14,6 +15,8 @@
 
 #include "DWDConstants.h"
 #include "DWDSettings.h"
+#include "qscreen.h"
+#include "qtimer.h"
 
 /*! qDebug() message handler function, redirects debug messages to IBK::IBK_Message(). */
 void qDebugMsgHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
@@ -42,7 +45,6 @@ int main(int argc, char* argv[]) {
 	qApp->setApplicationName(ProgramVersionName);
 
 
-
 	DWDSettings settings(ORG_NAME, ProgramVersionName);
 	settings.setDefaults();
 	settings.read();
@@ -63,6 +65,24 @@ int main(int argc, char* argv[]) {
 	std::string errmsg;
 	messageHandler.openLogFile(QtExt::Directories::globalLogFile().toUtf8().data(), false, errmsg);
 
+
+	// *** Create and show splash-screen ***
+	std::unique_ptr<QSplashScreen> splash;
+
+	if (!settings.m_flags[DWDSettings::NoSplashScreen]) {
+		QPixmap pixmap;
+
+		pixmap.load(":/splashscreen/DWDWeatherDataConverterSplash.png");
+
+		// is needed for high dpi screens to prevent bluring
+		double ratio = a.primaryScreen()->devicePixelRatio();
+		pixmap.setDevicePixelRatio(ratio);
+
+		// show splash screen
+		splash.reset(new QSplashScreen(pixmap, Qt::WindowStaysOnTopHint | Qt::SplashScreen));
+		splash->show();
+		QTimer::singleShot(5000, splash.get(), SLOT(close()));
+	}
 
 	// *** Setup and show MainWindow and start event loop ***
 	int res;
