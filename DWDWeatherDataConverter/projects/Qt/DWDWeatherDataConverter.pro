@@ -62,6 +62,7 @@ SOURCES += \
 				../../src/DWDLogWidget.cpp \
 				../../src/DWDMainWindow.cpp \
 				../../src/DWDMessageHandler.cpp \
+    ../../src/DWDSettings.cpp \
 				../../src/DWDSortFilterProxyModel.cpp \
 				../../src/DWDUtilities.cpp \
 				../../src/MetaDataEditWidget.cpp \
@@ -89,6 +90,7 @@ HEADERS += \
 				../../src/DWDMainWindow.h \
 				../../src/DWDMessageHandler.h \
 				../../src/DWDPlotZoomer.h \
+    ../../src/DWDSettings.h \
 				../../src/DWDSortFilterProxyModel.h \
 				../../src/DWDTableModel.h \
 				../../src/DWDTimePlotPicker.h \
@@ -97,6 +99,8 @@ HEADERS += \
 				../../src/MetaDataEditWidget.h \
 				../../ôsrc/DWDConversions.h
 
-DISTFILES +=
+DISTFILES += \
 
 
+
+TRANSLATIONS += ../../resources/translations/DWDWeatherDataConverter_de.ts

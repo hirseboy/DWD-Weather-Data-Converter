@@ -5,5 +5,10 @@
         <file>gfx/sunny-day.png</file>
         <file>gfx/thermometer.png</file>
         <file>gfx/wind.png</file>
+        <file>gfx/languages/de.png</file>
+        <file>gfx/languages/es.png</file>
+        <file>gfx/languages/fr.png</file>
+        <file>gfx/languages/it.png</file>
+        <file>gfx/languages/en.png</file>
     </qresource>
 </RCC>
