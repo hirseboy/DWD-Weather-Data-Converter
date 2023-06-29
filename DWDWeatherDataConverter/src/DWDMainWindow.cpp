@@ -1,4 +1,5 @@
 #include "DWDMainWindow.h"
+#include "qaction.h"
 #include "ui_DWDMainWindow.h"
 
 #include "DM_Conversions.h"
@@ -57,6 +58,7 @@
 #include "DWDLogWidget.h"
 #include "DWDMessageHandler.h"
 #include "DWDDelegate.h"
+#include "DWDSettings.h"
 #include "DWDConversions.h"
 
 #include "DWDConstants.h"
@@ -202,6 +204,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	// Initialize download directory
 	m_downloadDir = IBK::Path(QtExt::Directories().userDataDir().toStdString());
+
+	// *** Populate language menu ***
+	addLanguageAction("en", "English");
+	addLanguageAction("de", "Deutsch");
 
 	// updat UI
 	updateUi();
@@ -933,6 +939,13 @@ void MainWindow::convertDwdData() {
 	m_progressDlg->hide();
 }
 
+void MainWindow::onActionSwitchLanguage() {
+	QAction * a = (QAction *)sender();
+	QString langId = a->data().toString();
+	DWDSettings::instance().m_langId = langId;
+	QMessageBox::information(this, tr("Languange changed"), tr("Please restart the software to activate the new language!"));
+}
+
 void MainWindow::onUpdateDistances() {
 	calculateDistances();
 }
@@ -1157,6 +1170,24 @@ void MainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDate 
 	plot.replot();
 }
 
+void MainWindow::addLanguageAction(const QString &langId, const QString &actionCaption) {
+	FUNCID(DWDMainWindow::addLanguageAction);
+	QString languageFilename = QtExt::Directories::translationsFilePath(langId);
+	if (langId == "en" || QFile(languageFilename).exists()) {
+		QAction * a = new QAction(actionCaption, this);
+		a->setData(langId);
+		a->setIcon( QIcon( QString(":/gfx/languages/%1.png").arg(langId)) );
+		a->setIconVisibleInMenu(true);
+		connect(a, SIGNAL(triggered()),
+				this, SLOT(onActionSwitchLanguage()));
+		m_ui->menuLanguage->insertAction(nullptr, a);
+	}
+	else {
+		IBK::IBK_Message( IBK::FormatString("Language file '%1' missing.").arg(languageFilename.toStdString()),
+						  IBK::MSG_WARNING, FUNC_ID);
+	}
+}
+
 void MainWindow::resizeEvent(QResizeEvent *event){
 	updateMaximumHeightOfPlots();
 	QMainWindow::resizeEvent(event);
@@ -1320,5 +1351,11 @@ void MainWindow::on_toolButtonHelp_clicked() {
 
 void MainWindow::updateUi() {
 	m_ui->pushButtonDownload->setEnabled(m_validData);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+	// save user config and recent file list
+	DWDSettings::instance().write(saveGeometry(), saveState());
+	event->accept();
 }
 

@@ -82,12 +82,17 @@ public:
 	void formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDate endDate, QString title, QString leftYAxisTitle, double yLeftMin, double yLeftMax, double yLeftStepSize,
 					   bool hasRightAxis = false, QString rightYAxisTitle = "", double yRightMin = 0, double yRightMax = 100, double yRightStepSize = 0);
 
+
+	void addLanguageAction(const QString &langId, const QString &actionCaption) ;
 protected:
 	/*! Override resize event. */
 	void resizeEvent(QResizeEvent* event) override;
 
 private slots:
 	void convertDwdData();
+
+	/*! Triggered when a language menu entry was clicked. */
+	void onActionSwitchLanguage();
 
 	/*! Updates all distances. */
 	void onUpdateDistances();
@@ -177,6 +182,9 @@ private:
 
 	/*! Indicates if there is currently valid data. */
 	bool										m_validData = false;
+
+	/*! Close event. */
+	void closeEvent(QCloseEvent *event) override;
 };
 
 #endif // MAINWINDOW_H
