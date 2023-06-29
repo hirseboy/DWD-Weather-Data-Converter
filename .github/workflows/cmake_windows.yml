@@ -32,8 +32,8 @@ jobs:
     - name: Configure CMake
       env:
         CMAKE_PREFIX_PATH: ${{env.Qt5_Dir}}
-      working-directory: ${{github.workspace}}/build/cmake
-      run: cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} ${{github.workspace}}/build/cmake
+      working-directory: ${{github.workspace}}\build\cmake
+      run: cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
       working-directory: ${{github.workspace}}\build\cmake
