@@ -9,6 +9,7 @@ on:
 env:
   # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
   BUILD_TYPE: Release
+  QT_VERSION: "5.15.12"
 
 jobs:
   build:
@@ -21,20 +22,13 @@ jobs:
     - uses: actions/checkout@v3
     
     - name: Install Qt
-      uses: jurplel/install-qt-action@v2
+      uses: jurplel/install-qt-action@v3
       with:
-        host: windows
-        target: "desktop"
-        version: ${{ env.QT_VERSION }}
-        arch: ${{ env.MINGW_VERSION }}
-        dir: "${{github.workspace}}/qt"
-        install-deps: "true"
-    - name: Set Qt path and refresh
-      run: |
-        echo "${{github.workspace}}/qt/Qt/${{ env.QT_VERSION }}/${{ env.MINGW_PATH }}/bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        refreshenv
-        #Write-Output (Get-Command g++.exe).Path
-        #g++.exe --version
+        aqtversion: '==3.1.*'
+        version: '5.15.2'
+        host: 'linux'
+        target: 'desktop'
+        arch: 'gcc_64'
 
     - name: Configure CMake
       env:
