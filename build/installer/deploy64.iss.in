@@ -1,0 +1,93 @@
+[Setup]
+Compression=lzma
+SolidCompression=true
+OutputDir=.
+UsePreviousAppDir=false
+UsePreviousGroup=false
+InternalCompressLevel=ultra
+
+AppName=SIM-VICUS 64-Bit
+AppVerName=SIM-VICUS ${Version} 64-Bit
+AppVersion=${LongVersion}
+DefaultDirName={pf}\IBK\SIM-VICUS ${Version}
+DefaultGroupName=IBK\SIM-VICUS ${Version} 64-Bit
+OutputBaseFilename=${OutputFileBasename}
+VersionInfoVersion=${LongVersion}
+VersionInfoDescription=SIM-VICUS 64-Bit
+UninstallDisplayIcon={app}\SIM-VICUS.exe
+
+AppPublisher=Bauklimatik Dresden Software GmbH
+AppPublisherURL=https://www.bauklimatik-dresden.de
+AppSupportURL=https://www.bauklimatik-dresden.de/schulungen.php
+AppUpdatesURL=https://www.bauklimatik-dresden.de/downloads.php
+VersionInfoCompany=Bauklimatik Dresden Software GmbH
+VersionInfoCopyright=${CurrentYear} Bauklimatik Dresden Software GmbH
+AppCopyright=${CurrentYear} Bauklimatik Dresden Software GmbH
+ArchitecturesInstallIn64BitMode=x64
+
+
+[Files]
+; Program files
+Source: ..\..\bin\release_x64\SIM-VICUS.exe; DestDir: {app}; DestName: SIM-VICUS.exe
+Source: ..\..\bin\release_x64\NandradSolver.exe; DestDir: {app}; DestName: NandradSolver.exe
+Source: ..\..\bin\release_x64\NandradFMUGenerator.exe; DestDir: {app}; DestName: NandradFMUGenerator.exe
+Source: ..\..\bin\release_x64\NandradSolverFMI.dll; DestDir: {app}; DestName: NandradSolverFMI.dll
+Source: ..\..\bin\release_x64\View3D.exe; DestDir: {app}; DestName: View3D.exe
+
+; Dependencies according to DependencyWalker
+Source: VC19_x64\Qt5Svg.dll; DestDir: {app}
+Source: VC19_x64\Qt5Network.dll; DestDir: {app}
+Source: VC19_x64\Qt5Widgets.dll; DestDir: {app}
+Source: VC19_x64\Qt5Gui.dll; DestDir: {app}
+Source: VC19_x64\Qt5Core.dll; DestDir: {app}
+
+Source: VC19_x64\msvcp140.dll; DestDir: {app}
+Source: VC19_x64\vcomp140.dll; DestDir: {app}
+Source: VC19_x64\vcruntime140_1.dll; DestDir: {app}
+Source: VC19_x64\vcruntime140.dll; DestDir: {app}
+
+Source: VC19_x64\bearer\*; DestDir: {app}\bearer
+Source: VC19_x64\iconengines\*; DestDir: {app}\iconengines
+Source: VC19_x64\imageformats\*; DestDir: {app}\imageformats
+Source: VC19_x64\platforms\qwindows.dll; DestDir: {app}\platforms
+Source: VC19_x64\styles\*; DestDir: {app}\styles
+Source: VC19_x64\printsupport\*; DestDir: {app}\printsupport
+
+; Files for OpenSSL support (i.e. when accessing https://bauklimatik-dresden.de)
+Source: VC19_x64\libcrypto-1_1-x64.dll; DestDir: {app}
+Source: VC19_x64\libssl-1_1-x64.dll; DestDir: {app}
+
+; Translation files
+Source: ..\..\SIM-VICUS\resources\translations\*.qm; DestDir: {app}\resources\translations
+
+; Example Files
+Source: ..\..\data\examples\*; DestDir: {app}\resources\examples; Flags: recursesubdirs createallsubdirs
+
+; IFC plugin
+Source: ..\..\..\plugins\IFCImport\*; DestDir: {app}\plugins\IFCImport; Flags: recursesubdirs createallsubdirs
+Source: ..\..\..\plugins\IFCImport\ifcplusplus.dll; DestDir: {app}; 
+Source: ..\..\..\plugins\IFCImport\ImportIFCPlugin_de.qm; DestDir: {app}\resources\translations
+
+
+[InstallDelete]
+Name: {app}; Type: filesandordirs
+
+[UninstallDelete]
+Name: {app}; Type: filesandordirs
+
+[Icons]
+Name: {group}\SIM-VICUS ${Version} 64-Bit; Filename: {app}\SIM-VICUS.exe; WorkingDir: {app}; IconIndex: 0; Flags: runmaximized
+;Name: {group}\SIM-VICUS ${Version} 64-Bit Online Benutzerhandbuch (deutsch); Filename: "https://bauklimatik-dresden.de/SIM-VICUS/documentation.php"
+
+[Run]
+Filename: {app}\SIM-VICUS.exe; WorkingDir: {app}; Flags: postinstall unchecked; Description: "Starte SIM-VICUS ${Version}"; Languages: Deutsch
+Filename: {app}\SIM-VICUS.exe; WorkingDir: {app}; Flags: postinstall unchecked; Description: "Run SIM-VICUS ${Version}"; Languages: English
+
+[Registry]
+Root: HKCR; Subkey: .vicus; ValueType: string; ValueData: SIM-VICUS.Project; Flags: uninsdeletekey deletekey
+Root: HKCR; Subkey: SIM-VICUS.Project; ValueType: string; ValueData: SIM-VICUS Project File; Flags: uninsdeletekey deletekey
+Root: HKCR; Subkey: SIM-VICUS.Project\shell\open\command; ValueType: string; ValueData: """{app}\SIM-VICUS.exe"" ""%1"""; Flags: uninsdeletekey deletekey
+
+[Languages]
+Name: English; MessagesFile: compiler:Default.isl
+Name: Deutsch; MessagesFile: compiler:Languages\German.isl
