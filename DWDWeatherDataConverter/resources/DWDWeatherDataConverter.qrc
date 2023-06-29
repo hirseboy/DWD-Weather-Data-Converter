@@ -10,5 +10,6 @@
         <file>gfx/languages/fr.png</file>
         <file>gfx/languages/it.png</file>
         <file>gfx/languages/en.png</file>
+        <file>icon/DWDWeatherDataConverter.png</file>
     </qresource>
 </RCC>

@@ -35,12 +35,17 @@ int main(int argc, char* argv[]) {
 
 
 	const QString ProgramVersionName = QString("DWDWeatherDataConverter %1").arg(VERSION);
+	QApplication a( argc, argv );
+
+	QIcon icon(QPixmap(":/icon/DWDWeatherDataConverter.png"));
+	qApp->setWindowIcon(icon);
+	qApp->setApplicationName(ProgramVersionName);
+
+
 
 	DWDSettings settings(ORG_NAME, ProgramVersionName);
 	settings.setDefaults();
 	settings.read();
-
-	QApplication a( argc, argv );
 
 	QtExt::LanguageHandler::instance().installTranslator(QtExt::LanguageHandler::langId());
 	// install message handler to catch qDebug()
@@ -54,8 +59,10 @@ int main(int argc, char* argv[]) {
 	DWDMessageHandler messageHandler;
 	IBK::MessageHandlerRegistry::instance().setMessageHandler( &messageHandler );
 
+
 	std::string errmsg;
 	messageHandler.openLogFile(QtExt::Directories::globalLogFile().toUtf8().data(), false, errmsg);
+
 
 	// *** Setup and show MainWindow and start event loop ***
 	int res;
