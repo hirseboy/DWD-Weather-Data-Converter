@@ -9,7 +9,6 @@ moc/
 ui/
 build-*
 
-cmake_local/
 VC8/
 VC9/
 VC10/
@@ -32,7 +31,6 @@ Makefile
 *.lib
 *.pdb
 /externals/lib_x64/
-*.txt
 *.zip
 /externals/qwt/projects/Qt/Makefile.qwt
 /externals/qwt/projects/Qt/Makefile.qwt.Debug
