@@ -28,10 +28,7 @@ jobs:
         host: 'windows'
         target: 'desktop'
         arch: 'win64_msvc2019_64'
-
-    - name: Create Build Directory
-      run: mkdir "${{github.workspace}}\build\cmake"
-
+        
     - name: Configure CMake
       env:
         CMAKE_PREFIX_PATH: ${{env.Qt5_Dir}}
