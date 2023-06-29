@@ -67,9 +67,6 @@ if( WIN32 )
 	add_executable( ${PROJECT_NAME} WIN32 
 		${APP_SRCS} ${APP_MOC_SRCS} ${APP_RC_SRCS} ${APP_UI_SRCS}
 	)
-
-	# Add pre target dependencies
-	add_dependencies(${PROJECT_NAME} IBK.lib CCM.lib QtExt.lib QuaZIP.lib qwt6.lib)
 	
 endif( WIN32 ) 
 
