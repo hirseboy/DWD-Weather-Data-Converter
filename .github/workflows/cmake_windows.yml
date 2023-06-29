@@ -33,7 +33,7 @@ jobs:
       env:
         CMAKE_PREFIX_PATH: ${{env.Qt5_Dir}}
       working-directory: ${{github.workspace}}\build\cmake
-      run: cmake ${{github.workspace}}\build\cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake ${{github.workspace}}\build\cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} --debug-output
 
     - name: Build
       working-directory: ${{github.workspace}}\build\cmake
