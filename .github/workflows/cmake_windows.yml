@@ -13,6 +13,7 @@ env:
   LONG_VERSION: 0.9.9
   CURRENT_YEAR: 2023
   FILE_BASENAME: DWDWeatherDataConverter_Win
+  INNOSETUP_VERSION: "6.2.0"
 
 
 jobs:
