@@ -45,7 +45,7 @@ jobs:
     - name: Install Visual Studio Build Tools
       uses: ilammy/msvc-dev-cmd@v1
       with:
-          toolset: 16.X
+          toolset: 16.11
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
