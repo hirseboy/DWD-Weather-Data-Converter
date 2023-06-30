@@ -67,7 +67,7 @@ jobs:
       
     - name: Copy Executable
       run: |
-        "xcopy /Y ${{github.workspace}}\build\cmake\DWDWeatherDataConverter\DWDWeatherDataConverter.exe ${{github.workspace}}\build\cmake\..\..\bin\release"
+        "xcopy /Y ${{github.workspace}}\build\cmake\DWDWeatherDataConverter\release\DWDWeatherDataConverter.exe ${{github.workspace}}\bin\release"
       shell: cmd
 
     - name: Build Installer
