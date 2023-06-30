@@ -8,6 +8,7 @@ on:
 
 env:
   BUILD_TYPE: Release
+  VERSION: 0.9.9
   QT_VERSION: "5.15.12"
 
 jobs:
@@ -43,21 +44,25 @@ jobs:
       working-directory: ${{github.workspace}}\build\cmake
       run: ctest -C ${{env.BUILD_TYPE}}
 
-    - name: Install Scoop and Inno Setup
-      run: |
-        iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
-        scoop install innosetup
-
     - name: Prepare Inno Setup Script
       run: |
         # Replace placeholders in .iss.in file here. 
         # This is just an example, adjust it to your needs.
         (Get-Content DWD-Weather-Data-Converter/build/installer/deploy64.iss.in) `
-        -replace 'PLACEHOLDER', 'REPLACEMENT' `
+        -replace 'app', 'DWDWeatherDataConverter' `
+        -replace 'version', '${{env.VERSION}}' `
         | Set-Content ${{github.workspace}}/build/installer/deploy64.iss
       shell: powershell
+      
+    - name: Download and Install Inno Setup
+      run: |
+        $url = "http://files.jrsoftware.org/is/$env:INNOSETUP_VERSION/innosetup-$env:INNOSETUP_VERSION-unicode.exe"
+        $output = "${{github.workspace}}\innosetup-$env:INNOSETUP_VERSION-unicode.exe"
+        Invoke-WebRequest -Uri $url -OutFile $output
+        Start-Process $output -ArgumentList "/VERYSILENT" -NoNewWindow -Wait
 
     - name: Build Installer
       run: |
-        "${{env.scoop}}\apps\innosetup\current\ISCC.exe" "${{github.workspace}}/build/installer/deploy64.iss"
+        "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe" "${{github.workspace}}/build/installer/deploy64.iss"
       shell: powershell
+
