@@ -49,6 +49,7 @@ jobs:
         host: 'windows'
         target: 'desktop'
         arch: 'win64_msvc2019_64'
+    
         
     - name: Configure CMake
       env:
@@ -62,7 +63,12 @@ jobs:
 
     - name: Test
       working-directory: ${{github.workspace}}\build\cmake
-      run: ctest -C ${{env.BUILD_TYPE}}  
+      run: ctest -C ${{env.BUILD_TYPE}} 
+      
+    - name: Copy Executable
+      run: |
+        "xcopy /Y ${{github.workspace}}\build\cmake\DWDWeatherDataConverter\DWDWeatherDataConverter.exe ${{github.workspace}}\build\cmake\..\..\bin\release"
+      shell: cmd
 
     - name: Build Installer
       run: |
