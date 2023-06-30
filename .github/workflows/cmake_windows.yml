@@ -8,8 +8,12 @@ on:
 
 env:
   BUILD_TYPE: Release
-  VERSION: 0.9.9
   QT_VERSION: "5.15.12"
+  VERSION: 0.9
+  LONG_VERSION: 0.9.9
+  CURRENT_YEAR: 2023
+  FILE_BASENAME: DWDWeatherDataConverter_Win
+
 
 jobs:
   build:
@@ -48,9 +52,12 @@ jobs:
       run: |
         # Replace placeholders in .iss.in file here. 
         # This is just an example, adjust it to your needs.
-        (Get-Content DWD-Weather-Data-Converter/build/installer/deploy64.iss.in) `
+        (Get-Content build/installer/deploy64.iss.in) `
         -replace 'app', 'DWDWeatherDataConverter' `
         -replace 'version', '${{env.VERSION}}' `
+        -replace 'LongVersion', '${{env.LONG_VERSION}}' `
+        -replace 'OutputFileBasename', '${{env.FILE_BASENAME}}' `
+        -replace 'CurrentYear', '${{env.CURRENT_YEAR}}' `
         | Set-Content ${{github.workspace}}/build/installer/deploy64.iss
       shell: powershell
       
