@@ -64,10 +64,11 @@ jobs:
       
     - name: Download and Install Inno Setup
       run: |
-        $url = "http://files.jrsoftware.org/is/${{$env.INNOSETUP_VERSION}}/innosetup-${{$env.INNOSETUP_VERSION}}-unicode.exe"
-        $output = "${{github.workspace}}\innosetup-${{$env.INNOSETUP_VERSION}}-unicode.exe"
-        Invoke-WebRequest -Uri $url -OutFile $output
-        Start-Process $output -ArgumentList "/VERYSILENT" -NoNewWindow -Wait
+   	$url = "http://files.jrsoftware.org/is/" + $env:INNOSETUP_VERSION + "/innosetup-" + $env:INNOSETUP_VERSION + "-unicode.exe"
+    	$output = "${{github.workspace}}\innosetup-$env:INNOSETUP_VERSION-unicode.exe"
+    	Invoke-WebRequest -Uri $url -OutFile $output
+    	Start-Process $output -ArgumentList "/VERYSILENT" -NoNewWindow -Wait
+      shell: powershell
 
     - name: Build Installer
       run: |
