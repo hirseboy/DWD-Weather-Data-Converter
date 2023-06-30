@@ -317,7 +317,7 @@ Path Path::relativePath(const Path& toPath) const {
 	}
 
 	unsigned int equalCount = 0;
-	unsigned int minCount = static_cast<unsigned int>(std::min(orgBranches.size(), toBranches.size()));
+	unsigned int minCount = static_cast<unsigned int>((std::min)(orgBranches.size(), toBranches.size()));
 	for (unsigned int i=0; i<minCount; ++i, ++equalCount) {
 		if (orgBranches[i] != toBranches[i])
 			break;
