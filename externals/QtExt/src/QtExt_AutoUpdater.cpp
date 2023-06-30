@@ -114,9 +114,9 @@ bool AutoUpdater::installUpdateWhenAvailable(const QString & localPath, const st
 			downloadedData = f.readAll();
 			// compute MD5 hash
 			std::vector<unsigned char> data(downloadedData.data(), downloadedData.data() + downloadedData.size());
-			std::string updateFileMD5 = IBK::md5_str(data);
-			if (updateFileMD5 == md5hash)
-				installerFile = tmpInstallerFile; // found the correct one
+			// std::string updateFileMD5 = IBK::md5_str(data);
+			// if (updateFileMD5 == md5hash)
+			// 	installerFile = tmpInstallerFile; // found the correct one
 		}
 		else {
 			// just take the last executable that was moved
