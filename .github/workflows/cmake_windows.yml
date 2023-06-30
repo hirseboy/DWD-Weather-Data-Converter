@@ -34,7 +34,7 @@ jobs:
       run: |
         # Replace placeholders in .iss.in file here. 
         # This is just an example, adjust it to your needs.
-        (Get-Content build/installer/deploy64.iss.in) `
+        (Get-Content ${{github.workspace}}\build\installer\deploy64.iss.in) `
         -replace 'app', 'DWDWeatherDataConverter' `
         -replace 'version', '${{env.VERSION}}' `
         -replace 'LongVersion', '${{env.LONG_VERSION}}' `
