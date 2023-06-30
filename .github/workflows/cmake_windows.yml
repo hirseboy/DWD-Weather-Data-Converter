@@ -35,11 +35,6 @@ jobs:
         # Replace placeholders in .iss.in file here. 
         # This is just an example, adjust it to your needs.
         (Get-Content ${{github.workspace}}\build\installer\deploy64.iss.in) `
-        -replace 'app', 'DWDWeatherDataConverter' `
-        -replace 'version', '${{env.VERSION}}' `
-        -replace 'LongVersion', '${{env.LONG_VERSION}}' `
-        -replace 'OutputFileBasename', '${{env.FILE_BASENAME}}' `
-        -replace 'CurrentYear', '${{env.CURRENT_YEAR}}' `
         | Set-Content ${{github.workspace}}\build\installer\deploy64.iss
       shell: powershell
     
