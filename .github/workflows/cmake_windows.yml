@@ -59,7 +59,7 @@ jobs:
       env:
         CMAKE_PREFIX_PATH: ${{env.Qt5_Dir}}
       working-directory: ${{github.workspace}}\build\cmake
-      run: cmake ${{github.workspace}}\build\cmake -G "NMake Makefiles JOM" -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake ${{github.workspace}}\build\cmake -G "NMake Makefiles JOM" .. -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
       working-directory: ${{github.workspace}}\build\cmake
