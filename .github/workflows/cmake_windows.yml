@@ -40,8 +40,8 @@ jobs:
         -replace 'LongVersion', '${{env.LONG_VERSION}}' `
         -replace 'OutputFileBasename', '${{env.FILE_BASENAME}}' `
         -replace 'CurrentYear', '${{env.CURRENT_YEAR}}' `
-        | Set-Content ${{github.workspace}}\build\installer\deploy64.iss
-        (Get-Content) ${{github.workspace}}\build\installer\deploy64.iss
+        | Set-Content ${{github.workspace}}\build\installer\deploy64.iss ` 
+        | Get-Content ${{github.workspace}}\build\installer\deploy64.iss
       shell: powershell
     
     - name: Install Visual Studio Build Tools
