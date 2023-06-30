@@ -23,6 +23,13 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
+    - name: Download and Install Inno Setup
+      run: |
+        $url = "files.jrsoftware.org/is/6/innosetup-6.2.0.exe"
+        $output = "${{github.workspace}}\innosetup-6.2.0-unicode.exe"
+        Invoke-WebRequest -Uri $url -OutFile $output
+        Start-Process $output -ArgumentList "/VERYSILENT" -NoNewWindow -Wait
+    
     - name: Install Visual Studio Build Tools
       uses: ilammy/msvc-dev-cmd@v1
 
@@ -62,12 +69,6 @@ jobs:
         | Set-Content ${{github.workspace}}/build/installer/deploy64.iss
       shell: powershell
       
-    - name: Download and Install Inno Setup
-      run: |
-        $url = "http://files.jrsoftware.org/is/" + $env:INNOSETUP_VERSION + "/innosetup-$env:INNOSETUP_VERSION-unicode.exe"
-        $output = "${{github.workspace}}\innosetup-" + $env:INNOSETUP_VERSION + "-unicode.exe"
-        Invoke-WebRequest -Uri $url -OutFile $output
-        Start-Process $output -ArgumentList "/VERYSILENT" -NoNewWindow -Wait
 
     - name: Build Installer
       run: |
