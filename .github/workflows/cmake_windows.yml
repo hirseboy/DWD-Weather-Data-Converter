@@ -17,23 +17,25 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
-    - name: Install Visual Studio Build Tools
-      uses: ilammy/msvc-dev-cmd@v1
+    - name: Install MSBuild
+      uses: microsoft/setup-msbuild@v1.0.2
 
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==3.1.*'
         version: '5.15.2'
-        host: 'windows'
+        host: 'win64_msvc2019_64'
         target: 'desktop'
-        arch: 'win64_msvc2019_64'
-        
+
+    - name: Create Build Directory
+      run: mkdir "${{github.workspace}}\build\cmake"
+
     - name: Configure CMake
       env:
         CMAKE_PREFIX_PATH: ${{env.Qt5_Dir}}
       working-directory: ${{github.workspace}}\build\cmake
-      run: cmake ${{github.workspace}}\build\cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} --debug-output
+      run: cmake -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -G "Visual Studio 16 2019" ${{github.workspace}}
 
     - name: Build
       working-directory: ${{github.workspace}}\build\cmake
@@ -44,20 +46,13 @@ jobs:
       run: ctest -C ${{env.BUILD_TYPE}}
 
     - name: Install Scoop and Inno Setup
+      shell: pwsh
       run: |
-        iex (new-object net.webclient).downloadstring('https://get.scoop.sh')
+        Set-ExecutionPolicy Bypass -Scope Process -Force
+        iex ((New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh'))
         scoop install innosetup
-
-    - name: Prepare Inno Setup Script
-      run: |
-        # Replace placeholders in .iss.in file here. 
-        # This is just an example, adjust it to your needs.
-        (Get-Content DWD-Weather-Data-Converter/build/installer/deploy64.iss.in) `
-        -replace 'PLACEHOLDER', 'REPLACEMENT' `
-        | Set-Content ${{github.workspace}}/build/installer/deploy64.iss
-      shell: powershell
 
     - name: Build Installer
       run: |
-        "${{env.scoop}}\apps\innosetup\current\ISCC.exe" "${{github.workspace}}/build/installer/deploy64.iss"
+        "$env:SCOOP/apps/innosetup/current/ISCC.exe" "path\to\your\InnoSetup.iss"
       shell: powershell
