@@ -29,6 +29,20 @@ jobs:
         $output = "${{github.workspace}}\innosetup-6.2.0-unicode.exe"
         Invoke-WebRequest -Uri $url -OutFile $output
         Start-Process $output -ArgumentList "/VERYSILENT" -NoNewWindow -Wait
+        
+    - name: Prepare Inno Setup Script
+      run: |
+        # Replace placeholders in .iss.in file here. 
+        # This is just an example, adjust it to your needs.
+        (Get-Content build/installer/deploy64.iss.in) `
+        -replace 'app', 'DWDWeatherDataConverter' `
+        -replace 'version', '${{env.VERSION}}' `
+        -replace 'LongVersion', '${{env.LONG_VERSION}}' `
+        -replace 'OutputFileBasename', '${{env.FILE_BASENAME}}' `
+        -replace 'CurrentYear', '${{env.CURRENT_YEAR}}' `
+        | Set-Content ${{github.workspace}}\build\installer\deploy64.iss
+        (Get-Content) ${{github.workspace}}\build\installer\deploy64.iss
+      shell: powershell
     
     - name: Install Visual Studio Build Tools
       uses: ilammy/msvc-dev-cmd@v1
@@ -54,24 +68,10 @@ jobs:
 
     - name: Test
       working-directory: ${{github.workspace}}\build\cmake
-      run: ctest -C ${{env.BUILD_TYPE}}
-
-    - name: Prepare Inno Setup Script
-      run: |
-        # Replace placeholders in .iss.in file here. 
-        # This is just an example, adjust it to your needs.
-        (Get-Content build/installer/deploy64.iss.in) `
-        -replace 'app', 'DWDWeatherDataConverter' `
-        -replace 'version', '${{env.VERSION}}' `
-        -replace 'LongVersion', '${{env.LONG_VERSION}}' `
-        -replace 'OutputFileBasename', '${{env.FILE_BASENAME}}' `
-        -replace 'CurrentYear', '${{env.CURRENT_YEAR}}' `
-        | Set-Content ${{github.workspace}}/build/installer/deploy64.iss
-      shell: powershell
-      
+      run: ctest -C ${{env.BUILD_TYPE}}  
 
     - name: Build Installer
       run: |
-        "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe" "${{github.workspace}}/build/installer/deploy64.iss"
+        "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe" "${{github.workspace}}\build\installer\deploy64.iss"
       shell: powershell
 
