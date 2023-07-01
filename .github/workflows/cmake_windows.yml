@@ -69,6 +69,11 @@ jobs:
       working-directory: ${{github.workspace}}\build\cmake
       run: ctest -C ${{env.BUILD_TYPE}} 
       
+    - name: Print files
+      run: |
+        "tree /f ${{github.workspace}}"
+      shell: cmd
+      
     - name: Copy Executable
       run: |
         "xcopy /Y ${{github.workspace}}\build\cmake\DWDWeatherDataConverter\release\DWDWeatherDataConverter.exe ${{github.workspace}}\bin\release_x64"
