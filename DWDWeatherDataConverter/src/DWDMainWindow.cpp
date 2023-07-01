@@ -359,6 +359,8 @@ void MainWindow::setGUIState(bool guiState) {
 }
 
 void MainWindow::downloadData(bool showPreview, bool exportEPW) {
+	FUNCID(MainWindow::downloadData);
+
 	if ( exportEPW ) {
 		if(!m_exportPath.isValid()) {
 			m_progressDlg->hide();
@@ -630,12 +632,16 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 	}
 
 	ProgressNotify progressNotify(m_progressDlg);
-
-	if (!exportEPW) {
+	try {
+		if (!exportEPW) {
 		//read data
 		m_dwdData.m_startTime = DWDConversions::convertQDate2IBKTime(m_ui->dateEditStart->date());
 		m_dwdData.m_progressDlg = m_progressDlg;
 		m_dwdData.createData(&progressNotify, filenamesForReading);
+		}
+	} catch(IBK::Exception &ex) {
+		throw IBK::Exception("Could not create DWD Data.", FUNC_ID);
+		return;
 	}
 
 	//copy all data in range and create an epw
