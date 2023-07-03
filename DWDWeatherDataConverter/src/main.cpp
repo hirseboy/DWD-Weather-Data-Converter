@@ -104,7 +104,6 @@ int main(int argc, char* argv[]) {
 	catch (...) {
 		return EXIT_FAILURE;
 	}
-
 	// return exit code to environment
 
 	return res;
