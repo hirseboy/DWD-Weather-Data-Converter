@@ -1,6 +1,6 @@
 # DWD Weather Data Converter
 
-![grafik](https://github.com/hirseboy/DWD-Weather-Data-Converter/assets/58851829/0cb63b55-b714-4603-a791-41926875deae)
+![DWDWeatherDataConverterSplash](https://github.com/hirseboy/DWD-Weather-Data-Converter/assets/58851829/32f764e2-9d3d-4c91-82ea-d8a4713b41fe)
 
 This repository holds all data concerning the weather data converter for converting weather data from the German Weather Service (DWD) [https://www.dwd.de/DE/Home/home_node.html].
 
@@ -20,3 +20,9 @@ Just go to '/build/cmake' and call under windows: 'build_x64_with_pause.bat' or 
 
 Windows: [![CMake](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake_windows.yml)
 Linux:  [![CMake](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake.yml/badge.svg)](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake.yml)
+
+# Screenshots
+
+![grafik](https://github.com/hirseboy/DWD-Weather-Data-Converter/assets/58851829/0cb63b55-b714-4603-a791-41926875deae)
+
+![grafik](https://github.com/hirseboy/DWD-Weather-Data-Converter/assets/58851829/17f20521-af5a-4255-a7de-2997510abfc9)
