@@ -121,9 +121,4 @@ void MapDialog::on_horizontalSliderDistance_valueChanged(int distance) {
 	emit updateDistances();
 }
 
-
-void MapDialog::on_horizontalSliderSize_valueChanged(int value) {
-	m_scene->m_dataPointSize = value;
-}
-
 } // namespace DM

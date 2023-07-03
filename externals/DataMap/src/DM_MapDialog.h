@@ -66,8 +66,6 @@ private slots:
 
 	void on_horizontalSliderDistance_valueChanged(int value);
 
-	void on_horizontalSliderSize_valueChanged(int value);
-
 private:
 	Ui::MapDialog			*m_ui;
 
