@@ -4,7 +4,17 @@ This repository holds all data concerning the weather data converter for convert
 
 It is accessing the data stored in the ftp server and the user can select needed data in order to create a weather data file (epw, c6b) that can be used for simulations (SIM-VICUS, DELPHIN, etc.)
 
-# Build process
+# Build
+
+## Qt-Creator
+
+Open the pro-file in Qt-Creator under '/build/qt'. Compile with MSVC 2019 or gcc
+
+## cmake
+
+Just go to '/build/cmake' and call under windows: 'build_x64_with_pause.bat' or run under Linux 'build.sh'
+
+# Status
 
 Windows: [![CMake](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake_windows.yml)
 Linux:  [![CMake](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake.yml/badge.svg)](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake.yml)
