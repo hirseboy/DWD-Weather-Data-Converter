@@ -22,23 +22,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-
-    - name: Building the installer
-      run: |
-        "%programfiles(x86)%\Inno Setup 6\iscc.exe" '${{github.workspace}}\build\installer\deploy64.iss'
-      shell: cmd
-    
+   
     - name: Create Directory
       run: mkdir ${{github.workspace}}\bin\release_x64
       shell: cmd
     
-    - name: Download and Install Inno Setup
-      run: |
-        $url = "files.jrsoftware.org/is/6/innosetup-6.2.0.exe"
-        $output = "${{github.workspace}}\innosetup-6.2.0-unicode.exe"
-        Invoke-WebRequest -Uri $url -OutFile $output
-        Start-Process $output -ArgumentList "/VERYSILENT" -NoNewWindow -Wait
-        
     - name: Prepare Inno Setup Script
       run: |
         # Replace placeholders in .iss.in file here. 
@@ -58,7 +46,6 @@ jobs:
         host: 'windows'
         target: 'desktop'
         arch: 'win64_msvc2019_64'
-    
         
     - name: Configure CMake
       env:
@@ -82,10 +69,10 @@ jobs:
       run: xcopy /Y ${{github.workspace}}\build\cmake\DWDWeatherDataConverter\release\DWDWeatherDataConverter.exe ${{github.workspace}}\bin\release_x64
       shell: cmd
 
-    - name: Build Installer
+    - name: Building the installer
       run: |
-        & "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe" '${{github.workspace}}deploy64.iss'
-      shell: powershell
+        "%programfiles(x86)%\Inno Setup 6\iscc.exe" '${{github.workspace}}\build\installer\deploy64.iss'
+      shell: cmd
 
     - name: Upload Installer as Artifact
       uses: actions/upload-artifact@v2
