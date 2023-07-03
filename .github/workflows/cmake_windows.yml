@@ -22,6 +22,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.npm  # Der Pfad zu dem Verzeichnis, das Sie zwischenspeichern möchten
+        key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}  # Der eindeutige Schlüssel für den Cache
+        restore-keys: |
+          ${{ runner.os }}-npm-
+        
+    - name: Install Dependencies
+      run: npm install
+
+    - name: Run tests
+      run: npm test
    
     - name: Create Directory
       run: mkdir ${{github.workspace}}\bin\release_x64
