@@ -79,8 +79,8 @@ jobs:
 
     - name: Build Installer
       run: |
-        "%ProgramFiles(x86)%\Inno Setup 6\iscc.exe" `
-        "${{github.workspace}}\build\installer\deploy64.iss"
-      shell: cmd
+        & "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe" 'D:\a\DWD-Weather-Data-Converter\DWD-Weather-Data-Converter\build\installer\deploy64.iss'
+      shell: powershell
+
 
 
