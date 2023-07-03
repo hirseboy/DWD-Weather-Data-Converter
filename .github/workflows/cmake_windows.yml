@@ -42,7 +42,7 @@ jobs:
       uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==3.1.*'
-        version: '5.15.12'
+        version: '5.15.2'
         host: 'windows'
         target: 'desktop'
         arch: 'win64_msvc2019_64'
