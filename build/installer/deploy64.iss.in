@@ -56,9 +56,6 @@ Source: VC19_x64\libssl-1_1-x64.dll; DestDir: {app}
 ; Translation files
 Source: ..\..\DWDWeatherDataConverter\resources\translations\*.qm; DestDir: {app}\resources\translations
 
-; Example Files
-Source: ..\..\data\examples\*; DestDir: {app}\resources\examples; Flags: recursesubdirs createallsubdirs
-
 [InstallDelete]
 Name: {app}; Type: filesandordirs
 
