@@ -79,8 +79,14 @@ jobs:
 
     - name: Build Installer
       run: |
-        & "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe" 'D:\a\DWD-Weather-Data-Converter\DWD-Weather-Data-Converter\build\installer\deploy64.iss'
+        & "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe" '${{github.workspace}}deploy64.iss'
       shell: powershell
+
+    - name: Upload Installer as Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: installer
+        path: ${{github.workspace}}\build\installer\DWDWeatherDataConverter_win64.exe # Ersetzen Sie dies durch den Pfad zu Ihrer Installer-Datei
 
 
 
