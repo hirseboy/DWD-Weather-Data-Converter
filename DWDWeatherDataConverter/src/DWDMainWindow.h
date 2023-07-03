@@ -127,6 +127,16 @@ private slots:
 
 	void on_toolButtonDownloadDir_clicked();
 
+	void on_actionAbout_triggered();
+
+	void on_actionAbout_Qt_triggered();
+
+	void on_actionClose_triggered();
+
+	void on_actionc6b_triggered();
+
+	void on_actionEPW_triggered();
+
 private:
 
 	/*! Updates the Ui. */

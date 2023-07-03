@@ -167,8 +167,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	on_horizontalSliderDistance_valueChanged(50);
 
 	// Init combo box for program mode
-	m_ui->comboBoxMode->addItem("EPW", EM_EPW);
-	m_ui->comboBoxMode->addItem("C6B", EM_C6B);
+	m_ui->comboBoxMode->addItem("epw", EM_EPW);
+	m_ui->comboBoxMode->addItem("c6b", EM_C6B);
 	m_ui->comboBoxMode->setCurrentIndex(EM_EPW);
 	m_mode = EM_EPW;
 
@@ -341,6 +341,7 @@ void MainWindow::loadDataFromDWDServer(){
 	else {
 		IBK::IBK_Message("Using cached local meta data from DWD.", IBK::MSG_PROGRESS);
 		convertDwdData();
+
 	}
 
 	// initialize lineEdit with userDataDir on StartUp
@@ -864,6 +865,7 @@ void MainWindow::convertDwdData() {
 	}
 	catch (IBK::Exception &ex) {
 		IBK::IBK_Message("Error converting data.", IBK::MSG_ERROR);
+		m_progressDlg->hide();
 	}
 
 	calculateDistances();
@@ -940,7 +942,6 @@ void MainWindow::convertDwdData() {
 	m_ui->plotTemp->setContentsMargins(maxAxisWidth-m_ui->plotTemp->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
 	m_ui->plotWind->setContentsMargins(maxAxisWidth-m_ui->plotWind->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
 	m_ui->plotRad->setContentsMargins(maxAxisWidth-m_ui->plotRad->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
-
 
 	m_progressDlg->hide();
 }
@@ -1363,5 +1364,30 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 	// save user config and recent file list
 	DWDSettings::instance().write(saveGeometry(), saveState());
 	event->accept();
+}
+
+
+void MainWindow::on_actionAbout_triggered() {
+	// ToDo Dialog
+}
+
+
+void MainWindow::on_actionAbout_Qt_triggered() {
+	QMessageBox::aboutQt(this, tr("About Qt..."));
+}
+
+
+void MainWindow::on_actionClose_triggered() {
+	close();
+}
+
+
+void MainWindow::on_actionc6b_triggered() {
+	m_ui->comboBoxMode->setCurrentIndex(EM_C6B);
+}
+
+
+void MainWindow::on_actionEPW_triggered() {
+	m_ui->comboBoxMode->setCurrentIndex(EM_EPW);
 }
 
