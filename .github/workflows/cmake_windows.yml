@@ -70,18 +70,17 @@ jobs:
       run: ctest -C ${{env.BUILD_TYPE}} 
       
     - name: Print files
-      run: |
-        "tree /f ${{github.workspace}}"
+      run: tree /f ${{github.workspace}}
       shell: cmd
       
     - name: Copy Executable
-      run: |
-        "xcopy /Y ${{github.workspace}}\build\cmake\DWDWeatherDataConverter\release\DWDWeatherDataConverter.exe ${{github.workspace}}\bin\release_x64"
+      run: xcopy /Y ${{github.workspace}}\build\cmake\DWDWeatherDataConverter\release\DWDWeatherDataConverter.exe ${{github.workspace}}\bin\release_x64
       shell: cmd
 
     - name: Build Installer
       run: |
-        "%programfiles(x86)%\Inno Setup 6\iscc.exe" "${{github.workspace}}\build\installer\deploy64.iss"
+        "%ProgramFiles(x86)%\Inno Setup 6\iscc.exe" `
+        "${{github.workspace}}\build\installer\deploy64.iss"
       shell: cmd
 
 
