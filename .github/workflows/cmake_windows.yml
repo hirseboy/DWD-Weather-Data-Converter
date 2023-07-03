@@ -73,6 +73,10 @@ jobs:
       run: |
         "%programfiles(x86)%\Inno Setup 6\iscc.exe" '${{github.workspace}}\build\installer\deploy64.iss'
       shell: cmd
+      
+    - name: Print files
+      run: tree /f ${{github.workspace}}
+      shell: cmd
 
     - name: Upload Installer as Artifact
       uses: actions/upload-artifact@v2
