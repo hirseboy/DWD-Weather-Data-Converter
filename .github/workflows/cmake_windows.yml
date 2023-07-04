@@ -86,7 +86,7 @@ jobs:
     - name: Upload Installer as Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: installer
+        name: ${{env.FILE_BASENAME}}
         path: ${{github.workspace}}\build\installer\DWDWeatherDataConverter_win64.exe # Ersetzen Sie dies durch den Pfad zu Ihrer Installer-Datei
 
 
