@@ -12,7 +12,7 @@ env:
   VERSION: 1.0
   LONG_VERSION: 1.0.0
   CURRENT_YEAR: 2023
-  FILE_BASENAME: DWDWeatherDataConverter_Win
+  FILE_BASENAME: DWDWeatherDataConverter_Win64
   INNOSETUP_VERSION: "6.2.0"
 
 
@@ -32,6 +32,10 @@ jobs:
         # Replace placeholders in .iss.in file here. 
         # This is just an example, adjust it to your needs.
         (Get-Content ${{github.workspace}}\build\installer\deploy64.iss.in) `
+        -replace '\$\{Version\}', ${{env.VERSION}} `
+        -replace '\$\{LongVersion\}', ${{env.LONG_VERSION}} ` 
+        -replace '\$\{CurrentYear\}', ${{env.CURRENT_YEAR}} `
+        -replace '\$\{OutputFileBasename\}', ${{env.FILE_BASENAME}} ` 
         | Set-Content ${{github.workspace}}\build\installer\deploy64.iss
       shell: powershell
     
@@ -42,7 +46,7 @@ jobs:
       uses: jurplel/install-qt-action@v3
       with:
         aqtversion: '==3.1.*'
-        version: '5.15.2'
+        version: ${{env.QT_VERSION}}
         host: 'windows'
         target: 'desktop'
         arch: 'win64_msvc2019_64'
