@@ -23,6 +23,5 @@ Linux:  [![CMake](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions
 
 # Screenshots
 
-![grafik](https://github.com/hirseboy/DWD-Weather-Data-Converter/assets/58851829/0cb63b55-b714-4603-a791-41926875deae)
-
-![grafik](https://github.com/hirseboy/DWD-Weather-Data-Converter/assets/58851829/17f20521-af5a-4255-a7de-2997510abfc9)
+![grafik](https://github.com/hirseboy/DWD-Weather-Data-Converter/assets/58851829/a462e4e1-3f89-4888-9c2c-62582f480de5)
+![grafik](https://github.com/hirseboy/DWD-Weather-Data-Converter/assets/58851829/58b4d317-771d-4397-bb9f-e155dd2dbd26)
