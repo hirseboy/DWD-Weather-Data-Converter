@@ -10,5 +10,7 @@ extern const char * const ORG_NAME;
 
 extern const int WRONG_NUMBER;
 
+/*! Cache period in days. */
+extern const unsigned int CACHE_PERIOD;
 
 #endif // DWDConstantsH
