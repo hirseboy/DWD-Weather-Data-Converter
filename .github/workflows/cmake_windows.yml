@@ -32,10 +32,10 @@ jobs:
         # Replace placeholders in .iss.in file here. 
         # This is just an example, adjust it to your needs.
         (Get-Content ${{github.workspace}}\build\installer\deploy64.iss.in) `
-        -replace '\$\{Version\}', ${{env.VERSION}} `
-        -replace '\$\{LongVersion\}', ${{env.LONG_VERSION}} ` 
-        -replace '\$\{CurrentYear\}', ${{env.CURRENT_YEAR}} `
-        -replace '\$\{OutputFileBasename\}', ${{env.FILE_BASENAME}} ` 
+        -replace '\$\{Version\}', "${{env.VERSION}}" `
+        -replace '\$\{LongVersion\}', "${{env.LONG_VERSION}}" ` 
+        -replace '\$\{CurrentYear\}', "${{env.CURRENT_YEAR}}" `
+        -replace '\$\{OutputFileBasename\}', "${{env.FILE_BASENAME}}" ` 
         | Set-Content ${{github.workspace}}\build\installer\deploy64.iss
       shell: powershell
     
