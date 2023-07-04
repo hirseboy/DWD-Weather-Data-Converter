@@ -26,18 +26,22 @@ jobs:
     - name: Create Directory
       run: mkdir ${{github.workspace}}\bin\release_x64
       shell: cmd
+      
+    - name: Print iss.in
+      run: type ${{github.workspace}}\build\installer\deploy64.iss.in
+      shell: cmd
     
     - name: Prepare Inno Setup Script
       run: |
-        # Replace placeholders in .iss.in file here. 
-        # This is just an example, adjust it to your needs.
+        # Replace placeholders in .iss.in file. 
         (Get-Content ${{github.workspace}}\build\installer\deploy64.iss.in) `
-        -replace '\$\{Version\}', "${{env.VERSION}}" `
-        -replace '\$\{LongVersion\}', "${{env.LONG_VERSION}}" ` 
-        -replace '\$\{CurrentYear\}', "${{env.CURRENT_YEAR}}" `
-        -replace '\$\{OutputFileBasename\}', "${{env.FILE_BASENAME}}" ` 
+        -replace "\$\{Version\}", "${{env.VERSION}}" `
         | Set-Content ${{github.workspace}}\build\installer\deploy64.iss
       shell: powershell
+      
+    - name: Print iss
+      run: type ${{github.workspace}}\build\installer\deploy64.iss
+      shell: cmd
     
     - name: Install Visual Studio Build Tools
       uses: ilammy/msvc-dev-cmd@v1
