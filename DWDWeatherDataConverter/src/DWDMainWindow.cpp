@@ -85,8 +85,6 @@ public:
 		if(m_dlg->value() == m_value)
 			return;
 		m_dlg->setValue(m_value);
-
-		int val = m_dlg->value();
 		// qDebug() << m_dlg->value() << " | " << m_dlg->maximum();
 
 		qApp->processEvents();
@@ -134,12 +132,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	m_ui->lineEditLongitude->setText(QString::number(m_ccm.m_longitudeInDegree));
 
 	m_ui->dateEditEnd->setDate(QDate(2021,1,1));
-
-	//	m_ui->lineEditYear->setup(1950,2023,tr("Year of interest."), true, true);
 	m_ui->dateEditStart->setDate(QDate(2020,1,1));
-	//	m_ui->lineEditYear->setText("2020");
-
-	//	on_lineEditYear_editingFinished();
 
 	QTableView * v = m_ui->tableView;
 	v->verticalHeader()->setDefaultSectionSize(25);
@@ -262,7 +255,7 @@ void MainWindow::updateLocalFileList() {
 
 	for(unsigned int i=0; i<m_localFileList.size(); ++i) {
 		try {
-			int stationId = std::stoi(m_localFileList[i].substr(std::string("stundenwerte_FF_").length(),5));
+			unsigned int stationId = std::stoi(m_localFileList[i].substr(std::string("stundenwerte_FF_").length(),5));
 			std::string type = m_localFileList[i].substr(std::string("stundenwerte_").length(),2);
 			int typeId = -1;
 			if (type == "TU") typeId = 0;
@@ -296,8 +289,7 @@ void MainWindow::loadDataFromDWDServer(){
 		QString fileName = url.mid(idx);
 
 		QString path = QString("%1/%2")
-				.arg(QString::fromStdString(m_downloadDir.str()))
-				.arg(fileName);
+				.arg(QString::fromStdString(m_downloadDir.str()), fileName);
 		QFile file(path);
 
 		if (file.exists()) {
@@ -306,7 +298,7 @@ void MainWindow::loadDataFromDWDServer(){
 			unsigned int days = modifiedDate.daysTo(QDateTime::currentDateTime());
 
 			// update!!!
-			if (days > 7) {
+			if (days > CACHE_PERIOD) {
 				doDownload = true;
 				break;
 			}
@@ -469,9 +461,17 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 			bool localFilePresent = false;
 			for(unsigned int i=0; i<m_localFileList.size(); ++i){
 				if (m_localFileList[i].substr(std::string("stundenwerte_").length(),std::string("FF_01234").length()) == currentRequest) {
-					localFilePresent = true;
-					localFileName = m_localFileList[i];
-					break;
+
+					QFileInfo info(QString::fromStdString(m_localFileList[i]));
+					QDateTime modifiedDate = info.lastModified();
+					unsigned int days = modifiedDate.daysTo(QDateTime::currentDateTime());
+
+					// update!!!
+					if (days > CACHE_PERIOD) {
+						localFilePresent = true;
+						localFileName = m_localFileList[i];
+						break;
+					}
 				}
 			}
 			if (localFilePresent) {
@@ -519,7 +519,7 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 					for(unsigned int j=0; j<dwdData.m_urls.size(); ++j){
 						filename = dwdData.m_urls[j].name();
 						//stundenwerte_ST_00183_row.zip
-						if((filename.mid(QString("stundenwerte_ST_").length(),5)).toUInt() == stationId){
+						if((filename.midRef(QString("stundenwerte_ST_").length(), 5)).toUInt() == stationId){
 							qDebug() << "Gefunden: " << filename;
 							break;
 						}
@@ -586,7 +586,7 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 	//create the file path names and according data types for reading
 	std::vector<IBK::Path>	checkedFileNames(DWDDescriptonData::NUM_D);
 	std::map<IBK::Path, std::set<DWDData::DataType>> filenamesForReading;
-	for (int i=0; i<filenames.size(); ++i) {
+	for (unsigned int i=0; i<filenames.size(); ++i) {
 		if ( filenames[i].isEmpty() )
 			continue;
 
@@ -837,6 +837,8 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 
 
 void MainWindow::convertDwdData() {
+	progressDialog()->show();
+
 	// read all decription files
 	DWDDescriptonData descData;
 	m_descData.clear();
@@ -940,6 +942,8 @@ void MainWindow::convertDwdData() {
 	m_ui->plotTemp->setContentsMargins(maxAxisWidth-m_ui->plotTemp->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
 	m_ui->plotWind->setContentsMargins(maxAxisWidth-m_ui->plotWind->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
 	m_ui->plotRad->setContentsMargins(maxAxisWidth-m_ui->plotRad->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
+
+	progressDialog()->hide();
 }
 
 void MainWindow::onActionSwitchLanguage() {
@@ -1152,7 +1156,7 @@ void MainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDate 
 
 	QwtDateScaleEngine *scaleEngine = new QwtDateScaleEngine(Qt::UTC);
 
-	plot.enableAxis(QwtPlot::xBottom, !init);
+	plot.enableAxis(QwtPlot::xBottom, !init && plot.isEnabled());
 	// Set scale draw engine
 	plot.setAxisScaleDraw(QwtPlot::xBottom, scaleDrawTemp);
 	plot.setAxisScaleEngine(QwtPlot::xBottom, scaleEngine);
@@ -1230,6 +1234,9 @@ void MainWindow::on_pushButtonMap_clicked() {
 	//	emit m_dwdTableModel->dataChanged(top, bottom); // we just update the whole column
 
 	m_dwdTableModel->reset();
+
+	// Unckecks currently selected data
+	m_dwdTableModel->uncheckData();
 }
 
 
@@ -1292,7 +1299,6 @@ void MainWindow::on_toolButtonDownloadDir_clicked() {
 	m_ui->lineEditDownloads->setText(directory);
 
 	updateLocalFileList();
-
 }
 
 
@@ -1335,6 +1341,9 @@ void MainWindow::on_dateEditStart_dateChanged(const QDate &date) {
 
 	m_dwdData.m_startTime.set(date.year(), date.month()-1, date.day()-1, 0 );
 	m_proxyModel->setFilterMinimumDate(date);
+
+	// Unckecks currently selected data
+	m_dwdTableModel->uncheckData();
 }
 
 
@@ -1349,6 +1358,9 @@ void MainWindow::on_dateEditEnd_dateChanged(const QDate &date) {
 
 	m_dwdData.m_endTime.set(date.year(), date.month()-1, date.day()-1, 0 );
 	m_proxyModel->setFilterMaximumDate(date);
+
+	// Unckecks currently selected data
+	m_dwdTableModel->uncheckData();
 }
 
 
@@ -1365,11 +1377,11 @@ void MainWindow::updateUi() {
 QProgressDialog *MainWindow::progressDialog() {
 	if(m_progressDlg == nullptr) {
 		m_progressDlg = new QProgressDialog(this);
-		m_progressDlg->setMinimumDuration(0);
 		m_progressDlg->setMinimumWidth(700);
 		m_progressDlg->setModal(true);
 		m_progressDlg->setValue(0);
 		m_progressDlg->setMaximum(0);
+		m_progressDlg->hide();
 	}
 
 	return m_progressDlg;
