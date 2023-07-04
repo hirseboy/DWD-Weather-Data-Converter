@@ -57,7 +57,7 @@ void DWDData::createData(IBK::NotificationHandler * notify, const std::map<IBK::
 		++counter;
 	}
 	} catch (IBK::Exception &ex) {
-		throw IBK::Exception("Could not read DWD Data", FUNC_ID);
+		throw IBK::Exception(IBK::FormatString("%1\nCould not read DWD Data.").arg(ex.what()), FUNC_ID);
 	}
 }
 
