@@ -84,6 +84,7 @@ public:
 
 
 	void addLanguageAction(const QString &langId, const QString &actionCaption) ;
+
 protected:
 	/*! Override resize event. */
 	void resizeEvent(QResizeEvent* event) override;
@@ -141,6 +142,9 @@ private:
 
 	/*! Updates the Ui. */
 	void updateUi();
+
+	/*! Pointer to progress Dialog. */
+	QProgressDialog *progressDialog();
 
 	Ui::MainWindow								*m_ui;
 

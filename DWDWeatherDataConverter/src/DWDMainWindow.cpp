@@ -91,7 +91,7 @@ public:
 
 		qApp->processEvents();
 		if(m_dlg->wasCanceled()){
-			throw IBK::Exception("Canceled", FUNC_ID);
+			throw IBK::Exception("Operation canceled by user", FUNC_ID);
 		}
 	}
 
@@ -172,9 +172,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	m_ui->comboBoxMode->setCurrentIndex(EM_EPW);
 	m_mode = EM_EPW;
 
-	m_progressDlg = new QProgressDialog(this);
-	m_progressDlg->setMinimumDuration(2000);
-	m_progressDlg->setModal(true);
 
 	connect( &m_dwdData, &DWDData::progress, this, &MainWindow::setProgress );
 	// connect( m_dwdTableModel, &DWDTableModel::dataChanged, this, &MainWindow::updateDownloadButton);
@@ -288,12 +285,8 @@ void MainWindow::updateLocalFileList() {
 
 void MainWindow::loadDataFromDWDServer(){
 
-	// Message
-	// show progress Dlg
-	m_progressDlg->show();
 	//download all files
 	DWDDescriptonData  descData;
-
 	// get download links for data
 	QStringList urls = descData.downloadDescriptionFiles(false);
 
@@ -325,6 +318,7 @@ void MainWindow::loadDataFromDWDServer(){
 	}
 
 	if (doDownload) {
+		progressDialog()->show();
 		IBK::IBK_Message("Downloading weather location meta data from DWD Server.", IBK::MSG_PROGRESS);
 
 		// initiate download manager
@@ -332,9 +326,8 @@ void MainWindow::loadDataFromDWDServer(){
 		m_manager->setFilepath(m_downloadDir);
 
 		m_manager->m_urls = urls;
-		m_manager->m_progressDlg = m_progressDlg; // bisschen quatsch
-		m_progressDlg->
-				connect( m_manager, &DWDDownloader::finished, this, &MainWindow::convertDwdData );
+		m_manager->m_progressDlg = progressDialog(); // bisschen quatsch
+		connect( m_manager, &DWDDownloader::finished, this, &MainWindow::convertDwdData );
 
 		m_manager->execute(); // simply registers network requests
 	}
@@ -364,16 +357,14 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 
 	if ( exportEPW ) {
 		if(!m_exportPath.isValid()) {
-			m_progressDlg->hide();
+			progressDialog()->hide();
 			QMessageBox::warning(this, "Select EPW file path.", "Please select a file path first for the export of the EPW - file.");
 			return;
 		}
 	}
 
-	m_progressDlg->show();
-	m_progressDlg->setLabelText("Downloading DWD Data.");
-	m_progressDlg->setValue(0);
-	m_progressDlg->setMaximum(0);
+	progressDialog()->setLabelText("Downloading DWD Data.");
+	qApp->processEvents();
 
 	//check longitude and latitude
 	if(m_ui->lineEditLatitude->text().isEmpty()){
@@ -429,7 +420,7 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 
 
 	if(dataInRows == std::vector<int>(DWDDescriptonData::NUM_D,-1)){
-		m_progressDlg->hide();
+		progressDialog()->hide();
 		QMessageBox::information(this, "Download Error.", "Download aborted. Please select at least one climate entry e.g. temperature, radiation, ... ");
 		setGUIState(true);
 		return;
@@ -445,7 +436,7 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 
 	m_manager = new DWDDownloader(this);
 	m_manager->setFilepath(m_downloadDir);
-	m_manager->m_progressDlg = m_progressDlg;
+	m_manager->m_progressDlg = progressDialog();
 	m_manager->m_urls.clear();
 
 	//connect( m_manager, &DWDDownloader::finished, this, &MainWindow::convertDwdData );
@@ -573,9 +564,17 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 			case DWDData::DT_WindDirection:		cat = "Wind";									break;
 			case DWDData::DT_Pressure:			cat = "Pressure";								break;
 			case DWDData::DT_Precipitation:		cat = "Precipitation";							break;
+			case DWDData::DT_RelativeHumidity:
+			case DWDData::DT_RadiationLongWave:
+			case DWDData::DT_RadiationGlobal:
+			case DWDData::DT_ZenithAngle:
+			case DWDData::DT_SunElevation:
+			case DWDData::DT_WindSpeed:
+			case DWDData::NUM_DT:
+				break;
 			}
 			QMessageBox::warning(this, QString(), QString("Download of file '%1' was not successful. Category: '%2'").arg(filenames[i]+".zip").arg(cat));
-			m_progressDlg->hide();
+			progressDialog()->hide();
 			return;
 		}
 		else
@@ -632,17 +631,16 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 		}
 	}
 
-	ProgressNotify progressNotify(m_progressDlg);
+	ProgressNotify progressNotify(progressDialog());
 	try {
 		if (!exportEPW) {
 		//read data
-		m_dwdData.m_startTime = DWDConversions::convertQDate2IBKTime(m_ui->dateEditStart->date());
-		m_dwdData.m_progressDlg = m_progressDlg;
-		m_dwdData.createData(&progressNotify, filenamesForReading);
+			m_dwdData.m_startTime = DWDConversions::convertQDate2IBKTime(m_ui->dateEditStart->date());
+			m_dwdData.m_progressDlg = progressDialog();
+			m_dwdData.createData(&progressNotify, filenamesForReading);
 		}
 	} catch(IBK::Exception &ex) {
-		throw IBK::Exception("Could not create DWD Data.", FUNC_ID);
-		return;
+		throw IBK::Exception(IBK::FormatString("%1\nCould not create DWD Data.").arg(ex.what()), FUNC_ID);
 	}
 
 	//copy all data in range and create an epw
@@ -756,7 +754,7 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 		start.setTimeSpec(Qt::UTC);
 		end.setTimeSpec(Qt::UTC);
 
-		m_progressDlg->setLabelText("Updating plot charts");
+		progressDialog()->setLabelText("Updating plot charts");
 		// Updating plots
 		for ( size_t i=0; i<m_dwdData.m_data.size(); ++i ) {
 			size_t time = i*3600*1000;
@@ -816,7 +814,7 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 	updateUi();
 
 	if (exportEPW) {
-		m_progressDlg->hide();
+		progressDialog()->hide();
 		switch (m_mode) {
 
 		case EM_EPW: {
@@ -865,7 +863,7 @@ void MainWindow::convertDwdData() {
 	}
 	catch (IBK::Exception &ex) {
 		IBK::IBK_Message("Error converting data.", IBK::MSG_ERROR);
-		m_progressDlg->hide();
+		progressDialog()->hide();
 	}
 
 	calculateDistances();
@@ -942,8 +940,6 @@ void MainWindow::convertDwdData() {
 	m_ui->plotTemp->setContentsMargins(maxAxisWidth-m_ui->plotTemp->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
 	m_ui->plotWind->setContentsMargins(maxAxisWidth-m_ui->plotWind->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
 	m_ui->plotRad->setContentsMargins(maxAxisWidth-m_ui->plotRad->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
-
-	m_progressDlg->hide();
 }
 
 void MainWindow::onActionSwitchLanguage() {
@@ -1028,7 +1024,7 @@ void MainWindow::on_pushButtonDownload_clicked(){
 		formatPlots();
 	}
 	catch (IBK::Exception &ex) {
-		m_progressDlg->hide();
+		progressDialog()->hide();
 		QMessageBox::warning(this, tr("Error reading DWD Data."),
 							 tr("Could not read DWD Data. See Error below.\n%1").arg(QString::fromStdString(ex.what())));
 
@@ -1234,14 +1230,13 @@ void MainWindow::on_pushButtonMap_clicked() {
 	//	emit m_dwdTableModel->dataChanged(top, bottom); // we just update the whole column
 
 	m_dwdTableModel->reset();
-
 }
 
 
 void MainWindow::setProgress(int min, int max, int val) {
 	//	FUNCID(setProgress);
 
-	m_progressDlg->setMaximum(val);
+	progressDialog()->setMaximum(val);
 
 	m_dwdTableModel->reset();
 }
@@ -1267,11 +1262,18 @@ void MainWindow::on_horizontalSliderDistance_valueChanged(int value) {
 }
 
 void MainWindow::on_pushButtonPreview_clicked() {
-	setGUIState(false);
-	downloadData(true, false);
-	setGUIState(true);
-	// update formatting
-	formatPlots();
+	try {
+		setGUIState(false);
+		downloadData(true, false);
+		setGUIState(true);
+		// update formatting
+		formatPlots();
+	}
+	catch (IBK::Exception &ex) {
+		QMessageBox::warning(this, tr("Error in data download"), tr("Could not download data. See Error below\n%1").arg(ex.what()));
+		setGUIState(true);
+		return;
+	}
 }
 
 
@@ -1358,6 +1360,19 @@ void MainWindow::on_toolButtonHelp_clicked() {
 
 void MainWindow::updateUi() {
 	m_ui->pushButtonDownload->setEnabled(m_validData);
+}
+
+QProgressDialog *MainWindow::progressDialog() {
+	if(m_progressDlg == nullptr) {
+		m_progressDlg = new QProgressDialog(this);
+		m_progressDlg->setMinimumDuration(0);
+		m_progressDlg->setMinimumWidth(700);
+		m_progressDlg->setModal(true);
+		m_progressDlg->setValue(0);
+		m_progressDlg->setMaximum(0);
+	}
+
+	return m_progressDlg;
 }
 
 void MainWindow::closeEvent(QCloseEvent *event) {
