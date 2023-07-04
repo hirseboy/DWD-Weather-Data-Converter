@@ -44,6 +44,8 @@ void DWDDelegate::paint( QPainter * painter, const QStyleOptionViewItem & option
 	DWDDescriptonData::DWDDataType dataType = (DWDDescriptonData::DWDDataType)index.data(Qt::UserRole).toInt();
 
 	QColor color = DWDDescriptonData::color(dataType);
+
+
 	if(state == Qt::Checked)//we need this to show selection
 		painter->fillRect( option.rect, QBrush(color) );
 	else {
