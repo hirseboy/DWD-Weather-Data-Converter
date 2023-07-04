@@ -32,6 +32,5 @@ bool DWDSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex 
 }
 
 bool DWDSortFilterProxyModel::dateInRange(QDate minDate, QDate maxDate) const {
-
 	return (!m_minDate.isValid() || minDate < m_minDate) && (!m_maxDate.isValid() || maxDate > m_maxDate);
 }
