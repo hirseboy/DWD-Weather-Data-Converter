@@ -7,12 +7,12 @@ UsePreviousGroup=false
 InternalCompressLevel=ultra
 
 AppName=DWDWeatherDataConverter 64-Bit
-AppVerName=DWDWeatherDataConverter 0.9 64-Bit
+AppVerName=DWDWeatherDataConverter 1.0 64-Bit
 AppVersion=0.99
-DefaultDirName={pf}\IBK\DWDWeatherDataConverter 0.9
-DefaultGroupName=IBK\DWDWeatherDataConverter 0.9 64-Bit
+DefaultDirName={pf}\IBK\DWDWeatherDataConverter 1.0
+DefaultGroupName=IBK\DWDWeatherDataConverter 1.0 64-Bit
 OutputBaseFilename=DWDWeatherDataConverter_win64
-VersionInfoVersion=0.9.9
+VersionInfoVersion=1.0.0
 VersionInfoDescription=DWDWeatherDataConverter 64-Bit
 UninstallDisplayIcon=DWDWeatherDataConverter\DWDWeatherDataConverter.exe
 
