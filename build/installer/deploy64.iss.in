@@ -63,12 +63,12 @@ Name: {app}; Type: filesandordirs
 Name: {app}; Type: filesandordirs
 
 [Icons]
-Name: {group}\DWDWeatherDataConverter 0.9 64-Bit; Filename: {app}\DWDWeatherDataConverter.exe; WorkingDir: {app}; IconIndex: 0; Flags: runmaximized
-;Name: {group}\DWDWeatherDataConverter 0.9 64-Bit Online Benutzerhandbuch (deutsch); Filename: "https://bauklimatik-dresden.de/DWDWeatherDataConverter/documentation.php"
+Name: {group}\DWDWeatherDataConverter 1.0 64-Bit; Filename: {app}\DWDWeatherDataConverter.exe; WorkingDir: {app}; IconIndex: 0; Flags: runmaximized
+;Name: {group}\DWDWeatherDataConverter 1.0 64-Bit Online Benutzerhandbuch (deutsch); Filename: "https://bauklimatik-dresden.de/DWDWeatherDataConverter/documentation.php"
 
 [Run]
-Filename: {app}\DWDWeatherDataConverter.exe; WorkingDir: {app}; Flags: postinstall unchecked; Description: "Starte DWDWeatherDataConverter 0.9"; Languages: Deutsch
-Filename: {app}\DWDWeatherDataConverter.exe; WorkingDir: {app}; Flags: postinstall unchecked; Description: "Run DWDWeatherDataConverter 0.9"; Languages: English
+Filename: {app}\DWDWeatherDataConverter.exe; WorkingDir: {app}; Flags: postinstall unchecked; Description: "Starte DWDWeatherDataConverter 1.0"; Languages: Deutsch
+Filename: {app}\DWDWeatherDataConverter.exe; WorkingDir: {app}; Flags: postinstall unchecked; Description: "Run DWDWeatherDataConverter 1.0"; Languages: English
 
 [Registry]
 Root: HKCR; Subkey: .vicus; ValueType: string; ValueData: DWDWeatherDataConverter.Project; Flags: uninsdeletekey deletekey
