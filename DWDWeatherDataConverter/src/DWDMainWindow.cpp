@@ -778,13 +778,13 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 		}
 
 		// give some points to the curve
-		curveTemp->setSamples(pointsTemp);
-		curveRelHum->setSamples(pointsRelHum);
-		curveRad->setSamples(pointsRad);
-		curveRadDiff->setSamples(pointsRadDiff);
-		curveWind->setSamples(pointsWind);
-		curvePressure->setSamples(pointsPressure);
-		curvePrecipitation->setSamples(pointsPrecipitation);
+		if (m_ui->plotTemp->isEnabled()) curveTemp->setSamples(pointsTemp);
+		if (m_ui->plotRelHum->isEnabled()) curveRelHum->setSamples(pointsRelHum);
+		if (m_ui->plotRad->isEnabled()) curveRad->setSamples(pointsRad);
+		if (m_ui->plotRad->isEnabled()) curveRadDiff->setSamples(pointsRadDiff);
+		if (m_ui->plotWind->isEnabled()) curveWind->setSamples(pointsWind);
+		if (m_ui->plotPres->isEnabled()) curvePressure->setSamples(pointsPressure);
+		if (m_ui->plotRain->isEnabled()) curvePrecipitation->setSamples(pointsPrecipitation);
 
 		// set the curve in the plot
 		curveRelHum->attach(m_ui->plotRelHum);
