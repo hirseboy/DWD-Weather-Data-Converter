@@ -35,20 +35,14 @@ jobs:
       run: |
         # Replace placeholders in .iss.in file. 
         copy ${{github.workspace}}\build\installer\deploy64.iss.in ${{github.workspace}}\build\installer\deploy64.iss
-        (Get-Content ${{github.workspace}}\build\installer\deploy64.iss) ` 
-        -replace "\$\{Version\}", "${{env.VERSION}}" ` 
-        | Set-Content ${{github.workspace}}\build\installer\deploy64.iss 
-        (Get-Content ${{github.workspace}}\build\installer\deploy64.iss) ` 
-        -replace "\$\{LongVersion\}", "${{env.LONG_VERSION}}" ` 
-        | Set-Content ${{github.workspace}}\build\installer\deploy64.iss
-        (Get-Content ${{github.workspace}}\build\installer\deploy64.iss) ` 
-        -replace "\$\{CurrentYear\}", "${{env.CURRENT_YEAR}}" ` 
-        | Set-Content ${{github.workspace}}\build\installer\deploy64.iss
-        (Get-Content ${{github.workspace}}\build\installer\deploy64.iss) ` 
-        -replace "\$\{OutputFileBasename\}", "${{env.FILE_BASENAME}}" ` 
-        | Set-Content ${{github.workspace}}\build\installer\deploy64.iss
+        $content = Get-Content ${{github.workspace}}\build\installer\deploy64.iss 
+        $content = $content -replace "\$\{Version\}", "${{env.VERSION}}"
+        $content = $content -replace "\$\{LongVersion\}", "${{env.LONG_VERSION}}" 
+        $content = $content -replace "\$\{CurrentYear\}", "${{env.CURRENT_YEAR}}" 
+        $content = $content -replace "\$\{OutputFileBasename\}", "${{env.FILE_BASENAME}}"
+        $content | Set-Content ${{github.workspace}}\build\installer\deploy64.iss
       shell: powershell
-      
+
     - name: Print iss
       run: type ${{github.workspace}}\build\installer\deploy64.iss
       shell: cmd
