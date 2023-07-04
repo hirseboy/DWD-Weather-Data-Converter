@@ -18,8 +18,11 @@ Just go to '/build/cmake' and call under windows: 'build_x64_with_pause.bat' or 
 
 # Status
 
-Windows: [![CMake](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake_windows.yml)
-Linux:  [![CMake](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake.yml/badge.svg)](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake.yml)
+| Test | Result|
+|-----|-----|
+| CI - Linux 64-bit (Ubuntu 20.04.3 LTS; Qt 5.12.9) |  [![CMake](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake.yml/badge.svg)](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake.yml)   |
+| CI - Windows 64-bit (Win10, VC 2019, Qt 5.15.2) | [![CMake](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake_windows.yml/badge.svg)](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake_windows.yml) |
+| CI - MacOS 64-bit (10.11 "El Capitan", Qt 5.11.3) | _currently no action_ |
 
 # Screenshots
 
