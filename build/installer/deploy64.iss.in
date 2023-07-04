@@ -7,12 +7,12 @@ UsePreviousGroup=false
 InternalCompressLevel=ultra
 
 AppName=DWDWeatherDataConverter 64-Bit
-AppVerName=DWDWeatherDataConverter 1.0 64-Bit
-AppVersion=0.99
-DefaultDirName={pf}\IBK\DWDWeatherDataConverter 1.0
-DefaultGroupName=IBK\DWDWeatherDataConverter 1.0 64-Bit
-OutputBaseFilename=DWDWeatherDataConverter_win64
-VersionInfoVersion=1.0.0
+AppVerName=DWDWeatherDataConverter ${Version} 64-Bit
+AppVersion=${LongVersion}
+DefaultDirName={pf}\IBK\DWDWeatherDataConverter ${Version}
+DefaultGroupName=IBK\DWDWeatherDataConverter ${Version} 64-Bit
+OutputBaseFilename=${OutputFileBasename}
+VersionInfoVersion=${LongVersion}
 VersionInfoDescription=DWDWeatherDataConverter 64-Bit
 UninstallDisplayIcon=DWDWeatherDataConverter\DWDWeatherDataConverter.exe
 
@@ -21,8 +21,8 @@ AppPublisherURL=https://www.bauklimatik-dresden.de
 AppSupportURL=https://www.bauklimatik-dresden.de/schulungen.php
 AppUpdatesURL=https://www.bauklimatik-dresden.de/downloads.php
 VersionInfoCompany=Bauklimatik Dresden Software GmbH
-VersionInfoCopyright=2023 Bauklimatik Dresden Software GmbH
-AppCopyright=2023 Bauklimatik Dresden Software GmbH
+VersionInfoCopyright=${CurrentYear} Bauklimatik Dresden Software GmbH
+AppCopyright=${CurrentYear} Bauklimatik Dresden Software GmbH
 ArchitecturesInstallIn64BitMode=x64
 
 
@@ -63,12 +63,12 @@ Name: {app}; Type: filesandordirs
 Name: {app}; Type: filesandordirs
 
 [Icons]
-Name: {group}\DWDWeatherDataConverter 1.0 64-Bit; Filename: {app}\DWDWeatherDataConverter.exe; WorkingDir: {app}; IconIndex: 0; Flags: runmaximized
-;Name: {group}\DWDWeatherDataConverter 1.0 64-Bit Online Benutzerhandbuch (deutsch); Filename: "https://bauklimatik-dresden.de/DWDWeatherDataConverter/documentation.php"
+Name: {group}\DWDWeatherDataConverter ${Version} 64-Bit; Filename: {app}\DWDWeatherDataConverter.exe; WorkingDir: {app}; IconIndex: 0; Flags: runmaximized
+;Name: {group}\DWDWeatherDataConverter ${Version} 64-Bit Online Benutzerhandbuch (deutsch); Filename: "https://bauklimatik-dresden.de/DWDWeatherDataConverter/documentation.php"
 
 [Run]
-Filename: {app}\DWDWeatherDataConverter.exe; WorkingDir: {app}; Flags: postinstall unchecked; Description: "Starte DWDWeatherDataConverter 1.0"; Languages: Deutsch
-Filename: {app}\DWDWeatherDataConverter.exe; WorkingDir: {app}; Flags: postinstall unchecked; Description: "Run DWDWeatherDataConverter 1.0"; Languages: English
+Filename: {app}\DWDWeatherDataConverter.exe; WorkingDir: {app}; Flags: postinstall unchecked; Description: "Starte DWDWeatherDataConverter ${Version}"; Languages: Deutsch
+Filename: {app}\DWDWeatherDataConverter.exe; WorkingDir: {app}; Flags: postinstall unchecked; Description: "Run DWDWeatherDataConverter ${Version}"; Languages: English
 
 [Registry]
 Root: HKCR; Subkey: .vicus; ValueType: string; ValueData: DWDWeatherDataConverter.Project; Flags: uninsdeletekey deletekey
