@@ -63,11 +63,11 @@ void MetaDataEditWidget::updateUi() {
 	ui->tableWidgetProperties->setItem(4,0, item);
 
 	item = new QTableWidgetItem(QString("%L1").arg(m_ccm->m_longitudeInDegree));
-	item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsSelectable );
+	item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
 	ui->tableWidgetProperties->setItem(5,0, item);
 
 	item = new QTableWidgetItem(QString("%L1").arg(m_ccm->m_latitudeInDegree));
-	item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsSelectable);
+	item->setFlags( Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsEditable);
 	ui->tableWidgetProperties->setItem(6,0, item);
 
 	QString timeZone = QString("%1").arg(m_ccm->m_timeZone);

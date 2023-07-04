@@ -1377,7 +1377,7 @@ void MainWindow::updateUi() {
 QProgressDialog *MainWindow::progressDialog() {
 	if(m_progressDlg == nullptr) {
 		m_progressDlg = new QProgressDialog(this);
-		m_progressDlg->setMinimumWidth(700);
+		m_progressDlg->setMinimumWidth(800);
 		m_progressDlg->setModal(true);
 		m_progressDlg->setValue(0);
 		m_progressDlg->setMaximum(0);
