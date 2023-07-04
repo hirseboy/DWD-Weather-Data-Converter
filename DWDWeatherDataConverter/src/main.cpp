@@ -91,8 +91,9 @@ int main(int argc, char* argv[]) {
 		MainWindow w;
 		// add user settings related window resize at program start
 		w.showMaximized();
-		// we set the data to the tableWidget
 		w.loadDataFromDWDServer();
+		w.activateWindow(); // set the focus
+		// we set the data to the tableWidget
 
 		// start event loop
 		res = a.exec();
