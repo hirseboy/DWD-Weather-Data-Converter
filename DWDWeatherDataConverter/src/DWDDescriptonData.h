@@ -58,6 +58,9 @@ public:
 	/*! Calculate Min and Max Date from all 4 Boundary Conditions ( AirTemp, Pressure, Solar Rad, wind) */
 	void calculateMinMaxDate();
 
+	/*! Resets checked data. */
+	void resetCheckedData();
+
 	static QColor color(const DWDDataType &dt);
 
 	/*! Station id. */

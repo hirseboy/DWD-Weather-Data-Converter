@@ -67,6 +67,12 @@ void DWDDescriptonData::calculateMinMaxDate() {
 	}
 }
 
+void DWDDescriptonData::resetCheckedData() {
+	for (unsigned int i=0; i<NUM_D; ++i) {
+		m_data[i].m_isChecked = false;
+	}
+}
+
 QColor DWDDescriptonData::color(const DWDDataType & dt) {
 
 	/*! Map with colors of data. */
