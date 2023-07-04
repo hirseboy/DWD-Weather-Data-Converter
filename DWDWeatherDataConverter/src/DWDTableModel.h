@@ -45,12 +45,14 @@ public:
 	/*! Performs a model reset. */
 	void reset();
 
+	/*! Unchecks all current selected data. */
+	void uncheckData();
+
 	/*! Description input of all stations.
 		Map Cointainging all necessairy data about the weather station
 		key of map is station id
 	*/
 	std::vector<DWDDescriptonData>				*m_descData = nullptr;
-
 	QSortFilterProxyModel						*m_proxyModel = nullptr;
 
 

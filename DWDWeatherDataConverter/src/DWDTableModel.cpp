@@ -91,6 +91,7 @@ QVariant DWDTableModel::data(const QModelIndex & index, int role) const {
 					else
 						return dwdData.m_data[dataType].m_isChecked ? Qt::Checked : Qt::Unchecked;
 			}
+		break;
 		case Qt::FontRole :
 			// vars with INVALID valueRef -> grey italic
 			//      with valid value -> black, bold
@@ -205,8 +206,6 @@ bool DWDTableModel::setData(const QModelIndex & index, const QVariant & value, i
 
 	DWDDescriptonData &checkBox = (*m_descData)[index.row()];
 
-	QModelIndex uncheckedIndex;
-
 	if (role == Qt::CheckStateRole)	{
 		if ((Qt::CheckState)value.toInt() == Qt::Checked) {
 			//	user has checked item
@@ -227,7 +226,6 @@ bool DWDTableModel::setData(const QModelIndex & index, const QVariant & value, i
 		}
 		else {
 			checkBox.m_data[dataType].m_isChecked = false; //user has unchecked item
-
 		}
 		emit dataChanged(index, index);
 
@@ -274,4 +272,15 @@ Qt::ItemFlags DWDTableModel::flags(const QModelIndex & index) const {
 void DWDTableModel::reset() {
 	beginResetModel();
 	endResetModel();
+}
+
+void DWDTableModel::uncheckData() {
+	if (m_descData == nullptr)
+		return;
+
+	for (DWDDescriptonData &data : *m_descData) {
+		data.resetCheckedData();
+	}
+
+	reset();
 }
