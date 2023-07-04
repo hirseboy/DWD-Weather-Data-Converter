@@ -98,8 +98,6 @@ void DWDData::addDataLine(std::string &line, const std::set<DataType> &dataType)
 					|| dataType.find(DT_RadiationLongWave) != dataType.end() || dataType.find(DT_ZenithAngle) != dataType.end() )
 				idx = 8;
 
-			unsigned int stationId = IBK::string2val<unsigned int>(data[0]);		//not used yet
-
 			//get timepoint
 			std::string& s = data[idx];
 			unsigned int year	= IBK::string2val<unsigned int>(s.substr(0,4));
@@ -120,7 +118,6 @@ void DWDData::addDataLine(std::string &line, const std::set<DataType> &dataType)
 
 	//shift all data because startpoint is later
 	unsigned int newTimepointStart = static_cast<unsigned int>(timepointStart);
-	unsigned int newTimepointEnd = static_cast<unsigned int>(timepointEnd);
 	if(timepointStart<0 || timepointEnd > 0){
 		return; // data should not be added
 		//adjust start date
@@ -154,7 +151,7 @@ void DWDData::addDataLine(std::string &line, const std::set<DataType> &dataType)
 	//get timepoint
 }
 
-void DWDData::writeTSV(unsigned int year){
+void DWDData::writeTSV() {
 	//first find the start timepoint
 	if(m_data.empty())
 		return; // no data :(
@@ -337,6 +334,9 @@ QString DWDData::urlFilename(const DWDData::DataType &type, const QString &numbe
 		case DT_RadiationLongWave:
 		case DT_ZenithAngle:
 			return base + "solar/" + "stundenwerte_ST_" + numberString + "_row.zip";
+		case DT_SunElevation:
+		case NUM_DT:
+			return "";
 		}
 
 	} else {
@@ -365,10 +365,19 @@ QString DWDData::urlFilename(const DWDData::DataType &type, const QString &numbe
 			//			case DT_RadiationLongWave:
 			//			case DT_ZenithAngle:
 			//				baseSearch = base + "solar/";
+		case DT_RadiationLongWave:
+		case DT_RadiationDiffuse:
+		case DT_RadiationGlobal:
+		case DT_ZenithAngle:
+		case DT_SunElevation:
+		case DT_Precipitation:
+		case NUM_DT:
+			break;
 		}
 		return baseSearch + rec2 + filename;
-
 	}
+
+	return ""; // make compiler happy
 }
 
 QString DWDData::filename(const DWDData::DataType &type, const QString &numberString, const std::string &dateString, bool isRecent) const{
@@ -399,7 +408,12 @@ QString DWDData::filename(const DWDData::DataType &type, const QString &numberSt
 	case DT_RadiationLongWave:
 	case DT_ZenithAngle:
 		return "stundenwerte_ST_" + numberString + "_row";
+	case DT_SunElevation:
+	case NUM_DT:
+		return "";
 	}
+
+	return ""; // make compiler happy
 }
 
 void DWDData::findFile(const QUrlInfo &url) {
@@ -419,6 +433,9 @@ unsigned int DWDData::getColumnDWD(const DataType &dt){
 	case DT_WindDirection:					return 4;
 	case DT_Pressure:						return 4;
 	case DT_Precipitation:					return 3;
+	case DT_SunElevation:
+	case NUM_DT:
+		break;
 	}
 	return 0;
 }

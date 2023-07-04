@@ -57,7 +57,9 @@ public:
 				case DT_WindSpeed:							m_windSpeed= val;		break;
 				case DT_Pressure:							m_pressure= val;		break;
 				case DT_Precipitation:						m_precipitation= val;	break;
-
+				case DT_SunElevation:
+				case NUM_DT:
+					break;
 			}
 		}
 
@@ -74,6 +76,10 @@ public:
 				case DT_Pressure:							return m_pressure;		break;
 				case DT_Precipitation:						return m_precipitation;	break;
 
+				case DT_SunElevation:
+				case NUM_DT:
+					return -999;
+				break;
 			}
 		}
 
@@ -100,7 +106,7 @@ public:
 	void addDataLine(std::string &line, const std::set<DataType> &dataType);
 
 	/*! Create a tsv-file for one year. */
-	void writeTSV(unsigned int year);
+	void writeTSV();
 
 	/*! Create an epw-file for one year. */
 	void exportEPW(CCM::ClimateDataLoader &loader, double latitudeDeg, double longitudeDeg, IBK::Path &exportPath);
