@@ -1,6 +1,6 @@
 # DWD Weather Data Converter
 
-![DWDWeatherDataConverterSplash](https://github.com/hirseboy/DWD-Weather-Data-Converter/assets/58851829/32f764e2-9d3d-4c91-82ea-d8a4713b41fe)
+![grafik](https://github.com/hirseboy/DWD-Weather-Data-Converter/assets/58851829/453ab876-abd7-498d-934b-c952ebbf1b61)
 
 This repository holds all data concerning the weather data converter for converting weather data from the German Weather Service (DWD) [https://www.dwd.de/DE/Home/home_node.html].
 
