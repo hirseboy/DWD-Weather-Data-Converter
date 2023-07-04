@@ -36,6 +36,7 @@ jobs:
         # Replace placeholders in .iss.in file. 
         (Get-Content ${{github.workspace}}\build\installer\deploy64.iss.in) `
         -replace "\$\{Version\}", "${{env.VERSION}}" `
+        -replace "\$\{LongVersion\}", "${{env.LONG_VERSION}}" ` 
         | Set-Content ${{github.workspace}}\build\installer\deploy64.iss
       shell: powershell
       
