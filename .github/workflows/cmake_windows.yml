@@ -19,8 +19,18 @@ env:
 jobs:
   build:
     runs-on: windows-latest
-
+    
     steps:
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y_%m_%d')"
+    - name: Checkout code
+      uses: actions/checkout@v2
+    - name: Build
+      run: echo "Building..."
+    - name: Show current date
+      run: echo "The current date is ${{ steps.date.outputs.date }}"
+
     - uses: actions/checkout@v3
     
     - name: Create Directory
@@ -94,7 +104,7 @@ jobs:
     - name: Upload Installer as Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: ${{env.FILE_BASENAME}}
+        name: "${{env.FILE_BASENAME}}_${{ steps.date.outputs.date }}"
         path: ${{github.workspace}}\build\installer\DWDWeatherDataConverter_win64.exe # Ersetzen Sie dies durch den Pfad zu Ihrer Installer-Datei
 
 
