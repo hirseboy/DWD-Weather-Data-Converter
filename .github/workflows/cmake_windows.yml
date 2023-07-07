@@ -125,6 +125,7 @@ jobs:
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
       with:
+        token: ${{ secrets.GH_RELEASE }}
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ${{github.workspace}}\build\installer\${{ steps.date.outputs.date }}_DWDWeatherDataConverter_win64.exe
         tag: nightly
