@@ -29,7 +29,6 @@ public:
 
 		DWDDataManager(){}
 
-
 		DWDDataManager(bool isAvailable, bool isChecked, bool isLocal) :
 			m_isAvailable(isAvailable),
 			m_isChecked(isChecked),

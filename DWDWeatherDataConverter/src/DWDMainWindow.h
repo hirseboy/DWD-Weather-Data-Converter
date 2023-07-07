@@ -197,6 +197,9 @@ private:
 	/*! Indicates if there is currently valid data. */
 	bool										m_validData = false;
 
+	/*! Current selected location. */
+	QString										m_currentLocation[DWDDescriptonData::NUM_D];
+
 	/*! Close event. */
 	void closeEvent(QCloseEvent *event) override;
 };

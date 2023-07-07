@@ -388,6 +388,9 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 			if (isChecked) {
 				dataInRows[j] = i;
 
+				// Set current location name
+				m_currentLocation[j] = QString::fromStdString(dwdData.m_name);
+
 				switch (j) {
 				case DWDDescriptonData::D_TemperatureAndHumidity:
 					m_ui->plotRelHum->setEnabled(isChecked);
@@ -1075,6 +1078,36 @@ void MainWindow::formatPlots(bool init) {
 	formatQwtPlot(init, *m_ui->plotRain, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Precipitation", "mm", 0, 50, 10, false);
 	formatQwtPlot(init, *m_ui->plotWind, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Wind speed", "m/s", 0, 100, 20, false);
 	formatQwtPlot(init, *m_ui->plotRelHum, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Relative Humidity", "%", 0, 100, 20, false);
+
+	if (m_ui->plotTemp->isEnabled())
+		m_ui->plotTemp->setTitle(QString("%1 - %2")
+							 .arg(m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity])
+							 .arg(m_ui->plotTemp->title().text()));
+
+	if (m_ui->plotRelHum->isEnabled())
+		m_ui->plotRelHum->setTitle(QString("%1 - %2")
+							 .arg(m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity])
+							 .arg(m_ui->plotRelHum->title().text()));
+
+	if (m_ui->plotPres->isEnabled())
+		m_ui->plotPres->setTitle(QString("%1 - %2")
+							 .arg(m_currentLocation[DWDDescriptonData::D_Pressure])
+							 .arg(m_ui->plotPres->title().text()));
+
+	if (m_ui->plotRad->isEnabled())
+		m_ui->plotRad->setTitle(QString("%1 - %2")
+							 .arg(m_currentLocation[DWDDescriptonData::D_Solar])
+							 .arg(m_ui->plotRad->title().text()));
+
+	if (m_ui->plotRain->isEnabled())
+		m_ui->plotRain->setTitle(QString("%1 - %2")
+							 .arg(m_currentLocation[DWDDescriptonData::D_Precipitation])
+							 .arg(m_ui->plotRain->title().text()));
+
+	if (m_ui->plotWind->isEnabled())
+		m_ui->plotWind->setTitle(QString("%1 - %2")
+							 .arg(m_currentLocation[DWDDescriptonData::D_Wind])
+							 .arg(m_ui->plotWind->title().text()));
 }
 
 void MainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDate endDate, QString title, QString leftYAxisTitle, double yLeftMin, double yLeftMax, double yLeftStepSize,
