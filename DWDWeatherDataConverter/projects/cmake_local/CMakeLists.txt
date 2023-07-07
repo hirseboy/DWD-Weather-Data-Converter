@@ -46,6 +46,11 @@ set( APP_QRCS
 	${PROJECT_SOURCE_DIR}/../../resources/style/style.qrc
 )
 
+# set rc file
+set ( APP_WIN_RC
+	${PROJECT_SOURCE_DIR}/../../resources/DWDWeatherDataConverter.rc
+)
+
 # run uic and moc compilers, add resources
 qt5_add_resources( APP_RC_SRCS ${APP_QRCS} )
 qt5_wrap_ui( APP_UI_SRCS ${APP_UIS} )
@@ -65,7 +70,7 @@ set ( QT_LIBRARIES
 # build application executable for the different platforms
 if( WIN32 )
 	add_executable( ${PROJECT_NAME} WIN32 
-		${APP_SRCS} ${APP_MOC_SRCS} ${APP_RC_SRCS} ${APP_UI_SRCS}
+		${APP_SRCS} ${APP_MOC_SRCS} ${APP_RC_SRCS} ${APP_UI_SRCS} ${APP_WIN_RC}
 	)
 	
 endif( WIN32 ) 
