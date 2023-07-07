@@ -37,7 +37,7 @@ jobs:
       with:
         repository: hirseboy/installer-scripts
         token: ${{ secrets.GH_TOKEN }} # `GH_PAT` is a secret that contains your PAT
-        path: ${{github.workspace}}       
+        path: ${{github.workspace}}\installer-scripts       
     
     - name: Create Directory
       run: mkdir ${{github.workspace}}\bin\release_x64
