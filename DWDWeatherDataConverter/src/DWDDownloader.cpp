@@ -70,6 +70,8 @@ bool DWDDownloader::isHttpRedirect(QNetworkReply *reply) {
 }
 
 void DWDDownloader::execute() {
+	m_progressDlg->show();
+
 	for (const QString &urlString : qAsConst(m_urls)) {
 		QUrl url = QUrl::fromEncoded(urlString.toLocal8Bit());
 		doDownload(url);
@@ -122,6 +124,7 @@ void DWDDownloader::downloadFinished(QNetworkReply *reply) {
 		// all downloads finished
 		emit finished();
 		m_isRunning = false;
+		m_progressDlg->hide();
 //		QCoreApplication::instance()->quit();
 	}
 }

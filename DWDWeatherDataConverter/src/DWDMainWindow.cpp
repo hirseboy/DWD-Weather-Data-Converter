@@ -837,8 +837,6 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 
 
 void MainWindow::convertDwdData() {
-	progressDialog()->show();
-
 	// read all decription files
 	DWDDescriptonData descData;
 	m_descData.clear();
@@ -865,7 +863,6 @@ void MainWindow::convertDwdData() {
 	}
 	catch (IBK::Exception &ex) {
 		IBK::IBK_Message("Error converting data.", IBK::MSG_ERROR);
-		progressDialog()->hide();
 	}
 
 	calculateDistances();
@@ -942,8 +939,6 @@ void MainWindow::convertDwdData() {
 	m_ui->plotTemp->setContentsMargins(maxAxisWidth-m_ui->plotTemp->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
 	m_ui->plotWind->setContentsMargins(maxAxisWidth-m_ui->plotWind->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
 	m_ui->plotRad->setContentsMargins(maxAxisWidth-m_ui->plotRad->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
-
-	progressDialog()->hide();
 }
 
 void MainWindow::onActionSwitchLanguage() {
