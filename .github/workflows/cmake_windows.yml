@@ -127,8 +127,8 @@ jobs:
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: ${{github.workspace}}\build\installer\${{ steps.date.outputs.date }}_DWDWeatherDataConverter_win64.exe
-        tag: ${{ github.ref }}
+        tag: nightly
         overwrite: true
-        body: "Release of DWD Weather Data Converter from ${{ steps.date.outputs.date }}"
+        body: "Nightly Release of DWD Weather Data Converter from ${{ steps.date.outputs.date }}"
 
 
