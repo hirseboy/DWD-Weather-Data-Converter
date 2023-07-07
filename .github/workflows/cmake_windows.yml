@@ -118,11 +118,15 @@ jobs:
         name: "${{env.FILE_BASENAME}}_${{ steps.date.outputs.date }}"
         path: ${{github.workspace}}\build\installer\DWDWeatherDataConverter_win64.exe # Ersetzen Sie dies durch den Pfad zu Ihrer Installer-Datei
     
+    - name: Rename installer
+      run: move "${{github.workspace}}\build\installer\DWDWeatherDataConverter_win64.exe" "${{github.workspace}}\build\installer\${{ steps.date.outputs.date }}_DWDWeatherDataConverter_win64.exe"
+      shell: cmd
+    
     - name: Upload binaries to release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{github.workspace}}\build\installer\DWDWeatherDataConverter_win64.exe
+        file: ${{github.workspace}}\build\installer\${{ steps.date.outputs.date }}_DWDWeatherDataConverter_win64.exe
         tag: ${{ github.ref }}
         overwrite: true
         body: "Release of DWD Weather Data Converter from ${{ steps.date.outputs.date }}"
