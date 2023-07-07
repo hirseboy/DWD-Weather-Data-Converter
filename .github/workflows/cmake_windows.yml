@@ -33,18 +33,30 @@ jobs:
 
     - uses: actions/checkout@v3
     
+    - name: Checkout private tools
+      uses: actions/checkout@v3
+      with:
+        repository: hirseboy/installer-scripts
+        token: ${{ secrets.GH_PAT }} # `GH_PAT` is a secret that contains your PAT
+        path: ${{github.workspace}}       
+    
     - name: Create Directory
       run: mkdir ${{github.workspace}}\bin\release_x64
       shell: cmd
       
+    - name: Create Directory
+      run: mkdir ${{github.workspace}}\build\installer
+      shell: cmd
+      
     - name: Print iss.in
-      run: type ${{github.workspace}}\build\installer\deploy64.iss.in
+      run: type ${{github.workspace}}\installer-scripts\DWDWeatherDataConverter\deploy64.iss.in
       shell: cmd
     
     - name: Prepare Inno Setup Script
       run: |
         # Replace placeholders in .iss.in file. 
-        copy ${{github.workspace}}\build\installer\deploy64.iss.in ${{github.workspace}}\build\installer\deploy64.iss
+        copy ${{github.workspace}}\installer-scripts\DWDWeatherDataConverter\deploy64.iss.in ${{github.workspace}}\build\installer\deploy64.iss
+        copy ${{github.workspace}}\installer-scripts\DWDWeatherDataConverter\VC19_x64 ${{github.workspace}}\build\installer\VC19_x64
         $content = Get-Content ${{github.workspace}}\build\installer\deploy64.iss 
         $content = $content -replace "\$\{Version\}", "${{env.VERSION}}"
         $content = $content -replace "\$\{LongVersion\}", "${{env.LONG_VERSION}}" 
