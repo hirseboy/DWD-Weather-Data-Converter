@@ -55,7 +55,7 @@ jobs:
       run: |
         # Replace placeholders in .iss.in file. 
         xcopy /E ${{github.workspace}}\installer-scripts\DWDWeatherDataConverter\ ${{github.workspace}}\build\installer\
-        $content = Get-Content ${{github.workspace}}\build\installer\deploy64.iss 
+        $content = Get-Content ${{github.workspace}}\build\installer\deploy64.iss.in 
         $content = $content -replace "\$\{Version\}", "${{env.VERSION}}"
         $content = $content -replace "\$\{LongVersion\}", "${{env.LONG_VERSION}}" 
         $content = $content -replace "\$\{CurrentYear\}", "${{env.CURRENT_YEAR}}" 
