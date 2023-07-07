@@ -54,8 +54,7 @@ jobs:
     - name: Prepare Inno Setup Script
       run: |
         # Replace placeholders in .iss.in file. 
-        copy ${{github.workspace}}\installer-scripts\DWDWeatherDataConverter\deploy64.iss.in ${{github.workspace}}\build\installer\deploy64.iss
-        xcopy /E ${{github.workspace}}\installer-scripts\DWDWeatherDataConverter\VC19_x64\ ${{github.workspace}}\build\installer\VC19_x64\
+        xcopy /E ${{github.workspace}}\installer-scripts\DWDWeatherDataConverter\ ${{github.workspace}}\build\installer\
         $content = Get-Content ${{github.workspace}}\build\installer\deploy64.iss 
         $content = $content -replace "\$\{Version\}", "${{env.VERSION}}"
         $content = $content -replace "\$\{LongVersion\}", "${{env.LONG_VERSION}}" 
