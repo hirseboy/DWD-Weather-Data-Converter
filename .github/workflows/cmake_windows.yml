@@ -15,7 +15,6 @@ env:
   FILE_BASENAME: "DWDWeatherDataConverter_Win64"
   INNOSETUP_VERSION: "6.2.0"
 
-
 jobs:
   build:
     runs-on: windows-latest
