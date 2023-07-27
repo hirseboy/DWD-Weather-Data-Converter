@@ -19,6 +19,11 @@ DWDLogWidget::~DWDLogWidget()
 	delete m_ui;
 }
 
+void DWDLogWidget::resizeEvent(QResizeEvent *event) {
+	QWidget::resizeEvent(event);
+	emit resized();
+}
+
 void DWDLogWidget::onMsgReceived(int type, QString msgString) {
 	// avoid empty lines between messages
 	if (msgString.endsWith('\n'))
