@@ -17,12 +17,16 @@
 
 #include <QDateTime>
 #include <QDebug>
+
+#include <qwt_plot.h>
+
 #include "DWDTimePlotPicker.h"
 
-DWDTimePlotPicker::DWDTimePlotPicker(int xAxis, int yAxis, QWidget * canvas) :
-	QwtPlotPicker(xAxis, yAxis, canvas)
-{
-}
+DWDTimePlotPicker::DWDTimePlotPicker(QWidget * canvas) :
+	QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft,
+				  QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOn,
+				  canvas)
+{}
 
 void DWDTimePlotPicker::setYUnit(const QString& unit) {
 	d_yUnit = unit;

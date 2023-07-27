@@ -28,7 +28,7 @@ class QwtPlotCanvas;
 class DWDTimePlotPicker : public QwtPlotPicker {
 	Q_OBJECT
 public:
-	DWDTimePlotPicker (int xAxis, int yAxis, QWidget * canvas);
+	DWDTimePlotPicker (QWidget * canvas);
 
 	void setYUnit(const QString& unit);
 	const QString & yUnit() const;
