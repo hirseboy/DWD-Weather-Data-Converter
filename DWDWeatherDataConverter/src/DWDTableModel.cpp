@@ -164,7 +164,7 @@ QVariant DWDTableModel::headerData(int section, Qt::Orientation orientation, int
 			<< tr("Minimum\nDate")
 			<< tr("Maximum\nDate")
 			<< tr("Temperature /\nHumidity")
-			<< tr("Short-wave\nradiation")
+			<< tr("Radiation")
 			<< tr("Wind Speed")
 			<< tr("Pressure")
 			<< tr("Precipitation");
