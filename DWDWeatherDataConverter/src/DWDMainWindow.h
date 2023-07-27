@@ -19,11 +19,14 @@
 #include "DWDData.h"
 #include "DWDTableModel.h"
 #include "DWDConversions.h"
+#include "DWDPlotZoomer.h"
 #include "MetaDataEditWidget.h"
 
 #include "QtExt_Directories.h"
 
 #include <qwt_plot.h>
+#include <qwt_plot_picker.h>
+#include <qwt_plot_zoomer.h>
 
 namespace Ui {
 class MainWindow;
@@ -37,6 +40,7 @@ class DWDMap;
 class DWDSortFilterProxyModel;
 class DWDProgressBar;
 class DWDLogWidget;
+
 
 class MainWindow : public QMainWindow
 {
@@ -101,6 +105,12 @@ private slots:
 	/*! Updates all distances. */
 	void onLocationDistances(double latitude, double longitude);
 
+	/*! Updates all plot hights when bottom splitter moved. */
+	void onLogWidgetResized();
+
+	/*! Update plot zoom. */
+	void onUpdatePlotZooming(const QRectF &rect);
+
 	/*! Updates the Maximum height of the plots, when the main window is beeing resized. */
 	void updateMaximumHeightOfPlots();
 
@@ -137,6 +147,8 @@ private slots:
 	void on_actionc6b_triggered();
 
 	void on_actionEPW_triggered();
+
+	void on_splitter_splitterMoved(int pos, int index);
 
 private:
 
@@ -199,6 +211,24 @@ private:
 
 	/*! Current selected location. */
 	QString										m_currentLocation[DWDDescriptonData::NUM_D];
+
+	/*! Plot picker. */
+	QwtPlotPicker								*m_plotPickerTemp = nullptr;
+	QwtPlotPicker								*m_plotPickerRelHum = nullptr;
+	QwtPlotPicker								*m_plotPickerPressure = nullptr;
+	QwtPlotPicker								*m_plotPickerRad = nullptr;
+	QwtPlotPicker								*m_plotPickerRain = nullptr;
+	QwtPlotPicker								*m_plotPickerLongWave = nullptr;
+	QwtPlotPicker								*m_plotPickerWind = nullptr;
+
+	/*! Plot zoomer. */
+	DWDPlotZoomer								*m_plotZoomerTemp = nullptr;
+	DWDPlotZoomer								*m_plotZoomerRelHum = nullptr;
+	DWDPlotZoomer								*m_plotZoomerPressure = nullptr;
+	DWDPlotZoomer								*m_plotZoomerRad = nullptr;
+	DWDPlotZoomer								*m_plotZoomerRain = nullptr;
+	DWDPlotZoomer								*m_plotZoomerLongWave = nullptr;
+	DWDPlotZoomer								*m_plotZoomerWind = nullptr;
 
 	/*! Close event. */
 	void closeEvent(QCloseEvent *event) override;

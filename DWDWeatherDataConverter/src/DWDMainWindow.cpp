@@ -45,6 +45,7 @@
 #include <qwt_date_scale_engine.h>
 #include <qwt_scale_div.h>
 #include "qwt_scale_widget.h"
+#include "qwt_plot_zoomer.h"
 
 
 #include <qftp.h>
@@ -62,9 +63,9 @@
 #include "DWDConversions.h"
 
 #include "DWDConstants.h"
+#include "DWDTimePlotPicker.h"
 #include "DWDUtilities.h"
 // #include "DWD_CheckBox.h"
-
 
 
 class ProgressNotify : public IBK::NotificationHandler{
@@ -165,18 +166,16 @@ MainWindow::MainWindow(QWidget *parent) :
 	m_ui->comboBoxMode->setCurrentIndex(EM_EPW);
 	m_mode = EM_EPW;
 
-
+	m_ui->splitter->installEventFilter(this);
 	connect( &m_dwdData, &DWDData::progress, this, &MainWindow::setProgress );
 	// connect( m_dwdTableModel, &DWDTableModel::dataChanged, this, &MainWindow::updateDownloadButton);
 	// double scaleFactor = this->devicePixelRatioF();
 	//resize(scaleFactor*1900, scaleFactor*1000);
 
-	// init all plots
-	formatPlots(true);
-
 	// Add the Dockwidget
 	m_logWidget = new DWDLogWidget;
 	this->addDockWidget(Qt::BottomDockWidgetArea, m_logWidget);
+	connect(m_logWidget, &DWDLogWidget::resized, this, &MainWindow::onLogWidgetResized);
 
 	// Also connect all IBK::Messages to Log Widget
 	DWDMessageHandler * msgHandler = dynamic_cast<DWDMessageHandler *>(IBK::MessageHandlerRegistry::instance().messageHandler() );
@@ -201,6 +200,47 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	// updat UI
 	updateUi();
+
+	m_plotPickerTemp = new DWDTimePlotPicker( m_ui->plotTemp->canvas() );
+	m_plotPickerPressure = new QwtPlotPicker( m_ui->plotPres->canvas() );
+	m_plotPickerRad = new QwtPlotPicker( m_ui->plotRad->canvas() );
+	m_plotPickerRain = new QwtPlotPicker( m_ui->plotRain->canvas() );
+	m_plotPickerRelHum = new QwtPlotPicker( m_ui->plotRelHum->canvas() );
+	m_plotPickerLongWave = new QwtPlotPicker( m_ui->plotRadLongWave->canvas() );
+	m_plotPickerWind = new QwtPlotPicker( m_ui->plotWind->canvas() );
+
+	m_plotZoomerTemp = new DWDPlotZoomer( m_ui->plotTemp->canvas() );
+	m_plotZoomerTemp->setAxis( QwtPlot::xBottom, QwtPlot::yRight);
+
+	m_plotZoomerPressure = new DWDPlotZoomer( m_ui->plotPres->canvas() );
+	m_plotZoomerPressure->setAxis( QwtPlot::xBottom, QwtPlot::yRight);
+
+	m_plotZoomerRad = new DWDPlotZoomer( m_ui->plotRad->canvas() );
+	m_plotZoomerRad->setAxis( QwtPlot::xBottom, QwtPlot::yRight);
+
+	m_plotZoomerRain = new DWDPlotZoomer( m_ui->plotRain->canvas() );
+	m_plotZoomerRain->setAxis( QwtPlot::xBottom, QwtPlot::yRight);
+
+	m_plotZoomerRelHum = new DWDPlotZoomer( m_ui->plotRelHum->canvas() );
+	m_plotZoomerRelHum->setAxis( QwtPlot::xBottom, QwtPlot::yRight);
+
+	m_plotZoomerLongWave = new DWDPlotZoomer( m_ui->plotRadLongWave->canvas() );
+	m_plotZoomerLongWave->setAxis( QwtPlot::xBottom, QwtPlot::yRight);
+
+	m_plotZoomerWind = new DWDPlotZoomer( m_ui->plotWind->canvas() );
+	m_plotZoomerWind->setAxis( QwtPlot::xBottom, QwtPlot::yRight);
+
+
+	connect(m_plotZoomerTemp, &QwtPlotZoomer::zoomed, this, &MainWindow::onUpdatePlotZooming);
+	connect(m_plotZoomerPressure, &QwtPlotZoomer::zoomed, this, &MainWindow::onUpdatePlotZooming);
+	connect(m_plotZoomerRad, &QwtPlotZoomer::zoomed, this, &MainWindow::onUpdatePlotZooming);
+	connect(m_plotZoomerRelHum, &QwtPlotZoomer::zoomed, this, &MainWindow::onUpdatePlotZooming);
+	connect(m_plotZoomerRain, &QwtPlotZoomer::zoomed, this, &MainWindow::onUpdatePlotZooming);
+	connect(m_plotZoomerLongWave, &QwtPlotZoomer::zoomed, this, &MainWindow::onUpdatePlotZooming);
+	connect(m_plotZoomerWind, &QwtPlotZoomer::zoomed, this, &MainWindow::onUpdatePlotZooming);
+
+	// init all plots
+	formatPlots(true);
 }
 
 
@@ -375,6 +415,7 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 	m_ui->plotRain->setEnabled(false);
 	m_ui->plotWind->setEnabled(false);
 	m_ui->plotRad->setEnabled(false);
+	m_ui->plotRadLongWave->setEnabled(false);
 	m_ui->plotTemp->setEnabled(false);
 
 	std::vector<int> dataInRows(DWDDescriptonData::NUM_D,-1);
@@ -398,6 +439,7 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 					break;
 				case DWDDescriptonData::D_Solar:
 					m_ui->plotRad->setEnabled(isChecked);
+					m_ui->plotRadLongWave->setEnabled(isChecked);
 					break;
 				case DWDDescriptonData::D_Pressure:
 					m_ui->plotPres->setEnabled(isChecked);
@@ -711,11 +753,13 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 		m_ui->plotTemp->detachItems();
 		m_ui->plotWind->detachItems();
 		m_ui->plotRad->detachItems();
+		m_ui->plotRadLongWave->detachItems();
 
 		// create a new curve to be shown in the plot and set some properties
 		QwtPlotCurve *curveTemp = new QwtPlotCurve();
 		QwtPlotCurve *curveRelHum = new QwtPlotCurve();
 		QwtPlotCurve *curveRad = new QwtPlotCurve();
+		QwtPlotCurve *curveLongWaveRad = new QwtPlotCurve();
 		QwtPlotCurve *curveRadDiff = new QwtPlotCurve();
 		QwtPlotCurve *curveWind = new QwtPlotCurve();
 		QwtPlotCurve *curvePressure = new QwtPlotCurve();
@@ -732,6 +776,9 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 		curveRad->setPen( DWDDescriptonData::color(DWDDescriptonData::D_Solar), 1 ); // color and thickness in pixels
 		curveRad->setRenderHint( QwtPlotItem::RenderAntialiased, true ); // use antialiasing
 
+		curveLongWaveRad->setPen( QColor("#871ca4"), 1 ); // color and thickness in pixels
+		curveLongWaveRad->setRenderHint( QwtPlotItem::RenderAntialiased, true ); // use antialiasing
+
 		curveRadDiff->setPen( DWDDescriptonData::color(DWDDescriptonData::D_Solar).darker(), 1 ); // color and thickness in pixels
 		curveRadDiff->setRenderHint( QwtPlotItem::RenderAntialiased, true ); // use antialiasing
 
@@ -745,8 +792,7 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 		curvePrecipitation->setRenderHint( QwtPlotItem::RenderAntialiased, true ); // use antialiasing
 
 		// data points
-		QPolygonF pointsTemp, pointsRelHum, pointsRad, pointsRadDiff, pointsWind, pointsPressure, pointsPrecipitation;
-
+		QPolygonF pointsTemp, pointsRelHum, pointsRad, pointsRadDiff, pointsWind, pointsPressure, pointsPrecipitation, pointsLongWaveRadiation;
 
 		QDateTime startUTC(m_ui->dateEditStart->date(), QTime(0,0,0,0), Qt::UTC);
 		QDateTime startLocal(m_ui->dateEditStart->date(), QTime(0,0,0,0), Qt::LocalTime);
@@ -773,6 +819,7 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 			double radValue = (intVal.m_globalRad - intVal.m_diffRad) / std::sin(IBK::PI - elevationAngle*IBK::DEG2RAD);
 			pointsRad << QPointF(timeStep, std::max(0.0, std::min(1200.0, radValue)));
 			pointsRadDiff << QPointF(timeStep, intVal.m_diffRad );
+			pointsLongWaveRadiation << QPointF(timeStep, intVal.m_counterRad );
 			pointsWind << QPointF(timeStep, intVal.m_windSpeed );
 			pointsPressure << QPointF(timeStep, intVal.m_pressure/1000  ); // in kPa
 			pointsPrecipitation << QPointF(timeStep, intVal.m_precipitation );
@@ -781,19 +828,29 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 		}
 
 		// give some points to the curve
-		if (m_ui->plotTemp->isEnabled()) curveTemp->setSamples(pointsTemp);
-		if (m_ui->plotRelHum->isEnabled()) curveRelHum->setSamples(pointsRelHum);
-		if (m_ui->plotRad->isEnabled()) curveRad->setSamples(pointsRad);
-		if (m_ui->plotRad->isEnabled()) curveRadDiff->setSamples(pointsRadDiff);
-		if (m_ui->plotWind->isEnabled()) curveWind->setSamples(pointsWind);
-		if (m_ui->plotPres->isEnabled()) curvePressure->setSamples(pointsPressure);
-		if (m_ui->plotRain->isEnabled()) curvePrecipitation->setSamples(pointsPrecipitation);
+		if (m_ui->plotTemp->isEnabled())
+			curveTemp->setSamples(pointsTemp);
+		if (m_ui->plotRelHum->isEnabled())
+			curveRelHum->setSamples(pointsRelHum);
+		if (m_ui->plotRad->isEnabled())
+			curveRad->setSamples(pointsRad);
+		if (m_ui->plotRad->isEnabled())
+			curveRadDiff->setSamples(pointsRadDiff);
+		if (m_ui->plotRadLongWave->isEnabled())
+			curveLongWaveRad->setSamples(pointsLongWaveRadiation);
+		if (m_ui->plotWind->isEnabled())
+			curveWind->setSamples(pointsWind);
+		if (m_ui->plotPres->isEnabled())
+			curvePressure->setSamples(pointsPressure);
+		if (m_ui->plotRain->isEnabled())
+			curvePrecipitation->setSamples(pointsPrecipitation);
 
 		// set the curve in the plot
 		curveRelHum->attach(m_ui->plotRelHum);
 		curveTemp->attach(m_ui->plotTemp);
 		curveRad->attach( m_ui->plotRad );
 		curveRadDiff->attach( m_ui->plotRad );
+		curveLongWaveRad->attach( m_ui->plotRadLongWave );
 		curvePressure->attach( m_ui->plotPres );
 		curvePrecipitation->attach( m_ui->plotRain );
 		curveWind->attach( m_ui->plotWind );
@@ -802,6 +859,7 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 		m_ui->plotPres->replot();
 		m_ui->plotRain->replot();
 		m_ui->plotRad->replot();
+		m_ui->plotRadLongWave->replot();
 		m_ui->plotTemp->replot();
 		m_ui->plotWind->replot();
 
@@ -809,8 +867,17 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 		m_ui->plotPres->show();
 		m_ui->plotRain->show();
 		m_ui->plotRad->show();
+		m_ui->plotRadLongWave->show();
 		m_ui->plotWind->show();
 		m_ui->plotTemp->show();
+
+		m_plotZoomerTemp->setZoomBase();
+		m_plotZoomerLongWave->setZoomBase();
+		m_plotZoomerPressure->setZoomBase();
+		m_plotZoomerWind->setZoomBase();
+		m_plotZoomerRain->setZoomBase();
+		m_plotZoomerRelHum->setZoomBase();
+		m_plotZoomerRad->setZoomBase();
 	}
 
 	m_validData = true;
@@ -929,12 +996,15 @@ void MainWindow::convertDwdData() {
 	updateLocalFileList();
 
 	// reformat the now initialized plots to align left axes
-	int maxAxisWidth = std::max({m_ui->plotPres->axisWidget(QwtPlot::yLeft)->width(),
+	int maxAxisWidth = std::max({
+								 m_ui->plotPres->axisWidget(QwtPlot::yLeft)->width(),
 								 m_ui->plotRain->axisWidget(QwtPlot::yLeft)->width(),
 								 m_ui->plotRelHum->axisWidget(QwtPlot::yLeft)->width(),
 								 m_ui->plotTemp->axisWidget(QwtPlot::yLeft)->width(),
 								 m_ui->plotWind->axisWidget(QwtPlot::yLeft)->width(),
-								 m_ui->plotRad->axisWidget(QwtPlot::yLeft)->width()});
+								 m_ui->plotRad->axisWidget(QwtPlot::yLeft)->width(),
+								 m_ui->plotRadLongWave->axisWidget(QwtPlot::yLeft)->width()
+								});
 
 	m_ui->plotPres->setContentsMargins(maxAxisWidth-m_ui->plotPres->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
 	m_ui->plotRain->setContentsMargins(maxAxisWidth-m_ui->plotRain->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
@@ -942,6 +1012,7 @@ void MainWindow::convertDwdData() {
 	m_ui->plotTemp->setContentsMargins(maxAxisWidth-m_ui->plotTemp->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
 	m_ui->plotWind->setContentsMargins(maxAxisWidth-m_ui->plotWind->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
 	m_ui->plotRad->setContentsMargins(maxAxisWidth-m_ui->plotRad->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
+	m_ui->plotRadLongWave->setContentsMargins(maxAxisWidth-m_ui->plotRadLongWave->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
 }
 
 void MainWindow::onActionSwitchLanguage() {
@@ -959,18 +1030,68 @@ void MainWindow::onLocationDistances(double latitude, double longitude) {
 
 }
 
+void MainWindow::onLogWidgetResized() {
+	updateMaximumHeightOfPlots();
+}
+
+void MainWindow::onUpdatePlotZooming(const QRectF &rect) {
+	QRectF rectOld = m_plotZoomerLongWave->zoomRect();
+	QRectF newRect(QPointF(rect.bottomLeft().x(), rectOld.bottomLeft().y()),
+				   QPointF(rect.topRight().x(),   rectOld.topRight().y()));
+
+	m_plotZoomerLongWave->zoom(newRect);
+
+	rectOld = m_plotZoomerPressure->zoomRect();
+	newRect = QRectF(QPointF(rect.bottomLeft().x(), rectOld.bottomLeft().y()),
+					 QPointF(rect.topRight().x(),   rectOld.topRight().y()));
+
+	m_plotZoomerPressure->zoom(newRect);
+
+	rectOld = m_plotZoomerRad->zoomRect();
+	newRect = QRectF(QPointF(rect.bottomLeft().x(), rectOld.bottomLeft().y()),
+					 QPointF(rect.topRight().x(),   rectOld.topRight().y()));
+
+	m_plotZoomerRad->zoom(newRect);
+
+	rectOld = m_plotZoomerRelHum->zoomRect();
+	newRect = QRectF(QPointF(rect.bottomLeft().x(), rectOld.bottomLeft().y()),
+					 QPointF(rect.topRight().x(),   rectOld.topRight().y()));
+
+	m_plotZoomerRelHum->zoom(newRect);
+
+	rectOld = m_plotZoomerRain->zoomRect();
+	newRect = QRectF(QPointF(rect.bottomLeft().x(), rectOld.bottomLeft().y()),
+					 QPointF(rect.topRight().x(),   rectOld.topRight().y()));
+
+	m_plotZoomerRain->zoom(newRect);
+
+	rectOld = m_plotZoomerTemp->zoomRect();
+	newRect = QRectF(QPointF(rect.bottomLeft().x(), rectOld.bottomLeft().y()),
+					 QPointF(rect.topRight().x(),   rectOld.topRight().y()));
+
+	m_plotZoomerTemp->zoom(newRect);
+
+	rectOld = m_plotZoomerWind->zoomRect();
+	newRect = QRectF(QPointF(rect.bottomLeft().x(), rectOld.bottomLeft().y()),
+					 QPointF(rect.topRight().x(),   rectOld.topRight().y()));
+
+	m_plotZoomerWind->zoom(newRect);
+}
+
 
 void MainWindow::updateMaximumHeightOfPlots() {
-	int height = m_ui->plotLayout->contentsRect().height();
+	int height = m_ui->plotLayout->contentsRect().height() - 100;
 
 	// qDebug() << height;
+	int count = 7;
 
-	m_ui->plotPres->setMaximumHeight(height/6);
-	m_ui->plotRad->setMaximumHeight(height/6);
-	m_ui->plotRain->setMaximumHeight(height/6);
-	m_ui->plotRelHum->setMaximumHeight(height/6);
-	m_ui->plotTemp->setMaximumHeight(height/6);
-	m_ui->plotWind->setMaximumHeight(height/6);
+	m_ui->plotPres->setMaximumHeight(height/count);
+	m_ui->plotRad->setMaximumHeight(height/count);
+	m_ui->plotRadLongWave->setMaximumHeight(height/count);
+	m_ui->plotRain->setMaximumHeight(height/count);
+	m_ui->plotRelHum->setMaximumHeight(height/count);
+	m_ui->plotTemp->setMaximumHeight(height/count);
+	m_ui->plotWind->setMaximumHeight(height/count);
 }
 
 
@@ -1074,40 +1195,64 @@ void MainWindow::calculateDistances() {
 void MainWindow::formatPlots(bool init) {
 	formatQwtPlot(init, *m_ui->plotTemp, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Air Temperature", "C", -20, 40, 20, false);
 	formatQwtPlot(init, *m_ui->plotPres, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Pressure", "kPa", 0, 1.4, 0.2, false);
-	formatQwtPlot(init, *m_ui->plotRad, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Shortwave Radiation", "W/m2", 0, 1400, 200, false);
+	formatQwtPlot(init, *m_ui->plotRad, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Shortwave radiation", "W/m2", 0, 1400, 400, false);
+	formatQwtPlot(init, *m_ui->plotRadLongWave, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Longwave radiation", "W/m2", 0, 500, 100, false);
 	formatQwtPlot(init, *m_ui->plotRain, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Precipitation", "mm", 0, 50, 10, false);
 	formatQwtPlot(init, *m_ui->plotWind, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Wind speed", "m/s", 0, 100, 20, false);
 	formatQwtPlot(init, *m_ui->plotRelHum, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Relative Humidity", "%", 0, 100, 20, false);
 
-	if (m_ui->plotTemp->isEnabled())
+	QString description;
+	if (m_ui->plotTemp->isEnabled()) {
+		description += "Temperatur: " + m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity] + "\n";
 		m_ui->plotTemp->setTitle(QString("%1 - %2")
 							 .arg(m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity])
 							 .arg(m_ui->plotTemp->title().text()));
+	}
 
-	if (m_ui->plotRelHum->isEnabled())
+	if (m_ui->plotRelHum->isEnabled()) {
+		description += "Relative Humidity: " + m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity] + "\n";
 		m_ui->plotRelHum->setTitle(QString("%1 - %2")
 							 .arg(m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity])
 							 .arg(m_ui->plotRelHum->title().text()));
+	}
 
-	if (m_ui->plotPres->isEnabled())
+	if (m_ui->plotPres->isEnabled()) {
+		description += "Pressure: " + m_currentLocation[DWDDescriptonData::D_Pressure] + "\n";
 		m_ui->plotPres->setTitle(QString("%1 - %2")
 							 .arg(m_currentLocation[DWDDescriptonData::D_Pressure])
 							 .arg(m_ui->plotPres->title().text()));
+	}
 
-	if (m_ui->plotRad->isEnabled())
+	if (m_ui->plotRad->isEnabled()) {
+		description += "Short wave radiation: " + m_currentLocation[DWDDescriptonData::D_Solar] + "\n";
 		m_ui->plotRad->setTitle(QString("%1 - %2")
 							 .arg(m_currentLocation[DWDDescriptonData::D_Solar])
 							 .arg(m_ui->plotRad->title().text()));
+	}
 
-	if (m_ui->plotRain->isEnabled())
+	if (m_ui->plotRadLongWave->isEnabled()) {
+		description += "Long wave radiation: " + m_currentLocation[DWDDescriptonData::D_Solar] + "\n";
+		m_ui->plotRadLongWave->setTitle(QString("%1 - %2")
+							 .arg(m_currentLocation[DWDDescriptonData::D_Solar])
+							 .arg(m_ui->plotRadLongWave->title().text()));
+	}
+
+	if (m_ui->plotRain->isEnabled()) {
+		description += "Precipitation: " + m_currentLocation[DWDDescriptonData::D_Precipitation] + "\n";
 		m_ui->plotRain->setTitle(QString("%1 - %2")
 							 .arg(m_currentLocation[DWDDescriptonData::D_Precipitation])
 							 .arg(m_ui->plotRain->title().text()));
+	}
 
-	if (m_ui->plotWind->isEnabled())
+	if (m_ui->plotWind->isEnabled()) {
+		description += "Wind: " + m_currentLocation[DWDDescriptonData::D_Wind] + "\n";
 		m_ui->plotWind->setTitle(QString("%1 - %2")
 							 .arg(m_currentLocation[DWDDescriptonData::D_Wind])
 							 .arg(m_ui->plotWind->title().text()));
+	}
+
+	m_metaDataWidget->m_ccm->m_comment = description.toStdString();
+	m_metaDataWidget->updateUi();
 }
 
 void MainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDate endDate, QString title, QString leftYAxisTitle, double yLeftMin, double yLeftMax, double yLeftStepSize,
@@ -1139,7 +1284,7 @@ void MainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDate 
 
 	// inti plot title
 	QFont font;
-	font.setPointSize(10);
+	font.setPointSize(8);
 	QwtText qwtTitle;
 	qwtTitle.setFont(font);
 	qwtTitle.setText(title);
@@ -1179,8 +1324,14 @@ void MainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDate 
 
 	// Init Scale draw engine
 	QwtDateScaleDraw *scaleDrawTemp = new QwtDateScaleDraw(Qt::UTC);
-	scaleDrawTemp->setDateFormat(QwtDate::Month, "MMM");
 	scaleDrawTemp->setDateFormat(QwtDate::Year, "yyyy");
+	scaleDrawTemp->setDateFormat(QwtDate::Month, "MMM");
+	scaleDrawTemp->setDateFormat(QwtDate::Week, "dd.MM.");
+	scaleDrawTemp->setDateFormat(QwtDate::Day, "dd.MM.");
+	scaleDrawTemp->setDateFormat(QwtDate::Hour, "hh:mm\ndd.MM.");
+	scaleDrawTemp->setDateFormat(QwtDate::Minute, "hh:mm");
+	scaleDrawTemp->setDateFormat(QwtDate::Second, "hh:mm:ss");
+	scaleDrawTemp->setDateFormat(QwtDate::Millisecond, "hh:mm:ss");
 
 	QwtDateScaleEngine *scaleEngine = new QwtDateScaleEngine(Qt::UTC);
 
@@ -1444,5 +1595,10 @@ void MainWindow::on_actionc6b_triggered() {
 
 void MainWindow::on_actionEPW_triggered() {
 	m_ui->comboBoxMode->setCurrentIndex(EM_EPW);
+}
+
+
+void MainWindow::on_splitter_splitterMoved(int /*pos*/, int /*index*/) {
+	updateMaximumHeightOfPlots();
 }
 
