@@ -19,8 +19,7 @@ DWDDelegate::~DWDDelegate()
 {
 }
 
-void DWDDelegate::paint( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const
-{
+void DWDDelegate::paint( QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index ) const {
 
 	QStyleOptionButton opt;// Setting parameters
 	Qt::ItemFlags flags = index.flags();
