@@ -26,5 +26,5 @@ Just go to '/build/cmake' and call under windows: 'build_x64_with_pause.bat' or 
 
 # Screenshots
 
-![grafik](https://github.com/hirseboy/DWD-Weather-Data-Converter/assets/58851829/a462e4e1-3f89-4888-9c2c-62582f480de5)
-![grafik](https://github.com/hirseboy/DWD-Weather-Data-Converter/assets/58851829/58b4d317-771d-4397-bb9f-e155dd2dbd26)
+![grafik](https://github.com/hirseboy/DWD-Weather-Data-Converter/assets/58851829/9b453759-b5f7-4ba6-9933-2ecdfd796ff2)
+![grafik](https://github.com/hirseboy/DWD-Weather-Data-Converter/assets/58851829/7baf825d-f5a2-4400-b536-c91eccd5ea3c)
