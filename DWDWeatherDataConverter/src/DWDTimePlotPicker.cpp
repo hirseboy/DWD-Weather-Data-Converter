@@ -22,11 +22,13 @@
 
 #include "DWDTimePlotPicker.h"
 
-DWDTimePlotPicker::DWDTimePlotPicker(QWidget * canvas) :
+DWDTimePlotPicker::DWDTimePlotPicker(QWidget * canvas, const QString &yUnit) :
 	QwtPlotPicker(QwtPlot::xBottom, QwtPlot::yLeft,
 				  QwtPlotPicker::CrossRubberBand, QwtPicker::AlwaysOn,
 				  canvas)
-{}
+{
+	d_yUnit = yUnit;
+}
 
 void DWDTimePlotPicker::setYUnit(const QString& unit) {
 	d_yUnit = unit;
@@ -46,9 +48,9 @@ QwtText DWDTimePlotPicker::trackerTextF(const QPointF & pos) const {
 	size_t secs = (size_t)(pos.x()/1000);
 	dt = dt.addSecs(secs);
 //	QDateTime absdt = dt.toUTC();
-	QString xText = dt.toString(tr("dd. MMM hh:mm:ss","Date/time format."));
+	QString xText = dt.toString(tr("dd.MM. hh:mm","Date/time format."));
 	// convert y position to value + unit
-	QString yText = QString("%1 %2").arg(pos.y(), 0, 'f', 2).arg(d_yUnit);
+	QString yText = QString("<b>%1 %2</b>").arg(pos.y(), 0, 'f', 2).arg(d_yUnit);
 
 	switch(rubberBand())
 	{
@@ -63,13 +65,16 @@ QwtText DWDTimePlotPicker::trackerTextF(const QPointF & pos) const {
 	}
 
 	QwtText theText(text, QwtText::RichText);
-#ifdef Q_OS_WIN
-	theText.setFont(QFont("Consolas"));
-#elif defined(Q_OS_LINUX)
-	theText.setFont(QFont("Monospace"));
-#else
-	theText.setFont(QFont("Monaco"));
-#endif
+//	QFont font;
+//	font.setBold(true);
+//	theText.setFont(font);
+//#ifdef Q_OS_WIN
+//	theText.setFont(QFont("Consolas"));
+//#elif defined(Q_OS_LINUX)
+//	theText.setFont(QFont("Monospace"));
+//#else
+//	theText.setFont(QFont("Monaco"));
+//#endif
 	return theText;
 }
 
