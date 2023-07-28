@@ -47,13 +47,11 @@
 #include "qwt_scale_widget.h"
 #include "qwt_plot_zoomer.h"
 
-
 #include <qftp.h>
 
 #include <JlCompress.h>
 
 #include "DWDDownloader.h"
-// #include "DWDDelegate.h"
 #include "DWDData.h"
 #include "DWDSortFilterProxyModel.h"
 #include "DWDLogWidget.h"
@@ -65,7 +63,6 @@
 #include "DWDConstants.h"
 #include "DWDTimePlotPicker.h"
 #include "DWDUtilities.h"
-// #include "DWD_CheckBox.h"
 
 
 class ProgressNotify : public IBK::NotificationHandler{
@@ -201,13 +198,14 @@ MainWindow::MainWindow(QWidget *parent) :
 	// updat UI
 	updateUi();
 
-	m_plotPickerTemp = new DWDTimePlotPicker( m_ui->plotTemp->canvas() );
-	m_plotPickerPressure = new QwtPlotPicker( m_ui->plotPres->canvas() );
-	m_plotPickerRad = new QwtPlotPicker( m_ui->plotRad->canvas() );
-	m_plotPickerRain = new QwtPlotPicker( m_ui->plotRain->canvas() );
-	m_plotPickerRelHum = new QwtPlotPicker( m_ui->plotRelHum->canvas() );
-	m_plotPickerLongWave = new QwtPlotPicker( m_ui->plotRadLongWave->canvas() );
-	m_plotPickerWind = new QwtPlotPicker( m_ui->plotWind->canvas() );
+	m_plotPickerTemp = new DWDTimePlotPicker( m_ui->plotTemp->canvas(), "°C" );
+
+	m_plotPickerPressure = new DWDTimePlotPicker( m_ui->plotPres->canvas(), "pa" );
+	m_plotPickerRad = new DWDTimePlotPicker( m_ui->plotRad->canvas(), "W/m2" );
+	m_plotPickerRain = new DWDTimePlotPicker( m_ui->plotRain->canvas(), "mm" );
+	m_plotPickerRelHum = new DWDTimePlotPicker( m_ui->plotRelHum->canvas(), "%" );
+	m_plotPickerLongWave = new DWDTimePlotPicker( m_ui->plotRadLongWave->canvas(), "W/m2" );
+	m_plotPickerWind = new DWDTimePlotPicker( m_ui->plotWind->canvas(), "m/s" );
 
 	m_plotZoomerTemp = new DWDPlotZoomer( m_ui->plotTemp->canvas() );
 	m_plotZoomerTemp->setAxis( QwtPlot::xBottom, QwtPlot::yRight);
