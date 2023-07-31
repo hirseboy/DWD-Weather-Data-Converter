@@ -200,7 +200,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	m_plotPickerTemp = new DWDTimePlotPicker( m_ui->plotTemp->canvas(), "°C" );
 
-	m_plotPickerPressure = new DWDTimePlotPicker( m_ui->plotPres->canvas(), "pa" );
+	m_plotPickerPressure = new DWDTimePlotPicker( m_ui->plotPres->canvas(), "kPa" );
 	m_plotPickerRad = new DWDTimePlotPicker( m_ui->plotRad->canvas(), "W/m2" );
 	m_plotPickerRain = new DWDTimePlotPicker( m_ui->plotRain->canvas(), "mm" );
 	m_plotPickerRelHum = new DWDTimePlotPicker( m_ui->plotRelHum->canvas(), "%" );
@@ -1080,6 +1080,9 @@ void MainWindow::onUpdatePlotZooming(const QRectF &rect) {
 void MainWindow::updateMaximumHeightOfPlots() {
 	int height = m_ui->plotLayout->contentsRect().height() - 100;
 
+	if (height < 0)
+		return;
+
 	// qDebug() << height;
 	int count = 7;
 
@@ -1196,7 +1199,7 @@ void MainWindow::formatPlots(bool init) {
 	formatQwtPlot(init, *m_ui->plotRad, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Shortwave radiation", "W/m2", 0, 1400, 400, false);
 	formatQwtPlot(init, *m_ui->plotRadLongWave, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Longwave radiation", "W/m2", 0, 500, 100, false);
 	formatQwtPlot(init, *m_ui->plotRain, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Precipitation", "mm", 0, 50, 10, false);
-	formatQwtPlot(init, *m_ui->plotWind, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Wind speed", "m/s", 0, 100, 20, false);
+	formatQwtPlot(init, *m_ui->plotWind, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Wind speed", "m/s", 0, 40, 10, false);
 	formatQwtPlot(init, *m_ui->plotRelHum, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Relative Humidity", "%", 0, 100, 20, false);
 
 	QString description;
@@ -1323,7 +1326,7 @@ void MainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDate 
 	// Init Scale draw engine
 	QwtDateScaleDraw *scaleDrawTemp = new QwtDateScaleDraw(Qt::UTC);
 	scaleDrawTemp->setDateFormat(QwtDate::Year, "yyyy");
-	scaleDrawTemp->setDateFormat(QwtDate::Month, "MMM");
+	scaleDrawTemp->setDateFormat(QwtDate::Month, "MMM yy");
 	scaleDrawTemp->setDateFormat(QwtDate::Week, "dd.MM.");
 	scaleDrawTemp->setDateFormat(QwtDate::Day, "dd.MM.");
 	scaleDrawTemp->setDateFormat(QwtDate::Hour, "hh:mm\ndd.MM.");
