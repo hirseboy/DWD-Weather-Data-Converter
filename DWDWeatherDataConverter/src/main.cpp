@@ -37,13 +37,17 @@ int main(int argc, char* argv[]) {
 	QtExt::Directories::devdir = "DWDWeatherDataConverter";
 
 
+	QFile styleDark(":/style/style.qss");
+	styleDark.open(QFile::ReadOnly);
+	QString style = QLatin1String(styleDark.readAll());
+
+
 	const QString ProgramVersionName = QString("DWDWeatherDataConverter %1").arg(VERSION);
 	QApplication a( argc, argv );
 
 	QIcon icon(QPixmap(":/icon/DWDWeatherDataConverter.png"));
 	qApp->setWindowIcon(icon);
 	qApp->setApplicationName(ProgramVersionName);
-
 
 	DWDSettings settings(ORG_NAME, ProgramVersionName);
 	settings.setDefaults();
@@ -89,12 +93,14 @@ int main(int argc, char* argv[]) {
 	try { // open scope to control lifetime of main window, ensure that main window instance dies before settings or project handler
 
 		MainWindow w;
+
+		// qApp->setStyleSheet(style);
+
 		// add user settings related window resize at program start
-		w.showMaximized();
 		w.loadDataFromDWDServer();
+		w.showMaximized();
 		w.activateWindow(); // set the focus
 		// we set the data to the tableWidget
-
 		// start event loop
 		res = a.exec();
 	} // here our mainwindow dies, main window goes out of scope and UI goes down -> destructor does ui and thread cleanup
