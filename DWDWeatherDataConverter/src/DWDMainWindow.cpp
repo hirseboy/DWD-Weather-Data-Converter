@@ -510,7 +510,7 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 					unsigned int days = modifiedDate.daysTo(QDateTime::currentDateTime());
 
 					// update!!!
-					if (days > CACHE_PERIOD) {
+					if (days < CACHE_PERIOD) {
 						localFilePresent = true;
 						localFileName = m_localFileList[i];
 						break;
@@ -519,7 +519,7 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 			}
 			if (localFilePresent) {
 				filenames[i] = QString::fromStdString(localFileName).mid(0, localFileName.length()-4);
-				IBK::IBK_Message("Found local file " + localFileName, IBK::MSG_PROGRESS);
+				IBK::IBK_Message("Found cached local file '" + localFileName +"'", IBK::MSG_PROGRESS);
 
 			} else {
 
@@ -1078,7 +1078,7 @@ void MainWindow::onUpdatePlotZooming(const QRectF &rect) {
 
 
 void MainWindow::updateMaximumHeightOfPlots() {
-	int height = m_ui->plotLayout->contentsRect().height() - 100;
+	int height = m_ui->plotLayout->contentsRect().height() - 150;
 
 	if (height < 0)
 		return;
