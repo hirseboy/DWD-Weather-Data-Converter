@@ -15,6 +15,7 @@
 
 #include <DM_MapDialog.h>
 
+#include "DWDAboutDialog.h"
 #include "DWDDescriptonData.h"
 #include "DWDData.h"
 #include "DWDTableModel.h"
@@ -165,6 +166,9 @@ private:
 
 	/*! Pointer to Map Widget. */
 	DM::MapDialog								*m_mapDialog = nullptr;
+
+	/*! Pointer to Map Widget. */
+	DWDAboutDialog								*m_aboutDialog = nullptr;
 
 	/*! Description input of all existing DWD stations.
 		\param key: station id

@@ -1576,6 +1576,10 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 
 void MainWindow::on_actionAbout_triggered() {
 	// ToDo Dialog
+	if (m_aboutDialog == nullptr)
+		m_aboutDialog = new DWDAboutDialog(this);
+
+	m_aboutDialog->exec();
 }
 
 
