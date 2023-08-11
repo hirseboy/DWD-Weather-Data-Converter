@@ -35,7 +35,7 @@ INCLUDEPATH = \
 
 win32 {
 PRE_TARGETDEPS += \
-				$$PWD/../../../externals/lib$${DIR_PREFIX}/IBK.lib \
+                $$PWD/../../../externals/lib$${DIR_PREFIX}/IBK.lib \
 				$$PWD/../../../externals/lib$${DIR_PREFIX}/CCM.lib \
 				$$PWD/../../../externals/lib$${DIR_PREFIX}/QtExt.lib \
 				$$PWD/../../../externals/lib$${DIR_PREFIX}/qwt6.lib \
@@ -53,6 +53,7 @@ RESOURCES += \
 SOURCES += \
                 # ../../src/DWDChart.cpp \
 				#../../src/DWDChartView.cpp \
+				../../src/DWDAboutDialog.cpp \
 				../../src/DWDConstants.cpp \
 				../../src/DWDData.cpp \
 				../../src/DWDDelegate.cpp \
@@ -72,6 +73,7 @@ SOURCES += \
 				../../src/DWDDateTimeScaleEngine.cpp
 
 FORMS += \
+                ../../src/DWDAboutDialog.ui \
 				../../src/DWDLogWidget.ui \
 				../../src/DWDMainWindow.ui \
 				../../src/MetaDataEditWidget.ui
@@ -79,6 +81,7 @@ FORMS += \
 HEADERS += \
                 #../../src/DWDChart.h \
 				#../../src/DWDChartView.h \
+				../../src/DWDAboutDialog.h \
 				../../src/DWDConstants.h \
 				../../src/DWDConversions.h \
 				../../src/DWDData.h \

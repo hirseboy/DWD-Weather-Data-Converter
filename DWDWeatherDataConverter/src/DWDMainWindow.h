@@ -73,7 +73,7 @@ public:
 	void setGUIState(bool guiState);
 
 	/*! Downloads all dwd data. */
-	void downloadData(bool showPreview = true, bool exportEPW = false);
+	bool downloadData(bool showPreview = true, bool exportEPW = false);
 
 	void addToList(const QUrlInfo qUrlI);
 

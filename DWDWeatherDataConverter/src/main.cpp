@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
 	QString style = QLatin1String(styleDark.readAll());
 
 
-	const QString ProgramVersionName = QString("DWDWeatherDataConverter %1").arg(VERSION);
+	const QString ProgramVersionName = QString("DWDWeatherDataConverter %1").arg(LONG_VERSION);
 	QApplication a( argc, argv );
 
 	QIcon icon(QPixmap(":/icon/DWDWeatherDataConverter.png"));
@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
 	try { // open scope to control lifetime of main window, ensure that main window instance dies before settings or project handler
 
 		MainWindow w;
-
+		w.setWindowTitle(ProgramVersionName);
 		// qApp->setStyleSheet(style);
 
 		// add user settings related window resize at program start

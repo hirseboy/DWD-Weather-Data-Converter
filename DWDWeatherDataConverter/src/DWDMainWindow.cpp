@@ -382,30 +382,27 @@ void MainWindow::setGUIState(bool guiState) {
 	m_ui->pushButtonDownload->setEnabled(guiState && m_generateEpwEnabled);
 }
 
-void MainWindow::downloadData(bool showPreview, bool exportEPW) {
+bool MainWindow::downloadData(bool showPreview, bool exportEPW) {
 	FUNCID(MainWindow::downloadData);
 
 	if ( exportEPW ) {
 		if(!m_exportPath.isValid()) {
 			progressDialog()->hide();
 			QMessageBox::warning(this, "Select EPW file path.", "Please select a file path first for the export of the EPW - file.");
-			return;
+			return false;
 		}
 	}
-
-	progressDialog()->setLabelText("Downloading DWD Data.");
-	qApp->processEvents();
 
 	//check longitude and latitude
 	if(m_ui->lineEditLatitude->text().isEmpty()){
 		QMessageBox::critical(this, QString(), "Latitude is empty");
 		setGUIState(true);
-		return;
+		return false;
 	}
 	if(m_ui->lineEditLongitude->text().isEmpty()){
 		QMessageBox::critical(this, QString(), "Longitude is empty");
 		setGUIState(true);
-		return;
+		return false;
 	}
 
 	m_ui->plotRelHum->setEnabled(false);
@@ -455,11 +452,14 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 
 
 	if(dataInRows == std::vector<int>(DWDDescriptonData::NUM_D,-1)){
-		progressDialog()->hide();
 		QMessageBox::information(this, "Download Error.", "Download aborted. Please select at least one climate entry e.g. temperature, radiation, ... ");
 		setGUIState(true);
-		return;
+		//progressDialog()->hide();
+		return false;
 	}
+
+	progressDialog()->setLabelText("Downloading DWD Data.");
+	qApp->processEvents();
 
 	std::vector<QString> filenames(DWDDescriptonData::NUM_D); //hold filenames for download
 	std::vector<DWDData::DataType>	types{	DWDData::DT_AirTemperature, DWDData::DT_RadiationDiffuse,
@@ -618,7 +618,7 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 			}
 			QMessageBox::warning(this, QString(), QString("Download of file '%1' was not successful. Category: '%2'").arg(filenames[i]+".zip").arg(cat));
 			progressDialog()->hide();
-			return;
+			return false;
 		}
 		else
 			validFiles[i] = checkfile;
@@ -890,7 +890,7 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 			QDate end = m_ui->dateEditStart->date();
 			if (start.daysTo(end) > 365) {
 				QMessageBox::warning(this, tr("Error in climate file creation"), tr("Only yearly data can be exported to an epw-file."));
-				return;
+				return false;
 			}
 			m_dwdData.exportEPW(m_ccm, latiDeg, longiDeg, m_exportPath);
 		} break;
@@ -900,6 +900,8 @@ void MainWindow::downloadData(bool showPreview, bool exportEPW) {
 
 		QMessageBox::information(this, QString("Climate file export"), tr("Climate file generation succesfully done.\n%1").arg(QString::fromStdString(m_exportPath.str())));
 	}
+
+	return true;
 }
 
 
@@ -1428,7 +1430,7 @@ void MainWindow::setProgress(int min, int max, int val) {
 	m_dwdTableModel->reset();
 }
 
-void MainWindow::on_radioButtonHistorical_toggled(bool checked) {
+void MainWindow::on_radioButtonHistorical_toggled(bool /*checked*/) {
 	loadDataFromDWDServer();
 
 	m_ui->tableView->reset();
@@ -1451,10 +1453,11 @@ void MainWindow::on_horizontalSliderDistance_valueChanged(int value) {
 void MainWindow::on_pushButtonPreview_clicked() {
 	try {
 		setGUIState(false);
-		downloadData(true, false);
+		bool successful = downloadData(true, false);
 		setGUIState(true);
 		// update formatting
-		formatPlots();
+		if (successful)
+			formatPlots();
 	}
 	catch (IBK::Exception &ex) {
 		QMessageBox::warning(this, tr("Error in data download"), tr("Could not download data. See Error below\n%1").arg(ex.what()));
