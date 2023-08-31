@@ -4,7 +4,7 @@
 
 This repository holds all data concerning the weather data converter for converting weather data from the [German Weather Service (DWD)](https://www.dwd.de/DE/Home/home_node.html).
 
-It is accessing data stored on their ftp server and all weather data can be combined interactivly into weather-files (epw, c6b) and can so be used simulation software (SIM-VICUS, DELPHIN, etc.)
+It is accessing meta data stored on the ftp server and all weather data can be combined interactivly into weather-files (epw, c6b). So all data can be used for simulation tools (SIM-VICUS, DELPHIN, etc.)
 
 # Status
 
