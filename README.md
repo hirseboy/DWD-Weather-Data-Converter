@@ -18,11 +18,11 @@ It is accessing meta data stored on the ftp server and all weather data can be c
 
 ## Qt-Creator
 
-Open the pro-file in Qt-Creator under '/build/qt'. Compile with MSVC 2019 or gcc
+Open the pro-file in Qt-Creator under `/build/qt`. Compile with MSVC 2019 or gcc
 
 ## cmake
 
-Just go to '/build/cmake' and call under windows: 'build_x64_with_pause.bat' or run under Linux 'build.sh'
+Just go to `/build/cmake` and call under windows: `build_x64_with_pause.bat` or run under Linux `build.sh`
 
 # Screenshots
 
