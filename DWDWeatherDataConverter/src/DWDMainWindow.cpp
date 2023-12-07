@@ -105,7 +105,7 @@ public:
 	int						m_value;
 };
 
-MainWindow::MainWindow(QWidget *parent) :
+DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	m_ui(new Ui::MainWindow),
 	m_progressDlg(nullptr),
@@ -164,7 +164,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	m_mode = EM_EPW;
 
 	m_ui->splitter->installEventFilter(this);
-	connect( &m_dwdData, &DWDData::progress, this, &MainWindow::setProgress );
+	connect( &m_dwdData, &DWDData::progress, this, &DWDMainWindow::setProgress );
 	// connect( m_dwdTableModel, &DWDTableModel::dataChanged, this, &MainWindow::updateDownloadButton);
 	// double scaleFactor = this->devicePixelRatioF();
 	//resize(scaleFactor*1900, scaleFactor*1000);
@@ -172,7 +172,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	// Add the Dockwidget
 	m_logWidget = new DWDLogWidget;
 	this->addDockWidget(Qt::BottomDockWidgetArea, m_logWidget);
-	connect(m_logWidget, &DWDLogWidget::resized, this, &MainWindow::onLogWidgetResized);
+	connect(m_logWidget, &DWDLogWidget::resized, this, &DWDMainWindow::onLogWidgetResized);
 
 	// Also connect all IBK::Messages to Log Widget
 	DWDMessageHandler * msgHandler = dynamic_cast<DWDMessageHandler *>(IBK::MessageHandlerRegistry::instance().messageHandler() );
@@ -184,7 +184,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	// Init Map Widget
 	m_mapDialog = new DM::MapDialog(this);
-	connect(m_mapDialog, &DM::MapDialog::updateDistances, this, &MainWindow::onUpdateDistances);
+	connect(m_mapDialog, &DM::MapDialog::updateDistances, this, &DWDMainWindow::onUpdateDistances);
 	m_mapDialog->m_latitude = m_ccm.m_latitudeInDegree;
 	m_mapDialog->m_longitude = m_ccm.m_longitudeInDegree;
 
@@ -229,24 +229,24 @@ MainWindow::MainWindow(QWidget *parent) :
 	m_plotZoomerWind->setAxis( QwtPlot::xBottom, QwtPlot::yRight);
 
 
-	connect(m_plotZoomerTemp, &QwtPlotZoomer::zoomed, this, &MainWindow::onUpdatePlotZooming);
-	connect(m_plotZoomerPressure, &QwtPlotZoomer::zoomed, this, &MainWindow::onUpdatePlotZooming);
-	connect(m_plotZoomerRad, &QwtPlotZoomer::zoomed, this, &MainWindow::onUpdatePlotZooming);
-	connect(m_plotZoomerRelHum, &QwtPlotZoomer::zoomed, this, &MainWindow::onUpdatePlotZooming);
-	connect(m_plotZoomerRain, &QwtPlotZoomer::zoomed, this, &MainWindow::onUpdatePlotZooming);
-	connect(m_plotZoomerLongWave, &QwtPlotZoomer::zoomed, this, &MainWindow::onUpdatePlotZooming);
-	connect(m_plotZoomerWind, &QwtPlotZoomer::zoomed, this, &MainWindow::onUpdatePlotZooming);
+	connect(m_plotZoomerTemp, &QwtPlotZoomer::zoomed, this, &DWDMainWindow::onUpdatePlotZooming);
+	connect(m_plotZoomerPressure, &QwtPlotZoomer::zoomed, this, &DWDMainWindow::onUpdatePlotZooming);
+	connect(m_plotZoomerRad, &QwtPlotZoomer::zoomed, this, &DWDMainWindow::onUpdatePlotZooming);
+	connect(m_plotZoomerRelHum, &QwtPlotZoomer::zoomed, this, &DWDMainWindow::onUpdatePlotZooming);
+	connect(m_plotZoomerRain, &QwtPlotZoomer::zoomed, this, &DWDMainWindow::onUpdatePlotZooming);
+	connect(m_plotZoomerLongWave, &QwtPlotZoomer::zoomed, this, &DWDMainWindow::onUpdatePlotZooming);
+	connect(m_plotZoomerWind, &QwtPlotZoomer::zoomed, this, &DWDMainWindow::onUpdatePlotZooming);
 
 	// init all plots
 	formatPlots(true);
 }
 
 
-MainWindow::~MainWindow() {
+DWDMainWindow::~DWDMainWindow() {
 	delete m_ui;
 }
 
-void MainWindow::updateDownloadButton() {
+void DWDMainWindow::updateDownloadButton() {
 	// This function checks if every category has 1 selected entry that is available locally, and if so, enables the download button
 
 	std::vector<int> dataInRows(DWDDescriptonData::NUM_D,-1);
@@ -271,7 +271,7 @@ void MainWindow::updateDownloadButton() {
 	}
 }
 
-void MainWindow::updateLocalFileList() {
+void DWDMainWindow::updateLocalFileList() {
 	// iterate over local files and write to m_localFileList
 	m_localFileList.clear();
 	std::string prefix = "stundenwerte_";
@@ -314,7 +314,7 @@ void MainWindow::updateLocalFileList() {
 	updateDownloadButton();
 }
 
-void MainWindow::loadDataFromDWDServer(){
+void DWDMainWindow::loadDataFromDWDServer(){
 
 	//download all files
 	DWDDescriptonData  descData;
@@ -357,7 +357,7 @@ void MainWindow::loadDataFromDWDServer(){
 
 		m_manager->m_urls = urls;
 		m_manager->m_progressDlg = progressDialog(); // bisschen quatsch
-		connect( m_manager, &DWDDownloader::finished, this, &MainWindow::convertDwdData );
+		connect( m_manager, &DWDDownloader::finished, this, &DWDMainWindow::convertDwdData );
 
 		m_manager->execute(); // simply registers network requests
 	}
@@ -371,7 +371,7 @@ void MainWindow::loadDataFromDWDServer(){
 	m_ui->lineEditDownloads->setText(QString::fromStdString(m_downloadDir.str()));
 }
 
-void MainWindow::setGUIState(bool guiState) {
+void DWDMainWindow::setGUIState(bool guiState) {
 	m_guiState = guiState;
 	m_ui->tableView->setEnabled(guiState);
 	m_ui->groupBoxLocation->setEnabled(guiState);
@@ -382,7 +382,7 @@ void MainWindow::setGUIState(bool guiState) {
 	m_ui->pushButtonDownload->setEnabled(guiState && m_generateEpwEnabled);
 }
 
-bool MainWindow::downloadData(bool showPreview, bool exportEPW) {
+bool DWDMainWindow::downloadData(bool showPreview, bool exportEPW) {
 	FUNCID(MainWindow::downloadData);
 
 	if ( exportEPW ) {
@@ -906,7 +906,7 @@ bool MainWindow::downloadData(bool showPreview, bool exportEPW) {
 
 
 
-void MainWindow::convertDwdData() {
+void DWDMainWindow::convertDwdData() {
 	// read all decription files
 	DWDDescriptonData descData;
 	m_descData.clear();
@@ -1015,26 +1015,26 @@ void MainWindow::convertDwdData() {
 	m_ui->plotRadLongWave->setContentsMargins(maxAxisWidth-m_ui->plotRadLongWave->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
 }
 
-void MainWindow::onActionSwitchLanguage() {
+void DWDMainWindow::onActionSwitchLanguage() {
 	QAction * a = (QAction *)sender();
 	QString langId = a->data().toString();
 	DWDSettings::instance().m_langId = langId;
 	QMessageBox::information(this, tr("Languange changed"), tr("Please restart the software to activate the new language!"));
 }
 
-void MainWindow::onUpdateDistances() {
+void DWDMainWindow::onUpdateDistances() {
 	calculateDistances();
 }
 
-void MainWindow::onLocationDistances(double latitude, double longitude) {
+void DWDMainWindow::onLocationDistances(double latitude, double longitude) {
 
 }
 
-void MainWindow::onLogWidgetResized() {
+void DWDMainWindow::onLogWidgetResized() {
 	updateMaximumHeightOfPlots();
 }
 
-void MainWindow::onUpdatePlotZooming(const QRectF &rect) {
+void DWDMainWindow::onUpdatePlotZooming(const QRectF &rect) {
 	QRectF rectOld = m_plotZoomerLongWave->zoomRect();
 	QRectF newRect(QPointF(rect.bottomLeft().x(), rectOld.bottomLeft().y()),
 				   QPointF(rect.topRight().x(),   rectOld.topRight().y()));
@@ -1079,7 +1079,7 @@ void MainWindow::onUpdatePlotZooming(const QRectF &rect) {
 }
 
 
-void MainWindow::updateMaximumHeightOfPlots() {
+void DWDMainWindow::updateMaximumHeightOfPlots() {
 	int height = m_ui->plotLayout->contentsRect().height() - 150;
 
 	if (height < 0)
@@ -1120,7 +1120,7 @@ void MainWindow::updateMaximumHeightOfPlots() {
 /// fertigstellen für CCM (epw) oder ccd (nicht jahresscheiben)
 
 
-void MainWindow::on_pushButtonDownload_clicked(){
+void DWDMainWindow::on_pushButtonDownload_clicked(){
 
 	try {
 		QString extension;
@@ -1157,11 +1157,11 @@ void MainWindow::on_pushButtonDownload_clicked(){
 	}
 }
 
-void MainWindow::addToList(const QUrlInfo qUrlI){
+void DWDMainWindow::addToList(const QUrlInfo qUrlI){
 	m_filelist << qUrlI.name();
 }
 
-void MainWindow::calculateDistances() {
+void DWDMainWindow::calculateDistances() {
 
 	double lat1 = m_mapDialog->m_latitude;
 	double lon1 = m_mapDialog->m_longitude;
@@ -1195,7 +1195,7 @@ void MainWindow::calculateDistances() {
 	}
 }
 
-void MainWindow::formatPlots(bool init) {
+void DWDMainWindow::formatPlots(bool init) {
 	formatQwtPlot(init, *m_ui->plotTemp, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Air Temperature", "C", -20, 40, 20, false);
 	formatQwtPlot(init, *m_ui->plotPres, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Pressure", "kPa", 0, 1.4, 0.2, false);
 	formatQwtPlot(init, *m_ui->plotRad, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Shortwave radiation", "W/m2", 0, 1400, 400, false);
@@ -1258,7 +1258,7 @@ void MainWindow::formatPlots(bool init) {
 	m_metaDataWidget->updateUi();
 }
 
-void MainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDate endDate, QString title, QString leftYAxisTitle, double yLeftMin, double yLeftMax, double yLeftStepSize,
+void DWDMainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDate endDate, QString title, QString leftYAxisTitle, double yLeftMin, double yLeftMax, double yLeftStepSize,
 							   bool hasRightAxis, QString rightYAxisTitle, double yRightMin, double yRightMax, double yRightStepSize) {
 
 
@@ -1287,7 +1287,7 @@ void MainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDate 
 
 	// inti plot title
 	QFont font;
-	font.setPointSize(8);
+	font.setPointSize(7);
 	QwtText qwtTitle;
 	qwtTitle.setFont(font);
 	qwtTitle.setText(title);
@@ -1359,7 +1359,7 @@ void MainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDate 
 	plot.replot();
 }
 
-void MainWindow::addLanguageAction(const QString &langId, const QString &actionCaption) {
+void DWDMainWindow::addLanguageAction(const QString &langId, const QString &actionCaption) {
 	FUNCID(DWDMainWindow::addLanguageAction);
 	QString languageFilename = QtExt::Directories::translationsFilePath(langId);
 	if (langId == "en" || QFile(languageFilename).exists()) {
@@ -1377,13 +1377,13 @@ void MainWindow::addLanguageAction(const QString &langId, const QString &actionC
 	}
 }
 
-void MainWindow::resizeEvent(QResizeEvent *event){
+void DWDMainWindow::resizeEvent(QResizeEvent *event){
 	updateMaximumHeightOfPlots();
 	QMainWindow::resizeEvent(event);
 }
 
 
-void MainWindow::on_pushButtonMap_clicked() {
+void DWDMainWindow::on_pushButtonMap_clicked() {
 	double latitude = m_ui->lineEditLatitude->text().toDouble();
 	double longitude = m_ui->lineEditLongitude->text().toDouble();
 	unsigned int distance = m_ui->horizontalSliderDistance->value();
@@ -1422,7 +1422,7 @@ void MainWindow::on_pushButtonMap_clicked() {
 }
 
 
-void MainWindow::setProgress(int min, int max, int val) {
+void DWDMainWindow::setProgress(int min, int max, int val) {
 	//	FUNCID(setProgress);
 
 	progressDialog()->setMaximum(val);
@@ -1430,27 +1430,27 @@ void MainWindow::setProgress(int min, int max, int val) {
 	m_dwdTableModel->reset();
 }
 
-void MainWindow::on_radioButtonHistorical_toggled(bool /*checked*/) {
+void DWDMainWindow::on_radioButtonHistorical_toggled(bool /*checked*/) {
 	loadDataFromDWDServer();
 
 	m_ui->tableView->reset();
 }
 
 
-void MainWindow::on_lineEditNameFilter_textChanged(const QString &filter) {
+void DWDMainWindow::on_lineEditNameFilter_textChanged(const QString &filter) {
 	m_proxyModel->setFilterRegExp(filter);
 	m_proxyModel->setFilterCaseSensitivity(Qt::CaseInsensitive);
 	m_proxyModel->setFilterKeyColumn(4);
 }
 
 
-void MainWindow::on_horizontalSliderDistance_valueChanged(int value) {
+void DWDMainWindow::on_horizontalSliderDistance_valueChanged(int value) {
 	m_ui->lineEditDistance->setText(QString::number(value) );
 	m_proxyModel->setFilterMaximumDistance(value);
 	m_proxyModel->setFilterKeyColumn(1);
 }
 
-void MainWindow::on_pushButtonPreview_clicked() {
+void DWDMainWindow::on_pushButtonPreview_clicked() {
 	try {
 		setGUIState(false);
 		bool successful = downloadData(true, false);
@@ -1467,7 +1467,7 @@ void MainWindow::on_pushButtonPreview_clicked() {
 }
 
 
-void MainWindow::on_toolButtonDownloadDir_clicked() {
+void DWDMainWindow::on_toolButtonDownloadDir_clicked() {
 	// request directory
 	QString directory = QFileDialog::getExistingDirectory (
 				this,
@@ -1485,7 +1485,7 @@ void MainWindow::on_toolButtonDownloadDir_clicked() {
 }
 
 
-void MainWindow::on_comboBoxMode_currentIndexChanged(int index) {
+void DWDMainWindow::on_comboBoxMode_currentIndexChanged(int index) {
 	m_mode = (ExportMode)m_ui->comboBoxMode->currentData().toUInt();
 
 	m_ui->dateEditEnd->setEnabled(m_mode == ExportMode::EM_C6B);
@@ -1504,7 +1504,7 @@ void MainWindow::on_comboBoxMode_currentIndexChanged(int index) {
 	}
 }
 
-void MainWindow::on_dateEditStart_dateChanged(const QDate &date) {
+void DWDMainWindow::on_dateEditStart_dateChanged(const QDate &date) {
 
 	m_ccm.m_startYear = date.year();
 	m_ui->widgetMetaData->updateUi();
@@ -1530,7 +1530,7 @@ void MainWindow::on_dateEditStart_dateChanged(const QDate &date) {
 }
 
 
-void MainWindow::on_dateEditEnd_dateChanged(const QDate &date) {
+void DWDMainWindow::on_dateEditEnd_dateChanged(const QDate &date) {
 	if (date < m_ui->dateEditStart->date()) {
 		m_ui->dateEditStart->setDate(date.addDays(-1));
 		QMessageBox::warning(this, tr("Error in start date"), tr("Period should be at least one day."));
@@ -1547,17 +1547,17 @@ void MainWindow::on_dateEditEnd_dateChanged(const QDate &date) {
 }
 
 
-void MainWindow::on_toolButtonHelp_clicked() {
+void DWDMainWindow::on_toolButtonHelp_clicked() {
 	QMessageBox::information(this, tr("Climate data modes"), tr("In EPW Mode it is only possible to produce yearly data and exported "
 																"weather files. So only a start date can be specified. Whereas in C6B "
 																"Mode continuous weather data can be produced and exported in a weather file."));
 }
 
-void MainWindow::updateUi() {
+void DWDMainWindow::updateUi() {
 	m_ui->pushButtonDownload->setEnabled(m_validData);
 }
 
-QProgressDialog *MainWindow::progressDialog() {
+QProgressDialog *DWDMainWindow::progressDialog() {
 	if(m_progressDlg == nullptr) {
 		m_progressDlg = new QProgressDialog(this);
 		m_progressDlg->setMinimumWidth(800);
@@ -1570,14 +1570,14 @@ QProgressDialog *MainWindow::progressDialog() {
 	return m_progressDlg;
 }
 
-void MainWindow::closeEvent(QCloseEvent *event) {
+void DWDMainWindow::closeEvent(QCloseEvent *event) {
 	// save user config and recent file list
 	DWDSettings::instance().write(saveGeometry(), saveState());
 	event->accept();
 }
 
 
-void MainWindow::on_actionAbout_triggered() {
+void DWDMainWindow::on_actionAbout_triggered() {
 	// ToDo Dialog
 	if (m_aboutDialog == nullptr)
 		m_aboutDialog = new DWDAboutDialog(this);
@@ -1586,27 +1586,27 @@ void MainWindow::on_actionAbout_triggered() {
 }
 
 
-void MainWindow::on_actionAbout_Qt_triggered() {
+void DWDMainWindow::on_actionAbout_Qt_triggered() {
 	QMessageBox::aboutQt(this, tr("About Qt..."));
 }
 
 
-void MainWindow::on_actionClose_triggered() {
+void DWDMainWindow::on_actionClose_triggered() {
 	close();
 }
 
 
-void MainWindow::on_actionc6b_triggered() {
+void DWDMainWindow::on_actionc6b_triggered() {
 	m_ui->comboBoxMode->setCurrentIndex(EM_C6B);
 }
 
 
-void MainWindow::on_actionEPW_triggered() {
+void DWDMainWindow::on_actionEPW_triggered() {
 	m_ui->comboBoxMode->setCurrentIndex(EM_EPW);
 }
 
 
-void MainWindow::on_splitter_splitterMoved(int /*pos*/, int /*index*/) {
+void DWDMainWindow::on_splitter_splitterMoved(int /*pos*/, int /*index*/) {
 	updateMaximumHeightOfPlots();
 }
 

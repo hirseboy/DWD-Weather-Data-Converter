@@ -43,7 +43,7 @@ class DWDProgressBar;
 class DWDLogWidget;
 
 
-class MainWindow : public QMainWindow
+class DWDMainWindow : public QMainWindow
 {
 	Q_OBJECT
 
@@ -56,8 +56,8 @@ class MainWindow : public QMainWindow
 
 public:
 
-	explicit MainWindow(QWidget *parent = nullptr);
-	~MainWindow();
+	explicit DWDMainWindow(QWidget *parent = nullptr);
+	~DWDMainWindow();
 
 	/*! If each datatype has one local file checked, enable button */
 	void updateDownloadButton();
@@ -67,6 +67,8 @@ public:
 
 	/*! Download data from DWD server. */
 	void extracted();
+
+	/*! Load DWD Data from Server. */
 	void loadDataFromDWDServer();
 
 	/*! Sets all GUI states. */
@@ -87,7 +89,7 @@ public:
 	void formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDate endDate, QString title, QString leftYAxisTitle, double yLeftMin, double yLeftMax, double yLeftStepSize,
 					   bool hasRightAxis = false, QString rightYAxisTitle = "", double yRightMin = 0, double yRightMax = 100, double yRightStepSize = 0);
 
-
+	/*! Add language action. */
 	void addLanguageAction(const QString &langId, const QString &actionCaption) ;
 
 protected:
