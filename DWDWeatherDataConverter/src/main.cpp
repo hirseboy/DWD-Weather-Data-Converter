@@ -83,7 +83,7 @@ int main(int argc, char* argv[]) {
 		pixmap.setDevicePixelRatio(ratio);
 
 		// show splash screen
-		splash.reset(new QSplashScreen(pixmap, Qt::WindowStaysOnTopHint | Qt::SplashScreen));
+		splash.reset(new QSplashScreen(pixmap.scaledToWidth(ratio*500), Qt::WindowStaysOnTopHint | Qt::SplashScreen));
 		splash->show();
 		QTimer::singleShot(5000, splash.get(), SLOT(close()));
 	}
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
 	int res;
 	try { // open scope to control lifetime of main window, ensure that main window instance dies before settings or project handler
 
-		MainWindow w;
+		DWDMainWindow w;
 		w.setWindowTitle(ProgramVersionName);
 		// qApp->setStyleSheet(style);
 
@@ -114,7 +114,6 @@ int main(int argc, char* argv[]) {
 	// return exit code to environment
 
 	return res;
-	return 0;
 }
 
 
