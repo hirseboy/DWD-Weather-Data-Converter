@@ -31,8 +31,8 @@ INCLUDEPATH +=	\
 SOURCES += \
     ../../src/DM_DataItem.cpp \
     ../../src/DM_DataItemGroup.cpp \
+    ../../src/DM_DataMapWidget.cpp \
 	../../src/DM_GraphicsView.cpp \
-	../../src/DM_MapDialog.cpp \
 	../../src/DM_Scene.cpp
 
 HEADERS += \
@@ -40,12 +40,12 @@ HEADERS += \
 	../../src/DM_Data.h \
 	../../src/DM_DataItem.h \
 	../../src/DM_DataItemGroup.h \
+	../../src/DM_DataMapWidget.h \
 	../../src/DM_GraphicsView.h \
-	../../src/DM_MapDialog.h \
 	../../src/DM_Scene.h
 
 FORMS += \
-	../../src/DM_MapDialog.ui
+    ../../src/DM_DataMapWidget.ui
 
 RESOURCES += \
 	../../resources/DataMap.qrc

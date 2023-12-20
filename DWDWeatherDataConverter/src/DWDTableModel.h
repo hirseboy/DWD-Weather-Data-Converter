@@ -33,6 +33,9 @@ public:
 		NumColumns
 	};
 
+signals:
+	void updateLocation(DWDDescriptonData::DWDDataType dataType, const QString &Location);
+
 	// QAbstractItemModel interface
 public:
 	int rowCount(const QModelIndex & parent) const;

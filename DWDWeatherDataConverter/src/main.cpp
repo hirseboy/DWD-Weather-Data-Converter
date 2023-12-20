@@ -95,10 +95,11 @@ int main(int argc, char* argv[]) {
 		DWDMainWindow w;
 		w.setWindowTitle(ProgramVersionName);
 		// qApp->setStyleSheet(style);
-
 		// add user settings related window resize at program start
 		w.loadDataFromDWDServer();
+		// Show widget maximized
 		w.showMaximized();
+		// w.updateMaximumHeightOfPlots();
 		w.activateWindow(); // set the focus
 		// we set the data to the tableWidget
 		// start event loop

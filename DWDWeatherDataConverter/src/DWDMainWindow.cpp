@@ -2,6 +2,8 @@
 #include "qaction.h"
 #include "ui_DWDMainWindow.h"
 
+#include <stdio.h>
+
 #include "DM_Conversions.h"
 #include "DM_Data.h"
 
@@ -155,15 +157,13 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	m_ui->dateEditEnd->setMinimumDate(QDate(1950,1,1));
 	m_ui->dateEditEnd->setMaximumDate(QDate::currentDate());
 
-	on_horizontalSliderDistance_valueChanged(50);
-
 	// Init combo box for program mode
 	m_ui->comboBoxMode->addItem("epw", EM_EPW);
 	m_ui->comboBoxMode->addItem("c6b", EM_C6B);
 	m_ui->comboBoxMode->setCurrentIndex(EM_EPW);
 	m_mode = EM_EPW;
 
-	m_ui->splitter->installEventFilter(this);
+	// m_ui->splitter->installEventFilter(this);
 	connect( &m_dwdData, &DWDData::progress, this, &DWDMainWindow::setProgress );
 	// connect( m_dwdTableModel, &DWDTableModel::dataChanged, this, &MainWindow::updateDownloadButton);
 	// double scaleFactor = this->devicePixelRatioF();
@@ -173,20 +173,23 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	m_logWidget = new DWDLogWidget;
 	this->addDockWidget(Qt::BottomDockWidgetArea, m_logWidget);
 	connect(m_logWidget, &DWDLogWidget::resized, this, &DWDMainWindow::onLogWidgetResized);
+	m_logWidget->hide();
 
 	// Also connect all IBK::Messages to Log Widget
 	DWDMessageHandler * msgHandler = dynamic_cast<DWDMessageHandler *>(IBK::MessageHandlerRegistry::instance().messageHandler() );
 	connect(msgHandler, &DWDMessageHandler::msgReceived, m_logWidget, &DWDLogWidget::onMsgReceived);
 
-	QList<int> sizes;
-	sizes << 1400 << 150 << 350;
-	m_ui->splitter->setSizes(sizes);
 
 	// Init Map Widget
-	m_mapDialog = new DM::MapDialog(this);
-	connect(m_mapDialog, &DM::MapDialog::updateDistances, this, &DWDMainWindow::onUpdateDistances);
-	m_mapDialog->m_latitude = m_ccm.m_latitudeInDegree;
-	m_mapDialog->m_longitude = m_ccm.m_longitudeInDegree;
+	m_mapWidget = m_ui->widgetLocation;
+	connect(m_mapWidget, &DM::DataMapWidget::updateDistances, this, &DWDMainWindow::onUpdateDistances);
+//	m_mapWidget->m_latitude = m_ccm.m_latitudeInDegree;
+//	m_mapWidget->m_longitude = m_ccm.m_longitudeInDegree;
+
+	double distance = 50;
+	on_horizontalSliderDistance_valueChanged(distance);
+	m_mapWidget->setCoordinates(m_ccm.m_latitudeInDegree, m_ccm.m_longitudeInDegree);
+	m_mapWidget->setDistance(distance);
 
 	// Initialize download directory
 	m_downloadDir = IBK::Path(QtExt::Directories().userDataDir().toStdString());
@@ -199,7 +202,6 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	updateUi();
 
 	m_plotPickerTemp = new DWDTimePlotPicker( m_ui->plotTemp->canvas(), "°C" );
-
 	m_plotPickerPressure = new DWDTimePlotPicker( m_ui->plotPres->canvas(), "kPa" );
 	m_plotPickerRad = new DWDTimePlotPicker( m_ui->plotRad->canvas(), "W/m2" );
 	m_plotPickerRain = new DWDTimePlotPicker( m_ui->plotRain->canvas(), "mm" );
@@ -228,7 +230,7 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	m_plotZoomerWind = new DWDPlotZoomer( m_ui->plotWind->canvas() );
 	m_plotZoomerWind->setAxis( QwtPlot::xBottom, QwtPlot::yRight);
 
-
+	// connect plot zoomer
 	connect(m_plotZoomerTemp, &QwtPlotZoomer::zoomed, this, &DWDMainWindow::onUpdatePlotZooming);
 	connect(m_plotZoomerPressure, &QwtPlotZoomer::zoomed, this, &DWDMainWindow::onUpdatePlotZooming);
 	connect(m_plotZoomerRad, &QwtPlotZoomer::zoomed, this, &DWDMainWindow::onUpdatePlotZooming);
@@ -236,6 +238,30 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	connect(m_plotZoomerRain, &QwtPlotZoomer::zoomed, this, &DWDMainWindow::onUpdatePlotZooming);
 	connect(m_plotZoomerLongWave, &QwtPlotZoomer::zoomed, this, &DWDMainWindow::onUpdatePlotZooming);
 	connect(m_plotZoomerWind, &QwtPlotZoomer::zoomed, this, &DWDMainWindow::onUpdatePlotZooming);
+
+	// connect Table model to get updates when clicked
+	connect(m_dwdTableModel, &DWDTableModel::updateLocation, this, &DWDMainWindow::onUpdateLocation);
+
+	QColor color;
+	color = DM::colorFromDataType(DM::Data::DT_TemperatureAndHumidity);
+	m_ui->labelTemperature->setStyleSheet(QString("QLabel { color : %1; }").arg(color.name()));
+	color = DM::colorFromDataType(DM::Data::DT_Precipitation);
+	m_ui->labelPrecipitation->setStyleSheet(QString("QLabel { color : %1; }").arg(color.name()));
+	color = DM::colorFromDataType(DM::Data::DT_Pressure);
+	m_ui->labelPressure->setStyleSheet(QString("QLabel { color : %1; }").arg(color.name()));
+	color = DM::colorFromDataType(DM::Data::DT_Solar);
+	m_ui->labelRadiation->setStyleSheet(QString("QLabel { color : %1; }").arg(color.name()));
+	color = DM::colorFromDataType(DM::Data::DT_Wind);
+	m_ui->labelWind->setStyleSheet(QString("QLabel { color : %1; }").arg(color.name()));
+
+	QFont font;
+	font.setItalic(true);
+
+	m_ui->labelTextPrecipitation->setFont(font);
+	m_ui->labelTextPressure->setFont(font);
+	m_ui->labelTextRadiation->setFont(font);
+	m_ui->labelTextTemperature->setFont(font);
+	m_ui->labelTextWind->setFont(font);
 
 	// init all plots
 	formatPlots(true);
@@ -371,6 +397,27 @@ void DWDMainWindow::loadDataFromDWDServer(){
 	m_ui->lineEditDownloads->setText(QString::fromStdString(m_downloadDir.str()));
 }
 
+void DWDMainWindow::alignLeftAxisQwtPlots() {
+	// reformat the now initialized plots to align left axes
+	int maxAxisWidth = std::max({
+									m_ui->plotPres->axisWidget(QwtPlot::yLeft)->width(),
+									m_ui->plotRain->axisWidget(QwtPlot::yLeft)->width(),
+									m_ui->plotRelHum->axisWidget(QwtPlot::yLeft)->width(),
+									m_ui->plotTemp->axisWidget(QwtPlot::yLeft)->width(),
+									m_ui->plotWind->axisWidget(QwtPlot::yLeft)->width(),
+									m_ui->plotRad->axisWidget(QwtPlot::yLeft)->width(),
+									m_ui->plotRadLongWave->axisWidget(QwtPlot::yLeft)->width()
+								});
+
+	m_ui->plotPres->setContentsMargins(maxAxisWidth-m_ui->plotPres->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
+	m_ui->plotRain->setContentsMargins(maxAxisWidth-m_ui->plotRain->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
+	m_ui->plotRelHum->setContentsMargins(maxAxisWidth-m_ui->plotRelHum->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
+	m_ui->plotTemp->setContentsMargins(maxAxisWidth-m_ui->plotTemp->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
+	m_ui->plotWind->setContentsMargins(maxAxisWidth-m_ui->plotWind->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
+	m_ui->plotRad->setContentsMargins(maxAxisWidth-m_ui->plotRad->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
+	m_ui->plotRadLongWave->setContentsMargins(maxAxisWidth-m_ui->plotRadLongWave->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
+}
+
 void DWDMainWindow::setGUIState(bool guiState) {
 	m_guiState = guiState;
 	m_ui->tableView->setEnabled(guiState);
@@ -384,6 +431,9 @@ void DWDMainWindow::setGUIState(bool guiState) {
 
 bool DWDMainWindow::downloadData(bool showPreview, bool exportEPW) {
 	FUNCID(MainWindow::downloadData);
+
+	progressDialog()->show();
+	qApp->processEvents();
 
 	if ( exportEPW ) {
 		if(!m_exportPath.isValid()) {
@@ -452,7 +502,7 @@ bool DWDMainWindow::downloadData(bool showPreview, bool exportEPW) {
 
 
 	if(dataInRows == std::vector<int>(DWDDescriptonData::NUM_D,-1)){
-		QMessageBox::information(this, "Download Error.", "Download aborted. Please select at least one climate entry e.g. temperature, radiation, ... ");
+		QMessageBox::warning(this, "Download Error.", "Please select at least one climate entry (e.g. temperature, radiation, ...)!");
 		setGUIState(true);
 		//progressDialog()->hide();
 		return false;
@@ -520,7 +570,6 @@ bool DWDMainWindow::downloadData(bool showPreview, bool exportEPW) {
 			if (localFilePresent) {
 				filenames[i] = QString::fromStdString(localFileName).mid(0, localFileName.length()-4);
 				IBK::IBK_Message("Found cached local file '" + localFileName +"'", IBK::MSG_PROGRESS);
-
 			} else {
 
 				dateString = "_" + m_descData[idx].m_startDateString + "_" + m_descData[idx].m_endDateString;
@@ -574,7 +623,7 @@ bool DWDMainWindow::downloadData(bool showPreview, bool exportEPW) {
 				m_manager->m_urls << dwdData.urlFilename(types[i], QString::number(m_descData[idx].m_idStation).rightJustified(5,'0'), dateString, isRecent, filename);
 				qDebug() << m_manager->m_urls.back();
 
-				if(isRecent || i==1)
+				if (isRecent || i==1)
 					filenames[i] = dwdData.filename(types[i], QString::number(m_descData[idx].m_idStation).rightJustified(5,'0'),dateString, isRecent);
 				else
 					filenames[i] = filename.mid(0, filename.length()-4);
@@ -584,13 +633,23 @@ bool DWDMainWindow::downloadData(bool showPreview, bool exportEPW) {
 
 	IBK::IBK_Message("Start downloading Weather Data...", IBK::MSG_PROGRESS);
 
-	if(!m_manager->m_urls.empty()) {
-		m_manager->execute();
+	try {
+		if(!m_manager->m_urls.empty()) {
+			m_manager->execute();
 
-		while ( m_manager->m_isRunning ) {
-			qApp->processEvents();
+			while ( m_manager->m_isRunning ) {
+				qApp->processEvents();
+			}
 		}
 	}
+	catch (IBK::Exception &ex) {
+		for (unsigned int i = 0; i < filenames.size(); ++i) {
+			std::remove(filenames[i].toStdString().c_str());
+		}
+		throw ex;
+	}
+
+
 	//Check if all downloaded files are valid
 	//create a vector with valid files
 	std::vector<IBK::Path>	validFiles(DWDDescriptonData::NUM_D);
@@ -677,13 +736,13 @@ bool DWDMainWindow::downloadData(bool showPreview, bool exportEPW) {
 	ProgressNotify progressNotify(progressDialog());
 	try {
 		if (!exportEPW) {
-		//read data
+			//read data
 			m_dwdData.m_startTime = DWDConversions::convertQDate2IBKTime(m_ui->dateEditStart->date());
 			m_dwdData.m_progressDlg = progressDialog();
 			m_dwdData.createData(&progressNotify, filenamesForReading);
 		}
 	} catch(IBK::Exception &ex) {
-		throw IBK::Exception(IBK::FormatString("%1\nCould not create DWD Data.").arg(ex.what()), FUNC_ID);
+		throw IBK::Exception(IBK::FormatString("%1\nCould not convert DWD Data succesfully.").arg(ex.what()), FUNC_ID);
 	}
 
 	//copy all data in range and create an epw
@@ -876,6 +935,8 @@ bool DWDMainWindow::downloadData(bool showPreview, bool exportEPW) {
 		m_plotZoomerRain->setZoomBase();
 		m_plotZoomerRelHum->setZoomBase();
 		m_plotZoomerRad->setZoomBase();
+
+
 	}
 
 	m_validData = true;
@@ -913,7 +974,7 @@ void DWDMainWindow::convertDwdData() {
 	IBK::IBK_Message("Converting weather data.", IBK::MSG_PROGRESS);
 
 	descData.readAllDescriptions(m_descData);
-	DM::Scene *s = m_mapDialog->m_scene;
+	DM::Scene *s = m_mapWidget->m_scene;
 	// s->addDwdDataPoint(DM::Data::DT_TemperatureAndHumidity, QString(), IBK::Time(), IBK::Time(), 55.036579, 8.389285);
 
 
@@ -924,8 +985,8 @@ void DWDMainWindow::convertDwdData() {
 				if(!d.m_data[i].m_isAvailable)
 					continue;
 
-				DM::Scene *s = m_mapDialog->m_scene;
-				s->addDwdDataPoint(&m_mapDialog->m_distance, &m_dwdData.m_startTime, &m_dwdData.m_endTime,
+				DM::Scene *s = m_mapWidget->m_scene;
+				s->addDwdDataPoint(&m_mapWidget->m_distance, &m_dwdData.m_startTime, &m_dwdData.m_endTime,
 								   (DM::Data::DataType)i, d.m_idStation, d.m_name.c_str(), d.m_minDate, d.m_maxDate,
 								   d.m_latitude, d.m_longitude);
 			}
@@ -994,25 +1055,6 @@ void DWDMainWindow::convertDwdData() {
 	// initialize local file list on startup
 	// this can only be done after m_descData is filled, so the isLocal flags can be set correctly
 	updateLocalFileList();
-
-	// reformat the now initialized plots to align left axes
-	int maxAxisWidth = std::max({
-								 m_ui->plotPres->axisWidget(QwtPlot::yLeft)->width(),
-								 m_ui->plotRain->axisWidget(QwtPlot::yLeft)->width(),
-								 m_ui->plotRelHum->axisWidget(QwtPlot::yLeft)->width(),
-								 m_ui->plotTemp->axisWidget(QwtPlot::yLeft)->width(),
-								 m_ui->plotWind->axisWidget(QwtPlot::yLeft)->width(),
-								 m_ui->plotRad->axisWidget(QwtPlot::yLeft)->width(),
-								 m_ui->plotRadLongWave->axisWidget(QwtPlot::yLeft)->width()
-								});
-
-	m_ui->plotPres->setContentsMargins(maxAxisWidth-m_ui->plotPres->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
-	m_ui->plotRain->setContentsMargins(maxAxisWidth-m_ui->plotRain->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
-	m_ui->plotRelHum->setContentsMargins(maxAxisWidth-m_ui->plotRelHum->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
-	m_ui->plotTemp->setContentsMargins(maxAxisWidth-m_ui->plotTemp->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
-	m_ui->plotWind->setContentsMargins(maxAxisWidth-m_ui->plotWind->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
-	m_ui->plotRad->setContentsMargins(maxAxisWidth-m_ui->plotRad->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
-	m_ui->plotRadLongWave->setContentsMargins(maxAxisWidth-m_ui->plotRadLongWave->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
 }
 
 void DWDMainWindow::onActionSwitchLanguage() {
@@ -1078,11 +1120,33 @@ void DWDMainWindow::onUpdatePlotZooming(const QRectF &rect) {
 	m_plotZoomerWind->zoom(newRect);
 }
 
+void DWDMainWindow::onUpdateLocation(DWDDescriptonData::DWDDataType dataType, const QString &location) {
+	switch (dataType) {
+	case DWDDescriptonData::D_TemperatureAndHumidity:
+		m_ui->labelTextTemperature->setText(location);
+		break;
+	case DWDDescriptonData::D_Solar:
+		m_ui->labelTextRadiation->setText(location);
+		break;
+	case DWDDescriptonData::D_Wind:
+		m_ui->labelTextWind->setText(location);
+		break;
+	case DWDDescriptonData::D_Pressure:
+		m_ui->labelTextPressure->setText(location);
+		break;
+	case DWDDescriptonData::D_Precipitation:
+		m_ui->labelTextPrecipitation->setText(location);
+		break;
+	case DWDDescriptonData::NUM_D:
+		break;
+	}
+}
+
 
 void DWDMainWindow::updateMaximumHeightOfPlots() {
-	int height = m_ui->plotLayout->contentsRect().height() - 150;
+	int height = m_ui->tabPreview->height() - 50;
 
-	if (height < 0)
+	if (height < 100)
 		return;
 
 	// qDebug() << height;
@@ -1163,8 +1227,8 @@ void DWDMainWindow::addToList(const QUrlInfo qUrlI){
 
 void DWDMainWindow::calculateDistances() {
 
-	double lat1 = m_mapDialog->m_latitude;
-	double lon1 = m_mapDialog->m_longitude;
+	double lat1 = m_mapWidget->m_latitude;
+	double lon1 = m_mapWidget->m_longitude;
 
 	// we calculate for each description the distance to the reference location
 	for ( DWDDescriptonData &data : m_descData ) {
@@ -1187,7 +1251,7 @@ void DWDMainWindow::calculateDistances() {
 
 			std::pair<DM::Data::DataType, unsigned int> key((DM::Data::DataType)i, data.m_idStation);
 
-			DM::DataItem *dataItem = m_mapDialog->m_scene->m_idToDataItem.at(key);
+			DM::DataItem *dataItem = m_mapWidget->m_scene->m_idToDataItem.at(key);
 
 			Q_ASSERT(dataItem != nullptr);
 			const_cast<DM::Data &>(dataItem->data()).m_currentDistance = dist;
@@ -1208,50 +1272,50 @@ void DWDMainWindow::formatPlots(bool init) {
 	if (m_ui->plotTemp->isEnabled()) {
 		description += "Temperatur: " + m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity] + "\n";
 		m_ui->plotTemp->setTitle(QString("%1 - %2")
-							 .arg(m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity])
-							 .arg(m_ui->plotTemp->title().text()));
+								 .arg(m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity])
+				.arg(m_ui->plotTemp->title().text()));
 	}
 
 	if (m_ui->plotRelHum->isEnabled()) {
 		description += "Relative Humidity: " + m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity] + "\n";
 		m_ui->plotRelHum->setTitle(QString("%1 - %2")
-							 .arg(m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity])
-							 .arg(m_ui->plotRelHum->title().text()));
+								   .arg(m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity])
+				.arg(m_ui->plotRelHum->title().text()));
 	}
 
 	if (m_ui->plotPres->isEnabled()) {
 		description += "Pressure: " + m_currentLocation[DWDDescriptonData::D_Pressure] + "\n";
 		m_ui->plotPres->setTitle(QString("%1 - %2")
-							 .arg(m_currentLocation[DWDDescriptonData::D_Pressure])
-							 .arg(m_ui->plotPres->title().text()));
+								 .arg(m_currentLocation[DWDDescriptonData::D_Pressure])
+				.arg(m_ui->plotPres->title().text()));
 	}
 
 	if (m_ui->plotRad->isEnabled()) {
 		description += "Short wave radiation: " + m_currentLocation[DWDDescriptonData::D_Solar] + "\n";
 		m_ui->plotRad->setTitle(QString("%1 - %2")
-							 .arg(m_currentLocation[DWDDescriptonData::D_Solar])
-							 .arg(m_ui->plotRad->title().text()));
+								.arg(m_currentLocation[DWDDescriptonData::D_Solar])
+				.arg(m_ui->plotRad->title().text()));
 	}
 
 	if (m_ui->plotRadLongWave->isEnabled()) {
 		description += "Long wave radiation: " + m_currentLocation[DWDDescriptonData::D_Solar] + "\n";
 		m_ui->plotRadLongWave->setTitle(QString("%1 - %2")
-							 .arg(m_currentLocation[DWDDescriptonData::D_Solar])
-							 .arg(m_ui->plotRadLongWave->title().text()));
+										.arg(m_currentLocation[DWDDescriptonData::D_Solar])
+				.arg(m_ui->plotRadLongWave->title().text()));
 	}
 
 	if (m_ui->plotRain->isEnabled()) {
 		description += "Precipitation: " + m_currentLocation[DWDDescriptonData::D_Precipitation] + "\n";
 		m_ui->plotRain->setTitle(QString("%1 - %2")
-							 .arg(m_currentLocation[DWDDescriptonData::D_Precipitation])
-							 .arg(m_ui->plotRain->title().text()));
+								 .arg(m_currentLocation[DWDDescriptonData::D_Precipitation])
+				.arg(m_ui->plotRain->title().text()));
 	}
 
 	if (m_ui->plotWind->isEnabled()) {
 		description += "Wind: " + m_currentLocation[DWDDescriptonData::D_Wind] + "\n";
 		m_ui->plotWind->setTitle(QString("%1 - %2")
-							 .arg(m_currentLocation[DWDDescriptonData::D_Wind])
-							 .arg(m_ui->plotWind->title().text()));
+								 .arg(m_currentLocation[DWDDescriptonData::D_Wind])
+				.arg(m_ui->plotWind->title().text()));
 	}
 
 	m_metaDataWidget->m_ccm->m_comment = description.toStdString();
@@ -1259,7 +1323,7 @@ void DWDMainWindow::formatPlots(bool init) {
 }
 
 void DWDMainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDate endDate, QString title, QString leftYAxisTitle, double yLeftMin, double yLeftMax, double yLeftStepSize,
-							   bool hasRightAxis, QString rightYAxisTitle, double yRightMin, double yRightMax, double yRightStepSize) {
+								  bool hasRightAxis, QString rightYAxisTitle, double yRightMin, double yRightMax, double yRightStepSize) {
 
 
 	// initialize start and end date
@@ -1390,22 +1454,21 @@ void DWDMainWindow::on_pushButtonMap_clicked() {
 
 	//	unsigned int year = 2020;
 	//DWDMap::getLocation(m_descData, latitude, longitude, year, distance, this);
-	m_mapDialog->setCoordinates(latitude, longitude);
-	m_mapDialog->setDistance(distance);
+	m_mapWidget->setCoordinates(latitude, longitude);
+	m_mapWidget->setDistance(distance);
 	// m_mapDialog->showMaximized();
 
-	QRectF rect = m_mapDialog->m_scene->m_mapSvgItem->boundingRect();
+	QRectF rect = m_mapWidget->m_scene->m_mapSvgItem->boundingRect();
 	QPointF pos = DM::convertCoordinatesToPos(rect, latitude, longitude);
 
-	m_mapDialog->m_scene->m_locationItem->setPos(pos.x(), pos.y());
-	m_mapDialog->exec();
+	m_mapWidget->m_scene->m_locationItem->setPos(pos.x(), pos.y());
 
-	m_ui->lineEditLatitude->setText(QString::number(m_mapDialog->m_latitude) );
-	m_ui->lineEditLongitude->setText(QString::number(m_mapDialog->m_longitude) );
-	m_ui->horizontalSliderDistance->setValue(m_mapDialog->m_distance);
+	m_ui->lineEditLatitude->setText(QString::number(m_mapWidget->m_latitude) );
+	m_ui->lineEditLongitude->setText(QString::number(m_mapWidget->m_longitude) );
+	m_ui->horizontalSliderDistance->setValue(m_mapWidget->m_distance);
 
-	m_ccm.m_latitudeInDegree = m_mapDialog->m_latitude;
-	m_ccm.m_longitudeInDegree = m_mapDialog->m_longitude;
+	m_ccm.m_latitudeInDegree = m_mapWidget->m_latitude;
+	m_ccm.m_longitudeInDegree = m_mapWidget->m_longitude;
 
 	m_ui->widgetMetaData->updateUi();
 
@@ -1456,11 +1519,14 @@ void DWDMainWindow::on_pushButtonPreview_clicked() {
 		bool successful = downloadData(true, false);
 		setGUIState(true);
 		// update formatting
-		if (successful)
+		if (successful) {
 			formatPlots();
+			m_ui->tabWidget->setCurrentIndex(T_Plots);
+		}
 	}
 	catch (IBK::Exception &ex) {
-		QMessageBox::warning(this, tr("Error in data download"), tr("Could not download data. See Error below\n%1").arg(ex.what()));
+		QMessageBox::warning(this, tr("Error in data download"), tr("Could not download and convert climate data. See Error below\n%1").arg(ex.what()));
+		m_progressDlg->reset();
 		setGUIState(true);
 		return;
 	}
@@ -1555,6 +1621,7 @@ void DWDMainWindow::on_toolButtonHelp_clicked() {
 
 void DWDMainWindow::updateUi() {
 	m_ui->pushButtonDownload->setEnabled(m_validData);
+	alignLeftAxisQwtPlots();
 }
 
 QProgressDialog *DWDMainWindow::progressDialog() {
@@ -1608,5 +1675,10 @@ void DWDMainWindow::on_actionEPW_triggered() {
 
 void DWDMainWindow::on_splitter_splitterMoved(int /*pos*/, int /*index*/) {
 	updateMaximumHeightOfPlots();
+}
+
+
+void DWDMainWindow::on_actionShow_log_widget_triggered() {
+	m_logWidget->show();
 }
 

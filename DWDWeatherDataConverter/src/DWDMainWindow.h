@@ -13,7 +13,7 @@
 #include <IBK_Time.h>
 #include <IBK_Path.h>
 
-#include <DM_MapDialog.h>
+#include <DM_DataMapWidget.h>
 
 #include "DWDAboutDialog.h"
 #include "DWDDescriptonData.h"
@@ -21,6 +21,7 @@
 #include "DWDTableModel.h"
 #include "DWDConversions.h"
 #include "DWDPlotZoomer.h"
+
 #include "MetaDataEditWidget.h"
 
 #include "QtExt_Directories.h"
@@ -47,12 +48,21 @@ class DWDMainWindow : public QMainWindow
 {
 	Q_OBJECT
 
+	/*! Export modes. */
 	enum ExportMode {
 		EM_EPW,
 		EM_C6B,
 		NUM_EM
 	};
 
+	/*! Tab modes. */
+	enum Tab {
+		T_Settings,
+		T_Location,
+		T_DataTable,
+		T_Plots,
+		NUM_T
+	};
 
 public:
 
@@ -70,6 +80,9 @@ public:
 
 	/*! Load DWD Data from Server. */
 	void loadDataFromDWDServer();
+
+	/*! Align left axis of QWT Plot. */
+	void alignLeftAxisQwtPlots();
 
 	/*! Sets all GUI states. */
 	void setGUIState(bool guiState);
@@ -91,6 +104,9 @@ public:
 
 	/*! Add language action. */
 	void addLanguageAction(const QString &langId, const QString &actionCaption) ;
+
+	/*! Updates the Maximum height of the plots, when the main window is beeing resized. */
+	void updateMaximumHeightOfPlots();
 
 protected:
 	/*! Override resize event. */
@@ -114,8 +130,8 @@ private slots:
 	/*! Update plot zoom. */
 	void onUpdatePlotZooming(const QRectF &rect);
 
-	/*! Updates the Maximum height of the plots, when the main window is beeing resized. */
-	void updateMaximumHeightOfPlots();
+	/*! Updates Location data in top view. */
+	void onUpdateLocation(DWDDescriptonData::DWDDataType dataType, const QString &location);
 
 	void on_pushButtonDownload_clicked();
 
@@ -153,6 +169,8 @@ private slots:
 
 	void on_splitter_splitterMoved(int pos, int index);
 
+	void on_actionShow_log_widget_triggered();
+
 private:
 
 	/*! Updates the Ui. */
@@ -167,7 +185,7 @@ private:
 	DWDDownloader								*m_manager = nullptr;
 
 	/*! Pointer to Map Widget. */
-	DM::MapDialog								*m_mapDialog = nullptr;
+	DM::DataMapWidget							*m_mapWidget = nullptr;
 
 	/*! Pointer to Map Widget. */
 	DWDAboutDialog								*m_aboutDialog = nullptr;
@@ -217,6 +235,10 @@ private:
 
 	/*! Current selected location. */
 	QString										m_currentLocation[DWDDescriptonData::NUM_D];
+
+	/*! Deletes currently downloaded files. When download was canceled by user.
+		So, no corrupted cached files will be read. */
+	bool										m_deleteCachedFiles = false;
 
 	/*! Plot picker. */
 	QwtPlotPicker								*m_plotPickerTemp = nullptr;

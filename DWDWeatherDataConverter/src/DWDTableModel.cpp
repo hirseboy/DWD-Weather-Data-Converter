@@ -206,6 +206,7 @@ bool DWDTableModel::setData(const QModelIndex & index, const QVariant & value, i
 
 	DWDDescriptonData &checkBox = (*m_descData)[index.row()];
 
+	QString location = "-";
 	if (role == Qt::CheckStateRole)	{
 		if ((Qt::CheckState)value.toInt() == Qt::Checked) {
 			//	user has checked item
@@ -223,11 +224,13 @@ bool DWDTableModel::setData(const QModelIndex & index, const QVariant & value, i
 			}
 
 			checkBox.m_data[dataType].m_isChecked = true;
+			location = QString::fromStdString(checkBox.m_name);
 		}
 		else {
 			checkBox.m_data[dataType].m_isChecked = false; //user has unchecked item
 		}
 		emit dataChanged(index, index);
+		emit updateLocation(dataType, location);
 
 		return true;
 	}

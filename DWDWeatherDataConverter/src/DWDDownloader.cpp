@@ -70,10 +70,16 @@ bool DWDDownloader::isHttpRedirect(QNetworkReply *reply) {
 }
 
 void DWDDownloader::execute() {
+	FUNCID(DWDDownloader::execute);
+
 	m_progressDlg->show();
 
 	for (const QString &urlString : qAsConst(m_urls)) {
 		QUrl url = QUrl::fromEncoded(urlString.toLocal8Bit());
+
+		if (m_progressDlg->wasCanceled())
+			throw IBK::Exception(IBK::FormatString("Download was canceled."), FUNC_ID);
+
 		doDownload(url);
 	}
 }
