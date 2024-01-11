@@ -316,9 +316,9 @@ std::string& trim_keyword(std::string& keyword);
 	std::transform(strvec.begin(), strvec.end(), strvec.begin(), trimmer());
 	\endcode
 */
-class trimmer : public std::unary_function<std::string,std::string> {
+class trimmer {
 public:
-	/*! Evaluation operator, returns a trimmed copy of the string argument using default trim characters, see trim(). */
+	// Evaluation operator, returns a trimmed copy of the string argument using default trim characters, see trim().
 	std::string operator()(const std::string& val) {
 		return IBK::trim_copy(val);
 	}
