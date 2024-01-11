@@ -2,9 +2,9 @@
 
 ![grafik](https://github.com/hirseboy/DWD-Weather-Data-Converter/assets/58851829/453ab876-abd7-498d-934b-c952ebbf1b61)
 
-This repository holds all data concerning the weather data converter for converting weather data from the [German Weather Service (DWD)](https://www.dwd.de/DE/Home/home_node.html).
+This repository holds all data concerning the weather data converter for generating climate files from the [German Weather Service (DWD)](https://www.dwd.de/DE/Home/home_node.html).
 
-It is accessing meta data stored on the ftp server and all weather data can be combined interactivly into weather-files (epw, c6b). So all data can be used for simulation tools (SIM-VICUS, DELPHIN, etc.)
+It is accessing measurement data stored on the ftp server and all data can be combined into weather-files (epw, c6b) needed for simulation tools (SIM-VICUS, DELPHIN, etc.)
 
 # Status
 
