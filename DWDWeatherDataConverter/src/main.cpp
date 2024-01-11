@@ -53,6 +53,10 @@ int main(int argc, char* argv[]) {
 	settings.setDefaults();
 	settings.read();
 
+
+	QtExt::LanguageHandler::instance().setup(DWDSettings::instance().m_organization,
+											 DWDSettings::instance().m_appName,
+											 PROGRAM_NAME );
 	QtExt::LanguageHandler::instance().installTranslator(QtExt::LanguageHandler::langId());
 	// install message handler to catch qDebug()
 	qInstallMessageHandler(qDebugMsgHandler);
