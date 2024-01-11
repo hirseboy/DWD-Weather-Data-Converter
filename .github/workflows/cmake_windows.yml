@@ -130,8 +130,8 @@ jobs:
       with:
         repo_token: ${{ secrets.GH_RELEASE }}
         file: ${{github.workspace}}\build\installer\${{ steps.date.outputs.date }}_DWDWeatherDataConverter_win64.exe
-        tag: nightly
+        tag: "v${{env.LONG_VERSION}}-nightly"
         overwrite: true
-        body: "Nightly Release of DWD Weather Data Converter from ${{ steps.date.outputs.date }}"
+        body: "Nightly Release ${{env.LONG_VERSION}} of DWD Weather Data Converter from ${{ steps.date.outputs.date }}"
 
 
