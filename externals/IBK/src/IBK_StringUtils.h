@@ -285,7 +285,7 @@ ExtractResultType extractFromParenthesis(const std::string & src, std::string & 
 
 /*! Extracts a value from paranthesis within a string, "blabla(0.01)". */
 std::pair<unsigned int, double> extractFromParenthesis(const std::string & src,
-													   std::pair<unsigned int, double> defaultValue);
+													std::pair<unsigned int, double> defaultValue);
 
 
 /*! Reads in (\a src) until char (\a ch)
@@ -337,10 +337,8 @@ std::string& remove_comment(std::string& str);
 */
 class nocase_equal {
 public:
-	// Evaluation operator, returns whether left uppercased character equals right upper cased character.
-	bool operator() (char lhs, char rhs) {
-		return TOLOWER(lhs) == TOLOWER(rhs);
-	}
+	/*! Evaluation operator, returns whether left uppercased character equals right upper cased character. */
+	bool operator() (char lhs, char rhs) { return TOLOWER(lhs)==TOLOWER(rhs); }
 };
 
 /*! Compares two string case insensitive.
@@ -397,7 +395,7 @@ size_t explode(const std::string& str, std::vector<std::string>& tokens, char de
 	\deprecated
 */
 size_t explode(const std::string& str, std::list<std::string>& tokens,
-			   std::string& delims, const std::string& delimiter);
+	std::string& delims, const std::string& delimiter);
 
 
 /*! Explodes the string 'str' into max 2 substrings (stored in the string list
@@ -437,11 +435,11 @@ void explode_csv(const std::string& str, std::vector<std::string>& tokens);
 
 /*! Explodes a string using the same section title where data is given as block of endline-separated strings.*/
 void explode_section(const std::string& str, const std::string& section_title,
-					 std::vector<std::string>& section_data);
+	std::vector<std::string>& section_data);
 
 /*! Explodes a string using the same section title, where data is given as vector of lines. */
 void explode_section(const std::vector<std::string>& data, const std::string& section_title,
-					 std::vector<std::vector<std::string> >& section_data);
+	std::vector<std::vector<std::string> >& section_data);
 
 /*! Explodes content of an input stream using a list of known section titles.
 	\code
@@ -470,9 +468,9 @@ void explode_section(const std::vector<std::string>& data, const std::string& se
 	\endcode
 */
 void explode_sections(std::istream& in,
-					  const std::vector<std::string>& section_titles,
-					  std::vector<std::string>& section_data,
-					  const std::string & commentChars=";#");
+					 const std::vector<std::string>& section_titles,
+					 std::vector<std::string>& section_data,
+					 const std::string & commentChars=";#");
 
 /*! Explodes content of an input data vector using a list of known section titles.
 	\code
@@ -501,15 +499,15 @@ void explode_sections(std::istream& in,
 	\endcode
 */
 void explode_sections(const std::vector<std::string>& data,
-					  const std::vector<std::string>& section_titles,
-					  std::vector<std::vector<std::string> >& section_data,
-					  const std::string & commentChars);
+					 const std::vector<std::string>& section_titles,
+					 std::vector<std::vector<std::string> >& section_data,
+					 const std::string & commentChars);
 
 /*! Explodes a string using a list of known section titles.
 	This is a convenience function around the previous explode_section() function.
 */
 void explode_sections(const std::string& str, const std::vector<std::string>& section_titles,
-					  std::vector<std::string>& section_data);
+	std::vector<std::string>& section_data);
 
 /*! Explodes a string into several sections where each section is stored in a single line
 	Essentially this function simply splits up a string into several lines which
@@ -598,7 +596,7 @@ std::string shorten_string(const std::string & src, unsigned int maxLength);
 	\sa StringReplaceKind
 */
 std::string replace_string(const std::string& src, const std::string& old_pattern,
-						   const std::string& new_pattern, StringReplaceKind flag = ReplaceAll);
+	const std::string& new_pattern, StringReplaceKind flag = ReplaceAll);
 
 /*! Deletes characters in \a pattern from \a src.
 	\return Returns a copy of the string 'src' without the characters in 'pattern'.
