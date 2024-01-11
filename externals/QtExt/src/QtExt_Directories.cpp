@@ -43,6 +43,7 @@
 #endif
 #include <QDir>
 #include <QSettings>
+#include <QDebug>
 
 #include <IBK_configuration.h>
 #include <IBK_messages.h>
@@ -62,6 +63,7 @@ inline std::string QString2trimmedUtf8(const QString & str) {
 
 QString Directories::resourcesRootDir() {
 	QString installPath = qApp->applicationDirPath();
+	qDebug() << "Install path I: " << installPath;
 
 #if defined(IBK_DEPLOYMENT) || defined(IBK_BUILDING_DEBIAN_PACKAGE)
 	// deployment mode
@@ -100,6 +102,7 @@ QString Directories::resourcesRootDir() {
 	// in development mode, we have the resources outside the bundle
 	return QFileInfo(installPath + "/../../../../" + devdir + "/resources").absoluteFilePath();
 #else
+	qDebug() << "Install path II: " << installPath;
 	return QFileInfo(installPath + "/../../" + devdir + "/resources").absoluteFilePath();
 #endif
 
