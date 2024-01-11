@@ -1452,6 +1452,8 @@ void DWDMainWindow::on_pushButtonMap_clicked() {
 
 	// Unckecks currently selected data
 	m_dwdTableModel->uncheckData();
+
+	m_ui->tabWidget->setCurrentIndex(T_Location);
 }
 
 
