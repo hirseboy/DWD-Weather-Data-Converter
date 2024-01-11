@@ -116,10 +116,9 @@ jobs:
       shell: cmd
 
     - name: Upload Installer as Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: "${{env.FILE_BASENAME}}_${{ steps.date.outputs.date }}"
-        token: ${{ secrets.GH_RELEASE }} # `GH_PAT` is a secret that contains your PAT
         path: ${{github.workspace}}\build\installer\DWDWeatherDataConverter_win64.exe # Ersetzen Sie dies durch den Pfad zu Ihrer Installer-Datei
     
     - name: Rename installer
