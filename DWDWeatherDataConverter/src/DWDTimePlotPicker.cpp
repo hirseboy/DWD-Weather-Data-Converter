@@ -50,7 +50,7 @@ QwtText DWDTimePlotPicker::trackerTextF(const QPointF & pos) const {
 //	QDateTime absdt = dt.toUTC();
 	QString xText = dt.toString(tr("dd.MM. hh:mm","Date/time format."));
 	// convert y position to value + unit
-	QString yText = QString("<b>%1 %2</b>").arg(pos.y(), 0, 'f', 2).arg(d_yUnit);
+	QString yText = QString("<i>%1 %2</i>").arg(pos.y(), 0, 'f', 2).arg(d_yUnit);
 
 	switch(rubberBand())
 	{

@@ -172,7 +172,6 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	// Add the Dockwidget
 	m_logWidget = new DWDLogWidget;
 	this->addDockWidget(Qt::BottomDockWidgetArea, m_logWidget);
-	connect(m_logWidget, &DWDLogWidget::resized, this, &DWDMainWindow::onLogWidgetResized);
 	m_logWidget->hide();
 
 	// Also connect all IBK::Messages to Log Widget
@@ -1072,10 +1071,6 @@ void DWDMainWindow::onLocationDistances(double latitude, double longitude) {
 
 }
 
-void DWDMainWindow::onLogWidgetResized() {
-	updateMaximumHeightOfPlots();
-}
-
 void DWDMainWindow::onUpdatePlotZooming(const QRectF &rect) {
 	QRectF rectOld = m_plotZoomerLongWave->zoomRect();
 	QRectF newRect(QPointF(rect.bottomLeft().x(), rectOld.bottomLeft().y()),
@@ -1141,26 +1136,6 @@ void DWDMainWindow::onUpdateLocation(DWDDescriptonData::DWDDataType dataType, co
 		break;
 	}
 }
-
-
-void DWDMainWindow::updateMaximumHeightOfPlots() {
-	int height = m_ui->tabPreview->height() - 50;
-
-	if (height < 100)
-		return;
-
-	// qDebug() << height;
-	int count = 7;
-
-	m_ui->plotPres->setMaximumHeight(height/count);
-	m_ui->plotRad->setMaximumHeight(height/count);
-	m_ui->plotRadLongWave->setMaximumHeight(height/count);
-	m_ui->plotRain->setMaximumHeight(height/count);
-	m_ui->plotRelHum->setMaximumHeight(height/count);
-	m_ui->plotTemp->setMaximumHeight(height/count);
-	m_ui->plotWind->setMaximumHeight(height/count);
-}
-
 
 /// TODO
 /// Herunterladen der Beschreibungsdateien
@@ -1441,11 +1416,6 @@ void DWDMainWindow::addLanguageAction(const QString &langId, const QString &acti
 	}
 }
 
-void DWDMainWindow::resizeEvent(QResizeEvent *event){
-	updateMaximumHeightOfPlots();
-	QMainWindow::resizeEvent(event);
-}
-
 
 void DWDMainWindow::on_pushButtonMap_clicked() {
 	double latitude = m_ui->lineEditLatitude->text().toDouble();
@@ -1671,12 +1641,6 @@ void DWDMainWindow::on_actionc6b_triggered() {
 void DWDMainWindow::on_actionEPW_triggered() {
 	m_ui->comboBoxMode->setCurrentIndex(EM_EPW);
 }
-
-
-void DWDMainWindow::on_splitter_splitterMoved(int /*pos*/, int /*index*/) {
-	updateMaximumHeightOfPlots();
-}
-
 
 void DWDMainWindow::on_actionShow_log_widget_triggered() {
 	m_logWidget->show();

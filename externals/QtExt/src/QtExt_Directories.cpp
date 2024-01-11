@@ -100,7 +100,7 @@ QString Directories::resourcesRootDir() {
 	// in development mode, we have the resources outside the bundle
 	return QFileInfo(installPath + "/../../../../" + devdir + "/resources").absoluteFilePath();
 #else
-	return QFileInfo(installPath + "/../../" + devdir + "").absoluteFilePath();
+	return QFileInfo(installPath + "/../../" + devdir + "/resources").absoluteFilePath();
 #endif
 
 #endif // IBK_DEPLOYMENT

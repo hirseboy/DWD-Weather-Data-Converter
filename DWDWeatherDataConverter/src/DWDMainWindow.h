@@ -105,13 +105,6 @@ public:
 	/*! Add language action. */
 	void addLanguageAction(const QString &langId, const QString &actionCaption) ;
 
-	/*! Updates the Maximum height of the plots, when the main window is beeing resized. */
-	void updateMaximumHeightOfPlots();
-
-protected:
-	/*! Override resize event. */
-	void resizeEvent(QResizeEvent* event) override;
-
 private slots:
 	void convertDwdData();
 
@@ -123,9 +116,6 @@ private slots:
 
 	/*! Updates all distances. */
 	void onLocationDistances(double latitude, double longitude);
-
-	/*! Updates all plot hights when bottom splitter moved. */
-	void onLogWidgetResized();
 
 	/*! Update plot zoom. */
 	void onUpdatePlotZooming(const QRectF &rect);
@@ -166,8 +156,6 @@ private slots:
 	void on_actionc6b_triggered();
 
 	void on_actionEPW_triggered();
-
-	void on_splitter_splitterMoved(int pos, int index);
 
 	void on_actionShow_log_widget_triggered();
 
