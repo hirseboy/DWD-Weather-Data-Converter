@@ -1774,7 +1774,8 @@ debug_x64/QtExt_ConstructionViewWidget.o: ../../src/QtExt_ConstructionViewWidget
 		../../src/QtExt_Constants.h \
 		../../src/QtExt_ConstructionGraphicsScene.h \
 		../../src/QtExt_GraphicsRectItemWithHatch.h \
-		ui/ui_QtExt_ConstructionViewWidget.h
+		ui/ui_QtExt_ConstructionViewWidget.h \
+		../../src/QtExt_ConstructionView.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug_x64/QtExt_ConstructionViewWidget.o ../../src/QtExt_ConstructionViewWidget.cpp
 
 debug_x64/QtExt_Conversions.o: ../../src/QtExt_Conversions.cpp ../../src/QtExt_Conversions.h \
@@ -1795,11 +1796,17 @@ debug_x64/QtExt_Conversions.o: ../../src/QtExt_Conversions.cpp ../../src/QtExt_C
 debug_x64/QtExt_CoordinateIndexEdit.o: ../../src/QtExt_CoordinateIndexEdit.cpp ../../src/QtExt_CoordinateIndexEdit.h \
 		../../src/QtExt_ValidatingInputBase.h \
 		ui/ui_QtExt_CoordinateIndexEdit.h \
-		../../../IBK/src/IBK_Exception.h \
-		../../../IBK/src/IBK_FormatString.h \
+		../../src/QtExt_ValidatingLineEdit.h \
+		../../../IBK/src/IBK_Parameter.h \
+		../../../IBK/src/IBK_Unit.h \
 		../../../IBK/src/IBK_configuration.h \
 		../../../IBK/src/IBK_BuildFlags.h \
-		../../../IBK/src/IBK_MultiLanguageString.h
+		../../../IBK/src/IBK_math.h \
+		../../../IBK/src/IBK_assert.h \
+		../../../IBK/src/IBK_Exception.h \
+		../../../IBK/src/IBK_FormatString.h \
+		../../../IBK/src/IBK_MultiLanguageString.h \
+		../../../IBK/src/IBK_StringUtils.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug_x64/QtExt_CoordinateIndexEdit.o ../../src/QtExt_CoordinateIndexEdit.cpp
 
 debug_x64/QtExt_DatabaseReference.o: ../../src/QtExt_DatabaseReference.cpp ../../src/QtExt_DatabaseReference.h

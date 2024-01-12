@@ -1,4 +1,5 @@
 #include "DWDTableModel.h"
+#include "DWDData.h"
 
 #include <QColor>
 
@@ -283,6 +284,10 @@ void DWDTableModel::uncheckData() {
 
 	for (DWDDescriptonData &data : *m_descData) {
 		data.resetCheckedData();
+	}
+
+	for (unsigned int i = 0; i < DWDDescriptonData::NUM_D; ++i) {
+		emit updateLocation((DWDDescriptonData::DWDDataType)i, "-");
 	}
 
 	reset();

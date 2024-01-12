@@ -126,15 +126,36 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	m_model = new QStandardItemModel();
 
 	m_ui->lineEditDistance->setup(0,1000, "Distance in km", true, true);
-//	m_ui->lineEditLatitude->setup(-90,90, "Latitude in Deg", true, true);
-//	m_ui->lineEditLongitude->setup(-180,180, "Longitude in Deg", true, true);
-//	m_ui->lineEditLatitude->setReadOnly(true);
-//	m_ui->lineEditLongitude->setReadOnly(true);
-//	m_ui->lineEditLatitude->setText(QString::number(m_ccm.m_latitudeInDegree));
-//	m_ui->lineEditLongitude->setText(QString::number(m_ccm.m_longitudeInDegree));
+	//	m_ui->lineEditLatitude->setup(-90,90, "Latitude in Deg", true, true);
+	//	m_ui->lineEditLongitude->setup(-180,180, "Longitude in Deg", true, true);
+	//	m_ui->lineEditLatitude->setReadOnly(true);
+	//	m_ui->lineEditLongitude->setReadOnly(true);
+	//	m_ui->lineEditLatitude->setText(QString::number(m_ccm.m_latitudeInDegree));
+	//	m_ui->lineEditLongitude->setText(QString::number(m_ccm.m_longitudeInDegree));
 
-	m_ui->dateEditEnd->setDate(QDate(2021,1,1));
-	m_ui->dateEditStart->setDate(QDate(2020,1,1));
+	m_ui->dateEditStart->blockSignals(true);
+	m_ui->dateEditEnd->blockSignals(true);
+
+	QDate startDate = QDate(2020,1,1);
+	QDate endDate = QDate(2021,1,1);
+
+	m_ui->dateEditEnd->setDate(endDate);
+	m_ui->dateEditStart->setDate(startDate);
+
+	m_dwdData.m_endTime.set(endDate.year(), endDate.month()-1, endDate.day()-1, 0 );
+	m_proxyModel->setFilterMaximumDate(endDate);
+
+	m_dwdData.m_startTime.set(startDate.year(), startDate.month()-1, startDate.day()-1, 0 );
+	m_proxyModel->setFilterMinimumDate(startDate);
+
+	m_ui->dateEditStart->setMinimumDate(QDate(1950,1,1));
+	m_ui->dateEditStart->setMaximumDate(QDate::currentDate());
+
+	m_ui->dateEditEnd->setMinimumDate(QDate(1950,1,1));
+	m_ui->dateEditEnd->setMaximumDate(QDate::currentDate());
+
+	m_ui->dateEditStart->blockSignals(false);
+	m_ui->dateEditEnd->blockSignals(false);
 
 	QTableView * v = m_ui->tableView;
 	v->verticalHeader()->setDefaultSectionSize(25);
@@ -153,11 +174,6 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	v->setFont(f);
 	v->horizontalHeader()->setFont(f); // Note: on Linux/Mac this won't work until Qt 5.11.1 - this was a bug between Qt 4.8...5.11.1
 
-	m_ui->dateEditStart->setMinimumDate(QDate(1950,1,1));
-	m_ui->dateEditStart->setMaximumDate(QDate::currentDate());
-
-	m_ui->dateEditEnd->setMinimumDate(QDate(1950,1,1));
-	m_ui->dateEditEnd->setMaximumDate(QDate::currentDate());
 
 	// Init combo box for program mode
 	m_ui->comboBoxMode->addItem("epw", EM_EPW);
@@ -184,8 +200,8 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	// Init Map Widget
 	m_mapWidget = m_ui->widgetLocation;
 	connect(m_mapWidget, &DM::DataMapWidget::updateDistances, this, &DWDMainWindow::onUpdateDistances);
-//	m_mapWidget->m_latitude = m_ccm.m_latitudeInDegree;
-//	m_mapWidget->m_longitude = m_ccm.m_longitudeInDegree;
+	//	m_mapWidget->m_latitude = m_ccm.m_latitudeInDegree;
+	//	m_mapWidget->m_longitude = m_ccm.m_longitudeInDegree;
 
 	double distance = 50;
 	on_horizontalSliderDistance_valueChanged(distance);
@@ -265,6 +281,19 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	m_ui->labelTextRadiation->setFont(font);
 	m_ui->labelTextTemperature->setFont(font);
 	m_ui->labelTextWind->setFont(font);
+
+	m_ui->checkBoxRad->setText("Short-Wave Radiation");
+	m_ui->checkBoxRad->setText("Short-Wave Radiation");
+	m_ui->checkBoxRad->setText("Short-Wave Radiation");
+	m_ui->checkBoxRad->setText("Short-Wave Radiation");
+	m_ui->checkBoxRad->setText("Short-Wave Radiation");
+
+	m_ui->checkBoxRad->setChecked(true);
+	m_ui->checkBoxRad->setChecked(true);
+	m_ui->checkBoxRad->setChecked(true);
+	m_ui->checkBoxRad->setChecked(true);
+	m_ui->checkBoxRad->setChecked(true);
+	m_ui->checkBoxRad->setChecked(true);
 
 	// init all plots
 	formatPlots(true);
@@ -454,16 +483,16 @@ bool DWDMainWindow::downloadData(bool showPreview, bool exportEPW) {
 	}
 
 	//check longitude and latitude
-//	if(m_ui->lineEditLatitude->text().isEmpty()){
-//		QMessageBox::critical(this, QString(), "Latitude is empty");
-//		setGUIState(true);
-//		return false;
-//	}
-//	if(m_ui->lineEditLongitude->text().isEmpty()){
-//		QMessageBox::critical(this, QString(), "Longitude is empty");
-//		setGUIState(true);
-//		return false;
-//	}
+	//	if(m_ui->lineEditLatitude->text().isEmpty()){
+	//		QMessageBox::critical(this, QString(), "Latitude is empty");
+	//		setGUIState(true);
+	//		return false;
+	//	}
+	//	if(m_ui->lineEditLongitude->text().isEmpty()){
+	//		QMessageBox::critical(this, QString(), "Longitude is empty");
+	//		setGUIState(true);
+	//		return false;
+	//	}
 
 	m_ui->plotRelHum->setEnabled(false);
 	m_ui->plotPres->setEnabled(false);
@@ -512,6 +541,7 @@ bool DWDMainWindow::downloadData(bool showPreview, bool exportEPW) {
 
 
 	if(dataInRows == std::vector<int>(DWDDescriptonData::NUM_D,-1)){
+		progressDialog()->hide();
 		QMessageBox::warning(this, "Download Error.", "Please select at least one climate entry (e.g. temperature, radiation, ...)!");
 		setGUIState(true);
 		//progressDialog()->hide();
@@ -1251,6 +1281,17 @@ void DWDMainWindow::calculateDistances() {
 }
 
 void DWDMainWindow::formatPlots(bool init) {
+
+	if (init) {
+		m_ui->plotTemp->detachItems();
+		m_ui->plotPres->detachItems();
+		m_ui->plotRad->detachItems();
+		m_ui->plotRadLongWave->detachItems();
+		m_ui->plotRain->detachItems();
+		m_ui->plotWind->detachItems();
+		m_ui->plotRelHum->detachItems();
+	}
+
 	formatQwtPlot(init, *m_ui->plotTemp, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Air Temperature", "C", -20, 40, 20, false);
 	formatQwtPlot(init, *m_ui->plotPres, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Pressure", "kPa", 0, 1.4, 0.2, false);
 	formatQwtPlot(init, *m_ui->plotRad, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Shortwave radiation", "W/m2", 0, 1400, 400, false);
@@ -1453,8 +1494,8 @@ void DWDMainWindow::on_pushButtonMap_clicked() {
 
 	m_mapWidget->m_scene->m_locationItem->setPos(pos.x(), pos.y());
 
-//	m_ui->lineEditLatitude->setText(QString::number(m_mapWidget->m_latitude) );
-//	m_ui->lineEditLongitude->setText(QString::number(m_mapWidget->m_longitude) );
+	//	m_ui->lineEditLatitude->setText(QString::number(m_mapWidget->m_latitude) );
+	//	m_ui->lineEditLongitude->setText(QString::number(m_mapWidget->m_longitude) );
 	m_ui->horizontalSliderDistance->setValue(m_mapWidget->m_distance);
 
 	m_ccm.m_latitudeInDegree = m_mapWidget->m_latitude;
@@ -1556,43 +1597,67 @@ void DWDMainWindow::on_comboBoxMode_currentIndexChanged(int index) {
 	}
 }
 
-void DWDMainWindow::on_dateEditStart_dateChanged(const QDate &date) {
+void DWDMainWindow::on_dateEditStart_dateChanged(const QDate &startDate) {
+	if (m_validData) {
+		QMessageBox::Button btn = QMessageBox::question(this, tr("Data reset"),
+														tr("Downloaded DWD data will be reseted.\n"
+														   "Do you want to continue?"));
 
-	m_ccm.m_startYear = date.year();
-	m_ui->widgetMetaData->updateUi();
-
-	m_validData = false;
-	updateUi();
-
-	if (m_mode == ExportMode::EM_EPW) {
-		m_ui->dateEditEnd->setDate(date.addMonths(12));
-	}
-	else {
-		if (date > m_ui->dateEditEnd->date()) {
-			m_ui->dateEditEnd->setDate(date.addDays(1));
-			QMessageBox::warning(this, tr("Error in start date"), tr("Period should be at least one day."));
+		if (btn == QMessageBox::No) {
+			updateUi(); // reset to old data
+			return;
 		}
 	}
 
-	m_dwdData.m_startTime.set(date.year(), date.month()-1, date.day()-1, 0 );
-	m_proxyModel->setFilterMinimumDate(date);
+	m_ccm.m_startYear = startDate.year();
+	m_ui->widgetMetaData->updateUi();
+
+
+
+	m_dwdData.m_startTime.set(startDate.year(), startDate.month()-1, startDate.day()-1, 0 );
+	QDate endDate(DWDConversions::convertIBKTime2QDate(m_dwdData.m_endTime));
+
+	if (m_mode == ExportMode::EM_EPW) {
+		endDate = startDate.addMonths(12);
+	}
+	else if (startDate > endDate) {
+		endDate = startDate.addDays(1);
+		QMessageBox::warning(this, tr("Error in start date"), tr("Period should be at least one day."));
+	}
+
+	m_dwdData.m_endTime = DWDConversions::convertQDate2IBKTime(endDate);
+
+	m_validData = false;
+	updateUi();
+	formatPlots(true);
 
 	// Unckecks currently selected data
 	m_dwdTableModel->uncheckData();
 }
 
 
-void DWDMainWindow::on_dateEditEnd_dateChanged(const QDate &date) {
-	if (date < m_ui->dateEditStart->date()) {
-		m_ui->dateEditStart->setDate(date.addDays(-1));
-		QMessageBox::warning(this, tr("Error in start date"), tr("Period should be at least one day."));
+void DWDMainWindow::on_dateEditEnd_dateChanged(const QDate &enddate) {
+	if (m_validData) {
+		QMessageBox::Button btn = QMessageBox::question(this, tr("Data reset"),
+														tr("Downloaded DWD data will be reseted.\n"
+														   "Do you want to continue?"));
+
+		if (btn == QMessageBox::No) {
+			updateUi(); // reset to old data
+			return;
+		}
 	}
 
 	m_validData = false;
-	updateUi();
 
-	m_dwdData.m_endTime.set(date.year(), date.month()-1, date.day()-1, 0 );
-	m_proxyModel->setFilterMaximumDate(date);
+	m_dwdData.m_endTime.set(enddate.year(), enddate.month()-1, enddate.day()-1, 0 );
+	QDate startDate(DWDConversions::convertIBKTime2QDate(m_dwdData.m_startTime));
+
+	if (startDate > enddate)
+		m_dwdData.m_startTime = DWDConversions::convertQDate2IBKTime(enddate.addDays(-1));
+
+	updateUi();
+	formatPlots(true);
 
 	// Unckecks currently selected data
 	m_dwdTableModel->uncheckData();
@@ -1608,6 +1673,19 @@ void DWDMainWindow::on_toolButtonHelp_clicked() {
 void DWDMainWindow::updateUi() {
 	m_ui->pushButtonDownload->setEnabled(m_validData);
 	alignLeftAxisQwtPlots();
+
+	m_ui->dateEditStart->blockSignals(true);
+	m_ui->dateEditEnd->blockSignals(true);
+
+	m_ui->dateEditStart->setDate(DWDConversions::convertIBKTime2QDate(m_dwdData.m_startTime));
+	m_ui->dateEditEnd->setDate(DWDConversions::convertIBKTime2QDate(m_dwdData.m_endTime));
+
+	m_proxyModel->setFilterMinimumDate(DWDConversions::convertIBKTime2QDate(m_dwdData.m_startTime));
+	m_proxyModel->setFilterMaximumDate(DWDConversions::convertIBKTime2QDate(m_dwdData.m_endTime));
+
+	m_ui->dateEditStart->blockSignals(false);
+	m_ui->dateEditEnd->blockSignals(false);
+
 }
 
 QProgressDialog *DWDMainWindow::progressDialog() {
@@ -1674,5 +1752,10 @@ void DWDMainWindow::on_horizontalSliderDistance_valueChanged(int value) {
 
 void DWDMainWindow::on_tabWidget_currentChanged(int index) {
 	m_ui->graphicsViewMap->fitInView(m_mapWidget->m_scene->sceneRect(), Qt::KeepAspectRatio);
+}
+
+
+void DWDMainWindow::on_checkBoxPres_toggled(bool checked) {
+	m_ui->plotPres->setHidden(!checked);
 }
 

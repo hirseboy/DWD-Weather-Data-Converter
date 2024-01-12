@@ -134,9 +134,9 @@ private slots:
 
 	void on_comboBoxMode_currentIndexChanged(int index);
 
-	void on_dateEditStart_dateChanged(const QDate &date);
+	void on_dateEditStart_dateChanged(const QDate &startDate);
 
-	void on_dateEditEnd_dateChanged(const QDate &date);
+	void on_dateEditEnd_dateChanged(const QDate &enddate);
 
 	void on_toolButtonHelp_clicked();
 
@@ -157,6 +157,8 @@ private slots:
 	void on_horizontalSliderDistance_valueChanged(int value);
 
 	void on_tabWidget_currentChanged(int index);
+
+	void on_checkBoxPres_toggled(bool checked);
 
 private:
 
