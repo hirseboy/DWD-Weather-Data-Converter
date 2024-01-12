@@ -1,6 +1,7 @@
 #include "DWDMainWindow.h"
-#include "qaction.h"
 #include "ui_DWDMainWindow.h"
+
+#include "qaction.h"
 
 #include <stdio.h>
 
@@ -18,6 +19,7 @@
 #include <QtExt_ValidatingLineEdit.h>
 
 #include <QString>
+#include <QSlider>
 #include <QCheckBox>
 #include <QStandardItemModel>
 #include <QAbstractTableModel>
@@ -67,7 +69,7 @@
 #include "DWDUtilities.h"
 
 
-class ProgressNotify : public IBK::NotificationHandler{
+class ProgressNotify : public IBK::NotificationHandler {
 public:
 	ProgressNotify(QProgressDialog *bar):
 		m_dlg(bar)
@@ -109,7 +111,7 @@ public:
 
 DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	QMainWindow(parent),
-	m_ui(new Ui::MainWindow),
+	m_ui(new Ui::DWDMainWindow),
 	m_progressDlg(nullptr),
 	m_dwdTableModel(new DWDTableModel(this)),
 	m_proxyModel(new DWDSortFilterProxyModel(this))
@@ -124,12 +126,12 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	m_model = new QStandardItemModel();
 
 	m_ui->lineEditDistance->setup(0,1000, "Distance in km", true, true);
-	m_ui->lineEditLatitude->setup(-90,90, "Latitude in Deg", true, true);
-	m_ui->lineEditLongitude->setup(-180,180, "Longitude in Deg", true, true);
-	m_ui->lineEditLatitude->setReadOnly(true);
-	m_ui->lineEditLongitude->setReadOnly(true);
-	m_ui->lineEditLatitude->setText(QString::number(m_ccm.m_latitudeInDegree));
-	m_ui->lineEditLongitude->setText(QString::number(m_ccm.m_longitudeInDegree));
+//	m_ui->lineEditLatitude->setup(-90,90, "Latitude in Deg", true, true);
+//	m_ui->lineEditLongitude->setup(-180,180, "Longitude in Deg", true, true);
+//	m_ui->lineEditLatitude->setReadOnly(true);
+//	m_ui->lineEditLongitude->setReadOnly(true);
+//	m_ui->lineEditLatitude->setText(QString::number(m_ccm.m_latitudeInDegree));
+//	m_ui->lineEditLongitude->setText(QString::number(m_ccm.m_longitudeInDegree));
 
 	m_ui->dateEditEnd->setDate(QDate(2021,1,1));
 	m_ui->dateEditStart->setDate(QDate(2020,1,1));
@@ -238,6 +240,8 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	connect(m_plotZoomerLongWave, &QwtPlotZoomer::zoomed, this, &DWDMainWindow::onUpdatePlotZooming);
 	connect(m_plotZoomerWind, &QwtPlotZoomer::zoomed, this, &DWDMainWindow::onUpdatePlotZooming);
 
+	connect(m_ui->horizontalSliderDistance, &QSlider::valueChanged, this, &DWDMainWindow::on_horizontalSliderDistance_valueChanged);
+
 	// connect Table model to get updates when clicked
 	connect(m_dwdTableModel, &DWDTableModel::updateLocation, this, &DWDMainWindow::onUpdateLocation);
 
@@ -264,6 +268,13 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 
 	// init all plots
 	formatPlots(true);
+
+	m_ui->tableView->update();
+	m_ui->tabWidget->setCurrentIndex(T_Settings);
+
+	m_ui->graphicsViewMap->setScene(m_mapWidget->m_scene);
+
+	onUpdateDistances();
 }
 
 
@@ -443,16 +454,16 @@ bool DWDMainWindow::downloadData(bool showPreview, bool exportEPW) {
 	}
 
 	//check longitude and latitude
-	if(m_ui->lineEditLatitude->text().isEmpty()){
-		QMessageBox::critical(this, QString(), "Latitude is empty");
-		setGUIState(true);
-		return false;
-	}
-	if(m_ui->lineEditLongitude->text().isEmpty()){
-		QMessageBox::critical(this, QString(), "Longitude is empty");
-		setGUIState(true);
-		return false;
-	}
+//	if(m_ui->lineEditLatitude->text().isEmpty()){
+//		QMessageBox::critical(this, QString(), "Latitude is empty");
+//		setGUIState(true);
+//		return false;
+//	}
+//	if(m_ui->lineEditLongitude->text().isEmpty()){
+//		QMessageBox::critical(this, QString(), "Longitude is empty");
+//		setGUIState(true);
+//		return false;
+//	}
 
 	m_ui->plotRelHum->setEnabled(false);
 	m_ui->plotPres->setEnabled(false);
@@ -745,8 +756,8 @@ bool DWDMainWindow::downloadData(bool showPreview, bool exportEPW) {
 	}
 
 	//copy all data in range and create an epw
-	double latiDeg = m_ui->lineEditLatitude->text().toDouble();
-	double longiDeg = m_ui->lineEditLongitude->text().toDouble();
+	double latiDeg = m_mapWidget->m_latitude;
+	double longiDeg = m_mapWidget->m_longitude;
 
 	///TODO take coordinates from radiation if exists --> zenith angle
 	//check data
@@ -1064,11 +1075,10 @@ void DWDMainWindow::onActionSwitchLanguage() {
 }
 
 void DWDMainWindow::onUpdateDistances() {
+	m_ui->lineEditLatitude->setText(QString("%1").arg(m_mapWidget->m_latitude, 0 ,'g', 3));
+	m_ui->lineEditLongitude->setText(QString("%1").arg(m_mapWidget->m_longitude, 0 ,'g', 3));
+
 	calculateDistances();
-}
-
-void DWDMainWindow::onLocationDistances(double latitude, double longitude) {
-
 }
 
 void DWDMainWindow::onUpdatePlotZooming(const QRectF &rect) {
@@ -1232,6 +1242,12 @@ void DWDMainWindow::calculateDistances() {
 			const_cast<DM::Data &>(dataItem->data()).m_currentDistance = dist;
 		}
 	}
+
+	double maxDistance = m_ui->lineEditDistance->text().toDouble();
+	m_proxyModel->setFilterMaximumDistance(maxDistance);
+	m_proxyModel->setFilterKeyColumn(1);
+
+	// dwdTableModel->reset();
 }
 
 void DWDMainWindow::formatPlots(bool init) {
@@ -1416,10 +1432,14 @@ void DWDMainWindow::addLanguageAction(const QString &langId, const QString &acti
 	}
 }
 
+void DWDMainWindow::resizeEvent(QResizeEvent *event) {
+	m_ui->graphicsViewMap->fitInView(m_mapWidget->m_scene->sceneRect(), Qt::KeepAspectRatio);
+}
+
 
 void DWDMainWindow::on_pushButtonMap_clicked() {
-	double latitude = m_ui->lineEditLatitude->text().toDouble();
-	double longitude = m_ui->lineEditLongitude->text().toDouble();
+	double latitude = m_mapWidget->m_latitude;
+	double longitude = m_mapWidget->m_longitude;
 	unsigned int distance = m_ui->horizontalSliderDistance->value();
 
 	//	unsigned int year = 2020;
@@ -1433,8 +1453,8 @@ void DWDMainWindow::on_pushButtonMap_clicked() {
 
 	m_mapWidget->m_scene->m_locationItem->setPos(pos.x(), pos.y());
 
-	m_ui->lineEditLatitude->setText(QString::number(m_mapWidget->m_latitude) );
-	m_ui->lineEditLongitude->setText(QString::number(m_mapWidget->m_longitude) );
+//	m_ui->lineEditLatitude->setText(QString::number(m_mapWidget->m_latitude) );
+//	m_ui->lineEditLongitude->setText(QString::number(m_mapWidget->m_longitude) );
 	m_ui->horizontalSliderDistance->setValue(m_mapWidget->m_distance);
 
 	m_ccm.m_latitudeInDegree = m_mapWidget->m_latitude;
@@ -1478,12 +1498,6 @@ void DWDMainWindow::on_lineEditNameFilter_textChanged(const QString &filter) {
 	m_proxyModel->setFilterKeyColumn(4);
 }
 
-
-void DWDMainWindow::on_horizontalSliderDistance_valueChanged(int value) {
-	m_ui->lineEditDistance->setText(QString::number(value) );
-	m_proxyModel->setFilterMaximumDistance(value);
-	m_proxyModel->setFilterKeyColumn(1);
-}
 
 void DWDMainWindow::on_pushButtonPreview_clicked() {
 	try {
@@ -1646,5 +1660,19 @@ void DWDMainWindow::on_actionEPW_triggered() {
 
 void DWDMainWindow::on_actionShow_log_widget_triggered() {
 	m_logWidget->show();
+}
+
+
+void DWDMainWindow::on_horizontalSliderDistance_valueChanged(int value) {
+	m_ui->lineEditDistance->setText(QString::number(value) );
+	m_mapWidget->setDistance(value);
+
+	m_proxyModel->setFilterMaximumDistance(value);
+	m_proxyModel->setFilterKeyColumn(1);
+}
+
+
+void DWDMainWindow::on_tabWidget_currentChanged(int index) {
+	m_ui->graphicsViewMap->fitInView(m_mapWidget->m_scene->sceneRect(), Qt::KeepAspectRatio);
 }
 

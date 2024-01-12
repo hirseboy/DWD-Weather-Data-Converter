@@ -1,7 +1,5 @@
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
-
-#include <map>
+#ifndef DWDMainWindowH
+#define DWDMainWindowH
 
 #include <QMainWindow>
 #include <QWidget>
@@ -31,7 +29,7 @@
 #include <qwt_plot_zoomer.h>
 
 namespace Ui {
-class MainWindow;
+class DWDMainWindow;
 }
 
 class QProgressDialog;
@@ -44,8 +42,7 @@ class DWDProgressBar;
 class DWDLogWidget;
 
 
-class DWDMainWindow : public QMainWindow
-{
+class DWDMainWindow : public QMainWindow {
 	Q_OBJECT
 
 	/*! Export modes. */
@@ -105,6 +102,9 @@ public:
 	/*! Add language action. */
 	void addLanguageAction(const QString &langId, const QString &actionCaption) ;
 
+protected:
+	void resizeEvent(QResizeEvent *event) override;
+
 private slots:
 	void convertDwdData();
 
@@ -113,9 +113,6 @@ private slots:
 
 	/*! Updates all distances. */
 	void onUpdateDistances();
-
-	/*! Updates all distances. */
-	void onLocationDistances(double latitude, double longitude);
 
 	/*! Update plot zoom. */
 	void onUpdatePlotZooming(const QRectF &rect);
@@ -132,8 +129,6 @@ private slots:
 	void on_radioButtonHistorical_toggled(bool checked);
 
 	void on_lineEditNameFilter_textChanged(const QString &filter);
-
-	void on_horizontalSliderDistance_valueChanged(int value);
 
 	void on_pushButtonPreview_clicked();
 
@@ -159,6 +154,10 @@ private slots:
 
 	void on_actionShow_log_widget_triggered();
 
+	void on_horizontalSliderDistance_valueChanged(int value);
+
+	void on_tabWidget_currentChanged(int index);
+
 private:
 
 	/*! Updates the Ui. */
@@ -167,7 +166,7 @@ private:
 	/*! Pointer to progress Dialog. */
 	QProgressDialog *progressDialog();
 
-	Ui::MainWindow								*m_ui;
+	Ui::DWDMainWindow							*m_ui;
 
 	/*! Pointer to download manager. */
 	DWDDownloader								*m_manager = nullptr;
@@ -248,6 +247,8 @@ private:
 
 	/*! Close event. */
 	void closeEvent(QCloseEvent *event) override;
+
+	// QWidget interface
 };
 
 #endif // MAINWINDOW_H
