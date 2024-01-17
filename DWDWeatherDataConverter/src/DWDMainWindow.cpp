@@ -283,9 +283,6 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	m_ui->labelTextTemperature->setFont(font);
 	m_ui->labelTextWind->setFont(font);
 
-	// init all plots
-	formatPlots(true);
-
 	m_ui->tableView->update();
 	m_ui->tabWidget->setCurrentIndex(T_Settings);
 
@@ -293,14 +290,17 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	onUpdateDistances();
 
 	// *** Add Checkboxes ***
-	generateCheckBox(tr("Temperature"), m_ui->plotTemp, DWDDescriptonData::color(DWDDescriptonData::D_TemperatureAndHumidity));
-	generateCheckBox(tr("Relative humidity"), m_ui->plotRelHum, QColor("#7F2AFF"));
-	generateCheckBox(tr("Short-wave radiation"), m_ui->plotRad, DWDDescriptonData::color(DWDDescriptonData::D_Solar));
-	generateCheckBox(tr("Long-wave radiation"), m_ui->plotRadLongWave, QColor("#871ca4"));
-	generateCheckBox(tr("Pressure"), m_ui->plotPres, DWDDescriptonData::color(DWDDescriptonData::D_Pressure));
-	generateCheckBox(tr("Precipiation"), m_ui->plotRain, DWDDescriptonData::color(DWDDescriptonData::D_Precipitation));
-	generateCheckBox(tr("Wind"), m_ui->plotWind, DWDDescriptonData::color(DWDDescriptonData::D_Wind));
 
+	generateCheckBox(tr("Temperature"), m_ui->plotTemp, DWDDescriptonData::color(DWDDescriptonData::D_TemperatureAndHumidity), PT_Temperature);
+	generateCheckBox(tr("Relative humidity"), m_ui->plotRelHum, QColor("#7F2AFF"), PT_RelativeHumidity);
+	generateCheckBox(tr("Short-wave radiation"), m_ui->plotRad, DWDDescriptonData::color(DWDDescriptonData::D_Solar), PT_ShortWaveRadiation);
+	generateCheckBox(tr("Long-wave radiation"), m_ui->plotRadLongWave, QColor("#871ca4"), PT_LongWaveRadiation);
+	generateCheckBox(tr("Pressure"), m_ui->plotPres, DWDDescriptonData::color(DWDDescriptonData::D_Pressure), PT_Pressure);
+	generateCheckBox(tr("Precipiation"), m_ui->plotRain, DWDDescriptonData::color(DWDDescriptonData::D_Precipitation), PT_Precipitation);
+	generateCheckBox(tr("Wind"), m_ui->plotWind, DWDDescriptonData::color(DWDDescriptonData::D_Wind), PT_WindSpeed);
+
+	// init all plots
+	formatPlots(true);
 }
 
 
@@ -504,7 +504,7 @@ bool DWDMainWindow::downloadAndConvertDwdData(bool showPreview, bool exportEPW) 
 				dataInRows[j] = i;
 
 				// Set current location name
-				m_currentLocation[j] = QString::fromStdString(dwdData.m_name);
+				m_currentLocation[j] = QString::fromLocal8Bit(dwdData.m_name.c_str());
 
 				switch (j) {
 				case DWDDescriptonData::D_TemperatureAndHumidity:
@@ -1286,14 +1286,6 @@ void DWDMainWindow::calculateDistances() {
 void DWDMainWindow::formatPlots(bool init) {
 
 	if (init) {
-		m_ui->plotTemp->setEnabled(false);
-		m_ui->plotPres->setEnabled(false);
-		m_ui->plotRad->setEnabled(false);
-		m_ui->plotRadLongWave->setEnabled(false);
-		m_ui->plotRain->setEnabled(false);
-		m_ui->plotWind->setEnabled(false);
-		m_ui->plotRelHum->setEnabled(false);
-
 		m_ui->plotTemp->detachItems();
 		m_ui->plotPres->detachItems();
 		m_ui->plotRad->detachItems();
@@ -1313,53 +1305,70 @@ void DWDMainWindow::formatPlots(bool init) {
 
 	QString description;
 	if (m_ui->plotTemp->isEnabled()) {
-		description += "Temperatur: " + m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity] + "\n";
+		description += "Temperatur: " + m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity] + ", ";
 		m_ui->plotTemp->setTitle(QString("%1 - %2")
 								 .arg(m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity])
 				.arg(m_ui->plotTemp->title().text()));
 	}
 
 	if (m_ui->plotRelHum->isEnabled()) {
-		description += "Relative Humidity: " + m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity] + "\n";
+		description += "Relative Humidity: " + m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity] + ", ";
 		m_ui->plotRelHum->setTitle(QString("%1 - %2")
 								   .arg(m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity])
 				.arg(m_ui->plotRelHum->title().text()));
 	}
 
 	if (m_ui->plotPres->isEnabled()) {
-		description += "Pressure: " + m_currentLocation[DWDDescriptonData::D_Pressure] + "\n";
+		description += "Pressure: " + m_currentLocation[DWDDescriptonData::D_Pressure] + ", ";
 		m_ui->plotPres->setTitle(QString("%1 - %2")
 								 .arg(m_currentLocation[DWDDescriptonData::D_Pressure])
 				.arg(m_ui->plotPres->title().text()));
 	}
 
 	if (m_ui->plotRad->isEnabled()) {
-		description += "Short wave radiation: " + m_currentLocation[DWDDescriptonData::D_Solar] + "\n";
+		description += "Short wave radiation: " + m_currentLocation[DWDDescriptonData::D_Solar] + ", ";
 		m_ui->plotRad->setTitle(QString("%1 - %2")
 								.arg(m_currentLocation[DWDDescriptonData::D_Solar])
 				.arg(m_ui->plotRad->title().text()));
 	}
 
 	if (m_ui->plotRadLongWave->isEnabled()) {
-		description += "Long wave radiation: " + m_currentLocation[DWDDescriptonData::D_Solar] + "\n";
+		description += "Long wave radiation: " + m_currentLocation[DWDDescriptonData::D_Solar] + ", ";
 		m_ui->plotRadLongWave->setTitle(QString("%1 - %2")
 										.arg(m_currentLocation[DWDDescriptonData::D_Solar])
 				.arg(m_ui->plotRadLongWave->title().text()));
 	}
 
 	if (m_ui->plotRain->isEnabled()) {
-		description += "Precipitation: " + m_currentLocation[DWDDescriptonData::D_Precipitation] + "\n";
+		description += "Precipitation: " + m_currentLocation[DWDDescriptonData::D_Precipitation] + ", ";
 		m_ui->plotRain->setTitle(QString("%1 - %2")
 								 .arg(m_currentLocation[DWDDescriptonData::D_Precipitation])
 				.arg(m_ui->plotRain->title().text()));
 	}
 
 	if (m_ui->plotWind->isEnabled()) {
-		description += "Wind: " + m_currentLocation[DWDDescriptonData::D_Wind] + "\n";
+		description += "Wind: " + m_currentLocation[DWDDescriptonData::D_Wind] + ", ";
 		m_ui->plotWind->setTitle(QString("%1 - %2")
 								 .arg(m_currentLocation[DWDDescriptonData::D_Wind])
 				.arg(m_ui->plotWind->title().text()));
 	}
+
+	m_ui->plotTemp->setHidden(!m_ui->plotTemp->isEnabled());
+	m_ui->plotRelHum->setHidden(!m_ui->plotRelHum->isEnabled());
+	m_ui->plotPres->setHidden(!m_ui->plotPres->isEnabled());
+	m_ui->plotRad->setHidden(!m_ui->plotRad->isEnabled());
+	m_ui->plotRadLongWave->setHidden(!m_ui->plotRadLongWave->isEnabled());
+	m_ui->plotWind->setHidden(!m_ui->plotWind->isEnabled());
+	m_ui->plotRain->setHidden(!m_ui->plotRain->isEnabled());
+
+	// ToDo Completly improve this!!!!
+	m_checkBox[PT_Temperature]->setChecked(m_ui->plotTemp->isEnabled());
+	m_checkBox[PT_RelativeHumidity]->setChecked(m_ui->plotRelHum->isEnabled());
+	m_checkBox[PT_LongWaveRadiation]->setChecked(m_ui->plotRadLongWave->isEnabled());
+	m_checkBox[PT_ShortWaveRadiation]->setChecked(m_ui->plotRad->isEnabled());
+	m_checkBox[PT_WindSpeed]->setChecked(m_ui->plotWind->isEnabled());
+	m_checkBox[PT_Pressure]->setChecked(m_ui->plotPres->isEnabled());
+	m_checkBox[PT_Precipitation]->setChecked(m_ui->plotRain->isEnabled());
 
 	m_metaDataWidget->m_ccm->m_comment = description.toStdString();
 	m_metaDataWidget->updateUi();
@@ -1719,7 +1728,7 @@ void DWDMainWindow::updateUi() {
 
 }
 
-void DWDMainWindow::generateCheckBox(const QString &str, const QwtPlot *plot, const QColor &color) {
+void DWDMainWindow::generateCheckBox(const QString &str, const QwtPlot *plot, const QColor &color, PlotType pt) {
 	// Connect the checkbox's stateChanged signal to a lambda function
 	QHBoxLayout *layout = m_ui->horizontalLayoutCheckBoxes;
 
@@ -1734,6 +1743,8 @@ void DWDMainWindow::generateCheckBox(const QString &str, const QwtPlot *plot, co
 	connect(cb, &QCheckBox::toggled, [plot](bool checked){
 		const_cast<QwtPlot*>(plot)->setHidden(!checked);
 	});
+
+	m_checkBox[pt] = cb;
 }
 
 

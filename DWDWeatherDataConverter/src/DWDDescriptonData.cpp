@@ -5,6 +5,7 @@
 #include <QMessageBox>
 
 #include "QtExt_Directories.h"
+#include "qtextcodec.h"
 
 QStringList DWDDescriptonData::downloadDescriptionFiles(bool isRecent){
 	QString baseDirFTP = "ftp://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/hourly/";
@@ -113,9 +114,9 @@ void DWDDescriptonData::readDescription(const IBK::Path &filepath, std::vector<D
 
 	// --------------------------------------------------
 
-	//parse each line
+	// parse each line
 	for (unsigned int i=2; i<lines.size(); ++i ) {
-		const std::string & line =lines[i];
+		const std::string & line = lines[i];
 		if(line.empty())
 			continue;
 
@@ -174,8 +175,8 @@ void DWDDescriptonData::readDescription(const IBK::Path &filepath, std::vector<D
 								 + QString("%1\n").arg(dwd.m_height)
 								 + QString("%1\n").arg(dwd.m_latitude)
 								 + QString("%1\n").arg(dwd.m_longitude)
-								 + QString("%1\n").arg(QString::fromStdString(dwd.m_name))
-								 + QString("%1\n").arg(QString::fromStdString(dwd.m_country))
+								 + QString("%1\n").arg(QString::fromLocal8Bit(dwd.m_name.c_str()))
+								 + QString("%1\n").arg(QString::fromLocal8Bit(dwd.m_country.c_str()))
 								 + QString("%1\n").arg(QString::fromStdString(line))
 								 );
 		}

@@ -23,6 +23,7 @@
 #include "MetaDataEditWidget.h"
 
 #include "QtExt_Directories.h"
+#include "qcheckbox.h"
 
 #include <qwt_plot.h>
 #include <qwt_plot_picker.h>
@@ -59,6 +60,18 @@ class DWDMainWindow : public QMainWindow {
 		T_DataTable,
 		T_Plots,
 		NUM_T
+	};
+
+	/*! Plot types for checkboxes. */
+	enum PlotType {
+		PT_Temperature,
+		PT_RelativeHumidity,
+		PT_ShortWaveRadiation,
+		PT_LongWaveRadiation,
+		PT_Pressure,
+		PT_Precipitation,
+		PT_WindSpeed,
+		NUM_PT
 	};
 
 public:
@@ -172,7 +185,7 @@ private:
 	void updateUi();
 
 	/*! Generate check boxes. */
-	void generateCheckBox(const QString &str, const QwtPlot *plot, const QColor &color);
+	void generateCheckBox(const QString &str, const QwtPlot *plot, const QColor &color, PlotType pt);
 
 	/*! Pointer to progress Dialog. */
 	QProgressDialog *progressDialog();
@@ -231,6 +244,7 @@ private:
 
 	/*! Current selected location. */
 	QString										m_currentLocation[DWDDescriptonData::NUM_D];
+	QCheckBox *									m_checkBox[PlotType::NUM_PT];
 
 	/*! Deletes currently downloaded files. When download was canceled by user.
 		So, no corrupted cached files will be read. */
