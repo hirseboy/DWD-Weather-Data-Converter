@@ -165,6 +165,9 @@ private:
 	/*! Updates the Ui. */
 	void updateUi();
 
+	/*! Generate check boxes. */
+	void generateCheckBox(const QString &str, const QwtPlot *plot, const QColor &color);
+
 	/*! Pointer to progress Dialog. */
 	QProgressDialog *progressDialog();
 
@@ -179,9 +182,7 @@ private:
 	/*! Pointer to Map Widget. */
 	DWDAboutDialog								*m_aboutDialog = nullptr;
 
-	/*! Description input of all existing DWD stations.
-		\param key: station id
-	*/
+	/*! Description input of all existing DWD stations.	*/
 	std::vector<DWDDescriptonData>				m_descData;
 	DWDData										m_dwdData;
 

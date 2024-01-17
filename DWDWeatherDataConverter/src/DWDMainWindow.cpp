@@ -39,6 +39,7 @@
 #include <QtNumeric>
 #include <QDate>
 #include <QDebug>
+#include <QHBoxLayout>
 
 #include <qwt_plot_curve.h>
 #include <qwt_series_data.h>
@@ -282,19 +283,6 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	m_ui->labelTextTemperature->setFont(font);
 	m_ui->labelTextWind->setFont(font);
 
-	m_ui->checkBoxRad->setText("Short-Wave Radiation");
-	m_ui->checkBoxRad->setText("Short-Wave Radiation");
-	m_ui->checkBoxRad->setText("Short-Wave Radiation");
-	m_ui->checkBoxRad->setText("Short-Wave Radiation");
-	m_ui->checkBoxRad->setText("Short-Wave Radiation");
-
-	m_ui->checkBoxRad->setChecked(true);
-	m_ui->checkBoxRad->setChecked(true);
-	m_ui->checkBoxRad->setChecked(true);
-	m_ui->checkBoxRad->setChecked(true);
-	m_ui->checkBoxRad->setChecked(true);
-	m_ui->checkBoxRad->setChecked(true);
-
 	// init all plots
 	formatPlots(true);
 
@@ -302,8 +290,17 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	m_ui->tabWidget->setCurrentIndex(T_Settings);
 
 	m_ui->graphicsViewMap->setScene(m_mapWidget->m_scene);
-
 	onUpdateDistances();
+
+	// *** Add Checkboxes ***
+	generateCheckBox(tr("Temperature"), m_ui->plotTemp, DWDDescriptonData::color(DWDDescriptonData::D_TemperatureAndHumidity));
+	generateCheckBox(tr("Relative humidity"), m_ui->plotRelHum, QColor("#7F2AFF"));
+	generateCheckBox(tr("Short-wave radiation"), m_ui->plotRad, DWDDescriptonData::color(DWDDescriptonData::D_Solar));
+	generateCheckBox(tr("Long-wave radiation"), m_ui->plotRadLongWave, QColor("#871ca4"));
+	generateCheckBox(tr("Pressure"), m_ui->plotPres, DWDDescriptonData::color(DWDDescriptonData::D_Pressure));
+	generateCheckBox(tr("Precipiation"), m_ui->plotRain, DWDDescriptonData::color(DWDDescriptonData::D_Precipitation));
+	generateCheckBox(tr("Wind"), m_ui->plotWind, DWDDescriptonData::color(DWDDescriptonData::D_Wind));
+
 }
 
 
@@ -782,7 +779,14 @@ bool DWDMainWindow::downloadData(bool showPreview, bool exportEPW) {
 			m_dwdData.createData(&progressNotify, filenamesForReading);
 		}
 	} catch(IBK::Exception &ex) {
-		throw IBK::Exception(IBK::FormatString("%1\nCould not convert DWD Data succesfully.").arg(ex.what()), FUNC_ID);
+		throw IBK::Exception(IBK::FormatString("%1\nCould not convert DWD Data.").arg(ex.what()), FUNC_ID);
+	}
+
+	if (m_dwdData.m_data.empty()) {
+		progressDialog()->hide();
+		throw IBK::Exception("Empty climate data. Cannot generate climate data for "
+							 "selected time-period and location. May be due to mismatching "
+							 "meta-data and measurement data from DWD server.", FUNC_ID);
 	}
 
 	//copy all data in range and create an epw
@@ -1230,9 +1234,12 @@ void DWDMainWindow::on_pushButtonDownload_clicked(){
 	}
 	catch (IBK::Exception &ex) {
 		progressDialog()->hide();
-		QMessageBox::warning(this, tr("Error reading DWD Data."),
-							 tr("Could not read DWD Data. See Error below.\n%1").arg(QString::fromStdString(ex.what())));
 
+		QMessageBox messageBox;
+		messageBox.setIcon(QMessageBox::Critical);
+		messageBox.setText(tr("Could not download and save climate data.\nSee detailed errors."));
+		messageBox.setDetailedText(QString("%1").arg(ex.what()));
+		messageBox.exec();
 	}
 }
 
@@ -1283,6 +1290,14 @@ void DWDMainWindow::calculateDistances() {
 void DWDMainWindow::formatPlots(bool init) {
 
 	if (init) {
+		m_ui->plotTemp->setEnabled(false);
+		m_ui->plotPres->setEnabled(false);
+		m_ui->plotRad->setEnabled(false);
+		m_ui->plotRadLongWave->setEnabled(false);
+		m_ui->plotRain->setEnabled(false);
+		m_ui->plotWind->setEnabled(false);
+		m_ui->plotRelHum->setEnabled(false);
+
 		m_ui->plotTemp->detachItems();
 		m_ui->plotPres->detachItems();
 		m_ui->plotRad->detachItems();
@@ -1552,8 +1567,14 @@ void DWDMainWindow::on_pushButtonPreview_clicked() {
 		}
 	}
 	catch (IBK::Exception &ex) {
-		QMessageBox::warning(this, tr("Error in data download"), tr("Could not download and convert climate data. See Error below\n%1").arg(ex.what()));
-		m_progressDlg->reset();
+		progressDialog()->hide();
+
+		QMessageBox messageBox;
+		messageBox.setIcon(QMessageBox::Critical);
+		messageBox.setText(tr("Could not download and convert climate data. See detailed errors."));
+		messageBox.setDetailedText(QString("%1").arg(ex.what()));
+		messageBox.exec();
+
 		setGUIState(true);
 		return;
 	}
@@ -1612,9 +1633,7 @@ void DWDMainWindow::on_dateEditStart_dateChanged(const QDate &startDate) {
 	m_ccm.m_startYear = startDate.year();
 	m_ui->widgetMetaData->updateUi();
 
-
-
-	m_dwdData.m_startTime.set(startDate.year(), startDate.month()-1, startDate.day()-1, 0 );
+	m_dwdData.m_startTime = DWDConversions::convertQDate2IBKTime(startDate);
 	QDate endDate(DWDConversions::convertIBKTime2QDate(m_dwdData.m_endTime));
 
 	if (m_mode == ExportMode::EM_EPW) {
@@ -1626,6 +1645,9 @@ void DWDMainWindow::on_dateEditStart_dateChanged(const QDate &startDate) {
 	}
 
 	m_dwdData.m_endTime = DWDConversions::convertQDate2IBKTime(endDate);
+
+	for (unsigned int i = 0; i < DWDDescriptonData::NUM_D; ++i)
+		m_currentLocation[(DWDDescriptonData::DWDDataType)i] = "-";
 
 	m_validData = false;
 	updateUi();
@@ -1657,6 +1679,10 @@ void DWDMainWindow::on_dateEditEnd_dateChanged(const QDate &enddate) {
 		m_dwdData.m_startTime = DWDConversions::convertQDate2IBKTime(enddate.addDays(-1));
 
 	updateUi();
+
+	for (unsigned int i = 0; i < DWDDescriptonData::NUM_D; ++i)
+		m_currentLocation[(DWDDescriptonData::DWDDataType)i] = "-";
+
 	formatPlots(true);
 
 	// Unckecks currently selected data
@@ -1671,6 +1697,7 @@ void DWDMainWindow::on_toolButtonHelp_clicked() {
 }
 
 void DWDMainWindow::updateUi() {
+
 	m_ui->pushButtonDownload->setEnabled(m_validData);
 	alignLeftAxisQwtPlots();
 
@@ -1687,6 +1714,24 @@ void DWDMainWindow::updateUi() {
 	m_ui->dateEditEnd->blockSignals(false);
 
 }
+
+void DWDMainWindow::generateCheckBox(const QString &str, const QwtPlot *plot, const QColor &color) {
+	// Connect the checkbox's stateChanged signal to a lambda function
+	QHBoxLayout *layout = m_ui->horizontalLayoutCheckBoxes;
+
+	QCheckBox *cb = new QCheckBox();
+	cb->setChecked(true);
+	cb->setText(str);
+	cb->setStyleSheet(QString("QCheckBox {Color: %1;}").arg(color.name()));
+
+	layout->addWidget(cb);
+
+	// Connect the checkbox's stateChanged signal to a lambda function
+	connect(cb, &QCheckBox::toggled, [plot](bool checked){
+		const_cast<QwtPlot*>(plot)->setHidden(!checked);
+	});
+}
+
 
 QProgressDialog *DWDMainWindow::progressDialog() {
 	if(m_progressDlg == nullptr) {

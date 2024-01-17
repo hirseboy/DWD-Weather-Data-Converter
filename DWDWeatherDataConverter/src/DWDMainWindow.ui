@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1335</width>
-    <height>486</height>
+    <height>839</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -347,7 +347,7 @@
       </widget>
       <widget class="QWidget" name="tabLocation">
        <attribute name="title">
-        <string>Location</string>
+        <string>Data map</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_8">
         <item row="0" column="0">
@@ -500,73 +500,10 @@
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <layout class="QVBoxLayout" name="plotLayoutPreview" stretch="0,1,1,1,1,1,1,1">
           <item>
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>Show plot:</string>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayoutCheckBoxes"/>
           </item>
-          <item>
-           <widget class="QCheckBox" name="checkBoxPres">
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="checkBoxRad">
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="checkBoxRadLongWave">
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="checkBoxRain">
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="checkBoxTemp">
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="checkBoxWind">
-            <property name="text">
-             <string>CheckBox</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QVBoxLayout" name="plotLayoutPreview" stretch="1,1,1,1,1,1,1">
           <item>
            <widget class="QwtPlot" name="plotTemp" native="true">
             <property name="enabled">
@@ -751,8 +688,16 @@
      <addaction name="actionEPW"/>
      <addaction name="actionc6b"/>
     </widget>
+    <widget class="QMenu" name="menuTheme">
+     <property name="title">
+      <string>Theme</string>
+     </property>
+     <addaction name="actionwhite"/>
+     <addaction name="actiondark"/>
+    </widget>
     <addaction name="menuLanguage"/>
     <addaction name="menuMode"/>
+    <addaction name="menuTheme"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -765,7 +710,7 @@
     <property name="title">
      <string>View</string>
     </property>
-    <addaction name="actionShow_log_widget"/>
+    <addaction name="actionShowLogWidget"/>
    </widget>
    <addaction name="menuDatei"/>
    <addaction name="menuBearbeiten"/>
@@ -805,9 +750,19 @@
     <string>c6b</string>
    </property>
   </action>
-  <action name="actionShow_log_widget">
+  <action name="actionShowLogWidget">
    <property name="text">
     <string>Show log widget</string>
+   </property>
+  </action>
+  <action name="actionwhite">
+   <property name="text">
+    <string>white</string>
+   </property>
+  </action>
+  <action name="actiondark">
+   <property name="text">
+    <string>dark</string>
    </property>
   </action>
  </widget>
