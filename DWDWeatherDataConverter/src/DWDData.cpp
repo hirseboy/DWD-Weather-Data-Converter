@@ -26,36 +26,36 @@ void DWDData::createData(IBK::NotificationHandler * notify, const std::map<IBK::
 	FUNCID(createData);
 
 	try {
-	m_intervalDuration = intervalDuration;
 
-	m_data.clear();
+		m_intervalDuration = intervalDuration;
+		m_data.clear();
 
-	unsigned int counter = 0;
-	unsigned int size = filenames.size();
-	for(std::map<IBK::Path, std::set<DWDData::DataType>>::const_iterator	it=filenames.begin();
-		it!=filenames.end(); ++it){
-		//check if file exist
-		IBK::Path fileName = it->first;
-		if(!fileName.exists())
-			throw IBK::Exception(IBK::FormatString( "File '%1' does not exist. ").arg(fileName.filename()), FUNC_ID);
+		unsigned int counter = 0;
+		unsigned int size = filenames.size();
+		for(std::map<IBK::Path, std::set<DWDData::DataType>>::const_iterator	it=filenames.begin();
+			it!=filenames.end(); ++it){
+			//check if file exist
+			IBK::Path fileName = it->first;
+			if(!fileName.exists())
+				throw IBK::Exception(IBK::FormatString( "File '%1' does not exist. ").arg(fileName.filename()), FUNC_ID);
 
-		//read the file
-		IBK::FileReader fileReader(fileName, 40960);
-		std::vector<std::string> lines;
+			//read the file
+			IBK::FileReader fileReader(fileName, 40960);
+			std::vector<std::string> lines;
 
-		qDebug() << "Reading file " << QString::fromStdString(fileName.str());
-		m_progressDlg->setLabelText(QString("Reading file '%1'").arg(QString::fromStdString(fileName.filename().str() ) ) );
-		fileReader.readAll(fileName, lines, std::vector<std::string>{"\n"}, 0, notify);
+			qDebug() << "Reading file " << QString::fromStdString(fileName.str());
+			m_progressDlg->setLabelText(QString("Reading file '%1'").arg(QString::fromStdString(fileName.filename().str() ) ) );
+			fileReader.readAll(fileName, lines, std::vector<std::string>{"\n"}, 0, notify);
 
-		qDebug() << "Extracting data from " << QString::fromStdString(fileName.str());
-		m_progressDlg->setLabelText(QString("Converting data of file '%1'").arg(QString::fromStdString(fileName.filename().str() ) ) );
-		for(unsigned int i=1;i<lines.size(); ++i){
-			addDataLine(lines[i], it->second);
-			notify->notify((double)counter/size * (double)(i)/lines.size());
+			qDebug() << "Extracting data from " << QString::fromStdString(fileName.str());
+			m_progressDlg->setLabelText(QString("Converting data of file '%1'").arg(QString::fromStdString(fileName.filename().str() ) ) );
+			for(unsigned int i=lines.size()-1; i>0; --i){
+				addDataLine(lines[i], it->second);
+				notify->notify((double)counter/size * (double)(lines.size() - i)/lines.size());
+			}
+
+			++counter;
 		}
-
-		++counter;
-	}
 	} catch (IBK::Exception &ex) {
 		throw IBK::Exception(IBK::FormatString("%1\nCould not read DWD Data.").arg(ex.what()), FUNC_ID);
 	}
@@ -64,6 +64,8 @@ void DWDData::createData(IBK::NotificationHandler * notify, const std::map<IBK::
 
 
 void DWDData::addDataLine(std::string &line, const std::set<DataType> &dataType){
+	FUNCID(DWDData::addDataLine);
+
 	std::vector<std::string> data;
 
 	/*! Mind the time zone. In DWD Data the time zone is set to UTC+0 whereas in our exported epw file
@@ -90,6 +92,7 @@ void DWDData::addDataLine(std::string &line, const std::set<DataType> &dataType)
 		return;	//time is not valid
 	}
 
+	std::string s;
 	if(data.size()>2){
 		try {
 			unsigned int idx = 1;
@@ -99,26 +102,27 @@ void DWDData::addDataLine(std::string &line, const std::set<DataType> &dataType)
 				idx = 8;
 
 			//get timepoint
-			std::string& s = data[idx];
+			s = data[idx];
 			unsigned int year	= IBK::string2val<unsigned int>(s.substr(0,4));
 			unsigned int month	= IBK::string2val<unsigned int>(s.substr(4,2))-1;
 			unsigned int day	= IBK::string2val<unsigned int>(s.substr(6,2))-1;
 			unsigned int hour	= IBK::string2val<unsigned int>(s.substr(8,2));
 			time.set(year, month, day, hour*3600);
 		} catch (IBK::Exception &ex) {
-
+			throw IBK::Exception(IBK::FormatString("%2\nCould not convert time-step from DWD-Dataset '%1'")
+								 .arg((s.substr(0, 10))).arg(ex.what()), FUNC_ID);
 		}
-
 	}
 	else
 		return;	//if no time point is given return
 
+//	qDebug()  << "Current time: " << QString::fromStdString(s);
 	double timepointStart = m_startTime.secondsUntil(time)/m_intervalDuration;
 	double timepointEnd = m_endTime.secondsUntil(time)/m_intervalDuration;
 
 	//shift all data because startpoint is later
 	unsigned int newTimepointStart = static_cast<unsigned int>(timepointStart);
-	if(timepointStart<0 || timepointEnd > 0){
+	if(timepointStart < 0 || timepointEnd > 0){
 		return; // data should not be added
 		//adjust start date
 		double timeDiffSec = m_startTime.secondsUntil(time);
@@ -151,17 +155,6 @@ void DWDData::addDataLine(std::string &line, const std::set<DataType> &dataType)
 	//get timepoint
 }
 
-void DWDData::writeTSV() {
-	//first find the start timepoint
-	if(m_data.empty())
-		return; // no data :(
-
-	// we go through all data and compose a tsv table
-	for(unsigned int i=0; i<m_data.size(); ++i){
-		// time
-		// data
-	}
-}
 
 void DWDData::exportEPW(CCM::ClimateDataLoader &loader, double latitudeDeg, double longitudeDeg, IBK::Path &exportPath) {
 	FUNCID(exportEPW);

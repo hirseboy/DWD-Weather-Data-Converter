@@ -98,15 +98,13 @@ public:
 
 	};
 
+	// ************** PUBLIC MEMBER FUNCTIONS *****************
 
 	/*! Reads all given dwd files and creates the data. */
 	void createData(IBK::NotificationHandler * notify, const std::map<IBK::Path, std::set<DWDData::DataType>> &filenames, unsigned int intervalDuration = 3600);
 
 	/*! Add a data line from dwd file.	*/
 	void addDataLine(std::string &line, const std::set<DataType> &dataType);
-
-	/*! Create a tsv-file for one year. */
-	void writeTSV();
 
 	/*! Create an epw-file for one year. */
 	void exportEPW(CCM::ClimateDataLoader &loader, double latitudeDeg, double longitudeDeg, IBK::Path &exportPath);
@@ -124,7 +122,7 @@ public:
 	/*! Returns interval data. */
 	std::vector<IntervalData>	data() const;
 
-
+	// ************** PUBLIC MEMBER VARIABLES *****************
 
 	IBK::Time						m_startTime;                ///> Start time for the first interval data
 	IBK::Time						m_endTime;					///> End time for the first interval data
