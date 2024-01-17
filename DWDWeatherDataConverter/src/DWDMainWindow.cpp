@@ -318,19 +318,13 @@ void DWDMainWindow::updateDownloadButton() {
 		for ( unsigned int j = 0; j<DWDDescriptonData::NUM_D; ++j ) {	// iterate over categories/types
 			DWDDescriptonData &dwdData = m_descData[i];
 			if (dwdData.m_data[j].m_isChecked && dwdData.m_data[j].m_isLocal) {
-				dataInRows[j] = i;
+				return; // all fine, we have at least one valid data
 			}
 		}
 	}
-	if (std::find(dataInRows.begin(), dataInRows.end(), -1) != dataInRows.end()) {
-		m_generateEpwEnabled = false;
-		setGUIState(m_guiState); //update ui
 
-	}
-	else {
-		m_generateEpwEnabled = true;
-		setGUIState(m_guiState); //update ui
-	}
+	m_enableClimateFileGeneration = false;
+	updateGuiState(); //update ui
 }
 
 void DWDMainWindow::updateLocalFileList() {
@@ -454,18 +448,17 @@ void DWDMainWindow::alignLeftAxisQwtPlots() {
 	m_ui->plotRadLongWave->setContentsMargins(maxAxisWidth-m_ui->plotRadLongWave->axisWidget(QwtPlot::yLeft)->width(),0,0,0);
 }
 
-void DWDMainWindow::setGUIState(bool guiState) {
-	m_guiState = guiState;
-	m_ui->tableView->setEnabled(guiState);
-	m_ui->groupBoxLocation->setEnabled(guiState);
-	m_ui->groupBoxTime->setEnabled(guiState);
-	m_ui->groupBoxDir->setEnabled(guiState);
-	m_ui->pushButtonPreview->setEnabled(guiState);
-	m_ui->pushButtonMap->setEnabled(guiState);
-	m_ui->pushButtonDownload->setEnabled(guiState && m_generateEpwEnabled);
+void DWDMainWindow::updateGuiState() {
+	m_ui->tableView->setEnabled(m_guiState);
+	m_ui->groupBoxLocation->setEnabled(m_guiState);
+	m_ui->groupBoxTime->setEnabled(m_guiState);
+	m_ui->groupBoxDir->setEnabled(m_guiState);
+	m_ui->pushButtonPreview->setEnabled(m_guiState);
+	m_ui->pushButtonMap->setEnabled(m_guiState);
+	m_ui->pushButtonDownload->setEnabled(m_guiState && m_enableClimateFileGeneration);
 }
 
-bool DWDMainWindow::downloadData(bool showPreview, bool exportEPW) {
+bool DWDMainWindow::downloadAndConvertDwdData(bool showPreview, bool exportEPW) {
 	FUNCID(MainWindow::downloadData);
 
 	progressDialog()->show();
@@ -537,11 +530,14 @@ bool DWDMainWindow::downloadData(bool showPreview, bool exportEPW) {
 	}
 
 
-	if(dataInRows == std::vector<int>(DWDDescriptonData::NUM_D,-1)){
+	if(dataInRows == std::vector<int>(DWDDescriptonData::NUM_D,-1)) {
 		progressDialog()->hide();
-		QMessageBox::warning(this, "Download Error.", "Please select at least one climate entry (e.g. temperature, radiation, ...)!");
-		setGUIState(true);
-		//progressDialog()->hide();
+		QMessageBox::warning(this, "Download Error", "Please select at least one climate data entry in data table (e.g. temperature, radiation, ...)!");
+
+		// update ui
+		m_guiState = true;
+		updateGuiState();
+
 		return false;
 	}
 
@@ -1229,7 +1225,7 @@ void DWDMainWindow::on_pushButtonDownload_clicked(){
 			filename.append(extension);
 
 		m_exportPath = IBK::Path(filename.toStdString());
-		downloadData(true, true);
+		downloadAndConvertDwdData(true, true);
 		formatPlots();
 	}
 	catch (IBK::Exception &ex) {
@@ -1556,15 +1552,23 @@ void DWDMainWindow::on_lineEditNameFilter_textChanged(const QString &filter) {
 
 
 void DWDMainWindow::on_pushButtonPreview_clicked() {
+	FUNCID(DWDMainWindow::on_pushButtonPreview_clicked);
+
 	try {
-		setGUIState(false);
-		bool successful = downloadData(true, false);
-		setGUIState(true);
+		// Try to download and convert data
+		bool successful = downloadAndConvertDwdData(true, false);
+
 		// update formatting
-		if (successful) {
-			formatPlots();
-			m_ui->tabWidget->setCurrentIndex(T_Plots);
-		}
+		if (!successful)
+			return; // When no data has been selected by user such as temperature, rel. Humidity, ...
+			// Info MessageBox is then thrown
+
+		// update plots;
+		formatPlots();
+
+		// Show plot charts
+		m_ui->tabWidget->setCurrentIndex(T_Plots);
+
 	}
 	catch (IBK::Exception &ex) {
 		progressDialog()->hide();
@@ -1575,7 +1579,7 @@ void DWDMainWindow::on_pushButtonPreview_clicked() {
 		messageBox.setDetailedText(QString("%1").arg(ex.what()));
 		messageBox.exec();
 
-		setGUIState(true);
+		updateGuiState();
 		return;
 	}
 }

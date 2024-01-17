@@ -82,10 +82,10 @@ public:
 	void alignLeftAxisQwtPlots();
 
 	/*! Sets all GUI states. */
-	void setGUIState(bool guiState);
+	void updateGuiState();
 
 	/*! Downloads all dwd data. */
-	bool downloadData(bool showPreview = true, bool exportEPW = false);
+	bool downloadAndConvertDwdData(bool showPreview = true, bool exportEPW = false);
 
 	void addToList(const QUrlInfo qUrlI);
 
@@ -195,7 +195,7 @@ private:
 	QStringList									m_filelist;
 
 	bool										m_guiState = true;
-	bool										m_generateEpwEnabled = false;
+	bool										m_enableClimateFileGeneration = false;
 
 	DWDMap										*m_dwdMap;
 
