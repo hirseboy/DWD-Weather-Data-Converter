@@ -1821,7 +1821,7 @@ void DWDMainWindow::on_actionwhite_triggered() {
 
 void DWDMainWindow::on_actionSaveAs_triggered() {
 	if (!m_validData) {
-		QMessageBox::information(this, tr("Save climate file"), tr("Please download first climate data in order to save it to a climate file."));
+		QMessageBox::information(this, tr("Save climate file"), tr("Please download climate data first in order to save it to a climate file."));
 		return;
 	}
 

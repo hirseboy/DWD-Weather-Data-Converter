@@ -684,7 +684,7 @@
     </widget>
     <widget class="QMenu" name="menuMode">
      <property name="title">
-      <string>Mode</string>
+      <string>Climate file mode</string>
      </property>
      <addaction name="actionEPW"/>
      <addaction name="actionc6b"/>
