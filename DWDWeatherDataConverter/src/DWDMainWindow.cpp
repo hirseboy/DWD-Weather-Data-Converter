@@ -1804,3 +1804,27 @@ void DWDMainWindow::on_checkBoxPres_toggled(bool checked) {
 	m_ui->plotPres->setHidden(!checked);
 }
 
+
+void DWDMainWindow::on_actiondark_triggered() {
+
+	QFile styleDark(":/style/style.qss");
+	styleDark.open(QFile::ReadOnly);
+	qApp->setStyleSheet(QLatin1String(styleDark.readAll()));
+
+}
+
+
+void DWDMainWindow::on_actionwhite_triggered() {
+	qApp->setStyleSheet("");
+}
+
+
+void DWDMainWindow::on_actionSaveAs_triggered() {
+	if (!m_validData) {
+		QMessageBox::information(this, tr("Save climate file"), tr("Please download first climate data in order to save it to a climate file."));
+		return;
+	}
+
+	on_pushButtonDownload_clicked();
+}
+

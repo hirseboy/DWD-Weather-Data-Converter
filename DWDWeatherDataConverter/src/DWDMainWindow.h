@@ -160,6 +160,12 @@ private slots:
 
 	void on_checkBoxPres_toggled(bool checked);
 
+	void on_actiondark_triggered();
+
+	void on_actionwhite_triggered();
+
+	void on_actionSaveAs_triggered();
+
 private:
 
 	/*! Updates the Ui. */

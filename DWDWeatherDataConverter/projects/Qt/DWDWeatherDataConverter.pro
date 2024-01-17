@@ -63,7 +63,7 @@ SOURCES += \
 				../../src/DWDLogWidget.cpp \
 				../../src/DWDMainWindow.cpp \
 				../../src/DWDMessageHandler.cpp \
-    ../../src/DWDSettings.cpp \
+				../../src/DWDSettings.cpp \
 				../../src/DWDSortFilterProxyModel.cpp \
 				../../src/DWDUtilities.cpp \
 				../../src/MetaDataEditWidget.cpp \
