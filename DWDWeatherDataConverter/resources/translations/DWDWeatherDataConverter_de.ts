@@ -191,11 +191,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <source>Data map</source>
-        <translation>Karte mit Messdaten</translation>
+        <translation type="vanished">Karte mit Messdaten</translation>
     </message>
     <message>
         <source>Climate data selection</source>
-        <translation>Klimadatenauswahl</translation>
+        <translation>Klimadaten-Auswahl</translation>
     </message>
     <message>
         <source>Location</source>
@@ -235,7 +235,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <source>Climate file preview</source>
-        <translation>Klimadaten-Vorschau</translation>
+        <translation type="vanished">Klimadaten-Vorschau</translation>
     </message>
     <message>
         <source>FIle</source>
@@ -364,6 +364,14 @@ Möchten Sie fortfahren?</translation>
     <message>
         <source>Please download climate data first in order to save it to a climate file.</source>
         <translation>Bitte laden Sie zuerst die Klimadaten herunter, um sie in einer Klimadatei zu speichern.</translation>
+    </message>
+    <message>
+        <source>Climate data map</source>
+        <translation>Klimadaten-Karte</translation>
+    </message>
+    <message>
+        <source>Climate data preview</source>
+        <translation>Klimadaten-Vorschau</translation>
     </message>
 </context>
 <context>

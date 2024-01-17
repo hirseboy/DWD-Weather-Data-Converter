@@ -1108,6 +1108,8 @@ void DWDMainWindow::onUpdateDistances() {
 	m_ui->lineEditLatitude->setText(QString("%1").arg(m_mapWidget->m_latitude, 0 ,'g', 3));
 	m_ui->lineEditLongitude->setText(QString("%1").arg(m_mapWidget->m_longitude, 0 ,'g', 3));
 
+	m_ui->horizontalSliderDistance->setValue(m_mapWidget->m_distance);
+
 	calculateDistances();
 }
 

@@ -347,7 +347,7 @@
       </widget>
       <widget class="QWidget" name="tabLocation">
        <attribute name="title">
-        <string>Data map</string>
+        <string>Climate data map</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_8">
         <item row="0" column="0">
@@ -496,7 +496,7 @@
       </widget>
       <widget class="QWidget" name="tabPreview">
        <attribute name="title">
-        <string>Climate file preview</string>
+        <string>Climate data preview</string>
        </attribute>
        <layout class="QVBoxLayout" name="verticalLayout_3">
         <item>
