@@ -289,8 +289,9 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	m_ui->graphicsViewMap->setScene(m_mapWidget->m_scene);
 	onUpdateDistances();
 
-	// *** Add Checkboxes ***
+//	m_ui->plotLayoutPreview->setSizeConstraint(QLayout::SetFixedSize);
 
+	// *** Add Checkboxes ***
 
 	generateCheckBox(tr("Temperature"), m_ui->plotTemp, DWDDescriptonData::color(DWDDescriptonData::D_TemperatureAndHumidity), PT_Temperature);
 	generateCheckBox(tr("Relative humidity"), m_ui->plotRelHum, QColor("#7F2AFF"), PT_RelativeHumidity);
@@ -302,6 +303,15 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 
 	// init all plots
 	formatPlots(true);
+	m_ui->plotLayoutPreview->setSizeConstraint(QLayout::SetFixedSize);
+
+	m_ui->plotTemp->setMinimumHeight(50);
+	m_ui->plotPres->setMinimumHeight(50);
+	m_ui->plotRad->setMinimumHeight(50);
+	m_ui->plotRadLongWave->setMinimumHeight(50);
+	m_ui->plotRain->setMinimumHeight(50);
+	m_ui->plotWind->setMinimumHeight(50);
+	m_ui->plotRelHum->setMinimumHeight(50);
 }
 
 
@@ -1329,49 +1339,49 @@ void DWDMainWindow::formatPlots(bool init) {
 
 	QString description;
 	if (m_ui->plotTemp->isEnabled()) {
-		description += "Temperatur: " + m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity] + ", ";
+		description += "Temperatur: " + m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity] + " ";
 		m_ui->plotTemp->setTitle(QString("%1 - %2")
 								 .arg(m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity])
 				.arg(m_ui->plotTemp->title().text()));
 	}
 
 	if (m_ui->plotRelHum->isEnabled()) {
-		description += "Relative Humidity: " + m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity] + ", ";
+		description += "Relative Humidity: " + m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity] + " ";
 		m_ui->plotRelHum->setTitle(QString("%1 - %2")
 								   .arg(m_currentLocation[DWDDescriptonData::D_TemperatureAndHumidity])
 				.arg(m_ui->plotRelHum->title().text()));
 	}
 
 	if (m_ui->plotPres->isEnabled()) {
-		description += "Pressure: " + m_currentLocation[DWDDescriptonData::D_Pressure] + ", ";
+		description += "Pressure: " + m_currentLocation[DWDDescriptonData::D_Pressure] + " ";
 		m_ui->plotPres->setTitle(QString("%1 - %2")
 								 .arg(m_currentLocation[DWDDescriptonData::D_Pressure])
 				.arg(m_ui->plotPres->title().text()));
 	}
 
 	if (m_ui->plotRad->isEnabled()) {
-		description += "Short wave radiation: " + m_currentLocation[DWDDescriptonData::D_Solar] + ", ";
+		description += "Short wave radiation: " + m_currentLocation[DWDDescriptonData::D_Solar] + " ";
 		m_ui->plotRad->setTitle(QString("%1 - %2")
 								.arg(m_currentLocation[DWDDescriptonData::D_Solar])
 				.arg(m_ui->plotRad->title().text()));
 	}
 
 	if (m_ui->plotRadLongWave->isEnabled()) {
-		description += "Long wave radiation: " + m_currentLocation[DWDDescriptonData::D_Solar] + ", ";
+		description += "Long wave radiation: " + m_currentLocation[DWDDescriptonData::D_Solar] + " ";
 		m_ui->plotRadLongWave->setTitle(QString("%1 - %2")
 										.arg(m_currentLocation[DWDDescriptonData::D_Solar])
 				.arg(m_ui->plotRadLongWave->title().text()));
 	}
 
 	if (m_ui->plotRain->isEnabled()) {
-		description += "Precipitation: " + m_currentLocation[DWDDescriptonData::D_Precipitation] + ", ";
+		description += "Precipitation: " + m_currentLocation[DWDDescriptonData::D_Precipitation] + " ";
 		m_ui->plotRain->setTitle(QString("%1 - %2")
 								 .arg(m_currentLocation[DWDDescriptonData::D_Precipitation])
 				.arg(m_ui->plotRain->title().text()));
 	}
 
 	if (m_ui->plotWind->isEnabled()) {
-		description += "Wind: " + m_currentLocation[DWDDescriptonData::D_Wind] + ", ";
+		description += "Wind: " + m_currentLocation[DWDDescriptonData::D_Wind] + " ";
 		m_ui->plotWind->setTitle(QString("%1 - %2")
 								 .arg(m_currentLocation[DWDDescriptonData::D_Wind])
 				.arg(m_ui->plotWind->title().text()));
@@ -1836,6 +1846,9 @@ void DWDMainWindow::on_horizontalSliderDistance_valueChanged(int value) {
 
 void DWDMainWindow::on_tabWidget_currentChanged(int index) {
 	m_ui->graphicsViewMap->fitInView(m_mapWidget->m_scene->sceneRect(), Qt::KeepAspectRatio);
+
+//	if (index == T_Plots)
+//		m_ui->plotLayoutPreview->setSizeConstraint(QLayout::SetDefaultConstraint);
 }
 
 
