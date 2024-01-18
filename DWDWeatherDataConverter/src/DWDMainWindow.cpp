@@ -1100,6 +1100,7 @@ void DWDMainWindow::convertDwdData() {
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColMaxDate, defWidth);
 
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColCountry, 80);
+	m_ui->tableView->setColumnWidth(DWDTableModel::ColDistance, 100);
 
 	headerView->setSectionResizeMode(DWDTableModel::ColName, QHeaderView::Stretch);
 
