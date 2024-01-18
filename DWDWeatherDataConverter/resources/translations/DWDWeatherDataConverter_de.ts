@@ -119,7 +119,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <source>Temperature / Relative Humidity:</source>
-        <translation>Temperatur / Relative Luftfeuchte</translation>
+        <translation>Temperatur / Relative Luftfeuchte:</translation>
     </message>
     <message>
         <source>-</source>
@@ -373,6 +373,10 @@ Möchten Sie fortfahren?</translation>
         <source>Climate data preview</source>
         <translation>Klimadaten-Vorschau</translation>
     </message>
+    <message>
+        <source>Please select at least one climate data entry in data table (e.g. temperature, radiation, ...)!</source>
+        <translation>Bitte wählen Sie mindestens einen Klimadateneintrag in der Datentabelle (z.B. Temperatur, Strahlung, ...)!</translation>
+    </message>
 </context>
 <context>
     <name>DWDTableModel</name>
@@ -414,11 +418,13 @@ Date</source>
     <message>
         <source>Temperature /
 Humidity</source>
-        <translation>Temperatur / Feuchte</translation>
+        <translation>Temperatur / 
+Feuchte</translation>
     </message>
     <message>
         <source>Wind Speed</source>
-        <translation>Windgeschwindigkeit</translation>
+        <translation type="unfinished">Wind-
+geschwindigkeit</translation>
     </message>
     <message>
         <source>Pressure</source>

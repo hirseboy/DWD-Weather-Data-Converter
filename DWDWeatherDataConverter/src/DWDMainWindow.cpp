@@ -543,7 +543,7 @@ bool DWDMainWindow::downloadAndConvertDwdData(bool showPreview, bool exportEPW) 
 
 	if(dataInRows == std::vector<int>(DWDDescriptonData::NUM_D,-1)) {
 		progressDialog()->hide();
-		QMessageBox::warning(this, "Download Error", "Please select at least one climate data entry in data table (e.g. temperature, radiation, ...)!");
+		QMessageBox::warning(this, "Download Error", tr("Please select at least one climate data entry in data table (e.g. temperature, radiation, ...)!"));
 
 		// update ui
 		m_guiState = true;
@@ -1083,7 +1083,7 @@ void DWDMainWindow::convertDwdData() {
 
 	m_ui->tableView->reset();
 
-	double width = (double)this->devicePixelRatio() * 65;
+	double width = (double)this->devicePixelRatio() * 50;
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColPressure, width);
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColAirTemp, width);
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColPrecipitation, width);
