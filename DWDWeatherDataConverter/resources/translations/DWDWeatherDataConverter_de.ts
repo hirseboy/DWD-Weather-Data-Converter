@@ -199,7 +199,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <source>Location</source>
-        <translation>Standort</translation>
+        <translation type="vanished">Standort</translation>
     </message>
     <message>
         <source>km</source>
@@ -219,7 +219,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <source>Map</source>
-        <translation>Karte</translation>
+        <translation type="vanished">Karte</translation>
     </message>
     <message>
         <source>Longitude:</source>
@@ -376,6 +376,10 @@ Möchten Sie fortfahren?</translation>
     <message>
         <source>Please select at least one climate data entry in data table (e.g. temperature, radiation, ...)!</source>
         <translation>Bitte wählen Sie mindestens einen Klimadateneintrag in der Datentabelle (z.B. Temperatur, Strahlung, ...)!</translation>
+    </message>
+    <message>
+        <source>Filter</source>
+        <translation>Filter</translation>
     </message>
 </context>
 <context>

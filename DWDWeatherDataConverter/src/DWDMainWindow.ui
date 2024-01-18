@@ -369,9 +369,16 @@
            </size>
           </property>
           <property name="title">
-           <string>Location</string>
+           <string>Filter</string>
           </property>
           <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,0">
+           <item row="6" column="0">
+            <widget class="QLabel" name="label_6">
+             <property name="text">
+              <string>Max Distance: </string>
+             </property>
+            </widget>
+           </item>
            <item row="6" column="3">
             <widget class="QLabel" name="label_7">
              <property name="text">
@@ -392,20 +399,6 @@
              </property>
             </widget>
            </item>
-           <item row="6" column="0">
-            <widget class="QLabel" name="label_6">
-             <property name="text">
-              <string>Max Distance: </string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_8">
-             <property name="text">
-              <string>Filter Name:</string>
-             </property>
-            </widget>
-           </item>
            <item row="6" column="1" colspan="2">
             <widget class="QtExt::ValidatingLineEdit" name="lineEditDistance">
              <property name="text">
@@ -413,6 +406,13 @@
              </property>
              <property name="readOnly">
               <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QLabel" name="label_8">
+             <property name="text">
+              <string>Filter Name:</string>
              </property>
             </widget>
            </item>
@@ -435,14 +435,25 @@
         <item row="1" column="1">
          <widget class="QGroupBox" name="groupBox_2">
           <property name="title">
-           <string>Map</string>
+           <string>Climate data map</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_10">
+           <item row="1" column="0">
+            <widget class="QGraphicsView" name="graphicsViewMap">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="pushButtonMap">
+             <property name="text">
+              <string>show large map</string>
+             </property>
+            </widget>
+           </item>
            <item row="0" column="0">
             <layout class="QGridLayout" name="gridLayout_9">
-             <item row="3" column="1">
-              <widget class="QtExt::ValidatingLineEdit" name="lineEditLatitude"/>
-             </item>
              <item row="2" column="1">
               <widget class="QtExt::ValidatingLineEdit" name="lineEditLongitude"/>
              </item>
@@ -460,21 +471,10 @@
                </property>
               </widget>
              </item>
+             <item row="3" column="1">
+              <widget class="QtExt::ValidatingLineEdit" name="lineEditLatitude"/>
+             </item>
             </layout>
-           </item>
-           <item row="1" column="0">
-            <widget class="QGraphicsView" name="graphicsViewMap">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="2" column="0">
-            <widget class="QPushButton" name="pushButtonMap">
-             <property name="text">
-              <string>show large map</string>
-             </property>
-            </widget>
            </item>
           </layout>
          </widget>
