@@ -1075,11 +1075,11 @@ void DWDMainWindow::convertDwdData() {
 	m_ui->tableView->setItemDelegateForColumn(DWDTableModel::ColWind, new DWDDelegate);
 
 	QHeaderView *headerView = m_ui->tableView->horizontalHeader();
-	headerView->setSectionResizeMode(DWDTableModel::ColPrecipitation, QHeaderView::Fixed);
-	headerView->setSectionResizeMode(DWDTableModel::ColRadiation, QHeaderView::Fixed);
-	headerView->setSectionResizeMode(DWDTableModel::ColRadiation, QHeaderView::Fixed);
-	headerView->setSectionResizeMode(DWDTableModel::ColWind, QHeaderView::Fixed);
-	headerView->setSectionResizeMode(DWDTableModel::ColPressure, QHeaderView::Fixed);
+//	headerView->setSectionResizeMode(DWDTableModel::ColPrecipitation, QHeaderView::Fixed);
+//	headerView->setSectionResizeMode(DWDTableModel::ColRadiation, QHeaderView::Fixed);
+//	headerView->setSectionResizeMode(DWDTableModel::ColRadiation, QHeaderView::Fixed);
+//	headerView->setSectionResizeMode(DWDTableModel::ColWind, QHeaderView::Fixed);
+//	headerView->setSectionResizeMode(DWDTableModel::ColPressure, QHeaderView::Fixed);
 
 	m_ui->tableView->reset();
 
