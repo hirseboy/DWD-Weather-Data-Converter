@@ -1083,7 +1083,7 @@ void DWDMainWindow::convertDwdData() {
 
 	m_ui->tableView->reset();
 
-	double width = (double)this->devicePixelRatio() * 50;
+	double width = 100;
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColPressure, width);
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColAirTemp, width);
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColPrecipitation, width);
