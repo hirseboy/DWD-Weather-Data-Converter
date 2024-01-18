@@ -1083,7 +1083,7 @@ void DWDMainWindow::convertDwdData() {
 
 	m_ui->tableView->reset();
 
-	double width = this->devicePixelRatioFScale() * 70;
+	double width = (double)this->devicePixelRatio() * 65;
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColPressure, width);
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColAirTemp, width);
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColPrecipitation, width);
@@ -1846,7 +1846,6 @@ void DWDMainWindow::on_horizontalSliderDistance_valueChanged(int value) {
 
 void DWDMainWindow::on_tabWidget_currentChanged(int index) {
 	m_ui->graphicsViewMap->fitInView(m_mapWidget->m_scene->sceneRect(), Qt::KeepAspectRatio);
-
 //	if (index == T_Plots)
 //		m_ui->plotLayoutPreview->setSizeConstraint(QLayout::SetDefaultConstraint);
 }
