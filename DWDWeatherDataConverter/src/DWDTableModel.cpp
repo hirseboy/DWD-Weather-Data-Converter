@@ -225,7 +225,7 @@ bool DWDTableModel::setData(const QModelIndex & index, const QVariant & value, i
 			}
 
 			checkBox.m_data[dataType].m_isChecked = true;
-			location = QString::fromStdString(checkBox.m_name);
+			location = QString::fromLocal8Bit(checkBox.m_name.c_str());
 		}
 		else {
 			checkBox.m_data[dataType].m_isChecked = false; //user has unchecked item

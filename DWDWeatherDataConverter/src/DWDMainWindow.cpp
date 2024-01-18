@@ -291,6 +291,7 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 
 	// *** Add Checkboxes ***
 
+
 	generateCheckBox(tr("Temperature"), m_ui->plotTemp, DWDDescriptonData::color(DWDDescriptonData::D_TemperatureAndHumidity), PT_Temperature);
 	generateCheckBox(tr("Relative humidity"), m_ui->plotRelHum, QColor("#7F2AFF"), PT_RelativeHumidity);
 	generateCheckBox(tr("Short-wave radiation"), m_ui->plotRad, DWDDescriptonData::color(DWDDescriptonData::D_Solar), PT_ShortWaveRadiation);
@@ -1105,6 +1106,19 @@ void DWDMainWindow::onActionSwitchLanguage() {
 }
 
 void DWDMainWindow::onUpdateDistances() {
+	if (m_validData) {
+
+		for (unsigned int i = 0; i < DWDDescriptonData::NUM_D; ++i)
+			m_currentLocation[(DWDDescriptonData::DWDDataType)i] = "-";
+
+		m_validData = false;
+		updateUi();
+		formatPlots(true);
+
+		// Unckecks currently selected data
+		m_dwdTableModel->uncheckData();
+	}
+
 	m_ui->lineEditLatitude->setText(QString("%1").arg(m_mapWidget->m_latitude, 0 ,'g', 3));
 	m_ui->lineEditLongitude->setText(QString("%1").arg(m_mapWidget->m_longitude, 0 ,'g', 3));
 
@@ -1295,6 +1309,14 @@ void DWDMainWindow::formatPlots(bool init) {
 		m_ui->plotRain->detachItems();
 		m_ui->plotWind->detachItems();
 		m_ui->plotRelHum->detachItems();
+
+		m_ui->plotTemp->setEnabled(false);
+		m_ui->plotPres->setEnabled(false);
+		m_ui->plotRad->setEnabled(false);
+		m_ui->plotRadLongWave->setEnabled(false);
+		m_ui->plotRain->setEnabled(false);
+		m_ui->plotWind->setEnabled(false);
+		m_ui->plotRelHum->setEnabled(false);
 	}
 
 	formatQwtPlot(init, *m_ui->plotTemp, m_ui->dateEditStart->date(), m_ui->dateEditEnd->date(), "Air Temperature", "C", -20, 40, 20, false);
@@ -1460,7 +1482,7 @@ void DWDMainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDa
 	// Set scale draw engine
 	plot.setAxisScaleDraw(QwtPlot::xBottom, scaleDrawTemp);
 	plot.setAxisScaleEngine(QwtPlot::xBottom, scaleEngine);
-	plot.setMinimumWidth(350);
+	//plot.setMinimumWidth(350);
 
 
 	// Init Grid
@@ -1572,7 +1594,7 @@ void DWDMainWindow::on_pushButtonPreview_clicked() {
 		// update formatting
 		if (!successful)
 			return; // When no data has been selected by user such as temperature, rel. Humidity, ...
-			// Info MessageBox is then thrown
+		// Info MessageBox is then thrown
 
 		// update plots;
 		formatPlots();
