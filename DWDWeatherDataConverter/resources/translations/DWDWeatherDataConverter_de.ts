@@ -127,7 +127,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <source>SW / LW Radiation:</source>
-        <translation>Kurzw. / langw. Strahlung</translation>
+        <translation>Kurzw. / langw. Strahlung:</translation>
     </message>
     <message>
         <source>Wind:</source>
@@ -423,7 +423,7 @@ Feuchte</translation>
     </message>
     <message>
         <source>Wind Speed</source>
-        <translation type="unfinished">Wind-
+        <translation>Wind-
 geschwindigkeit</translation>
     </message>
     <message>
