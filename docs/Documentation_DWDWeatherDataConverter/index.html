@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.18">
+<meta name="author" content="Stephan Hirth">
+<title>Dokumentation DWDWeatherDataConverter</title>
+<style>
+/* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
+
+@import url(../css/asciidoctor.css); /* Default asciidoc style framework - important */
+
+/* roboto-condensed-regular - latin */
+@font-face {
+  font-family: 'Roboto Condensed';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/roboto-condensed-v25-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('../fonts/roboto-condensed-v25-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../fonts/roboto-condensed-v25-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../fonts/roboto-condensed-v25-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('../fonts/roboto-condensed-v25-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../fonts/roboto-condensed-v25-latin-regular.svg#RobotoCondensed') format('svg'); /* Legacy iOS */
+}
+/* roboto-condensed-italic - latin */
+@font-face {
+  font-family: 'Roboto Condensed';
+  font-style: italic;
+  font-weight: 400;
+  src: url('../fonts/roboto-condensed-v25-latin-italic.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('../fonts/roboto-condensed-v25-latin-italic.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../fonts/roboto-condensed-v25-latin-italic.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../fonts/roboto-condensed-v25-latin-italic.woff') format('woff'), /* Modern Browsers */
+       url('../fonts/roboto-condensed-v25-latin-italic.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../fonts/roboto-condensed-v25-latin-italic.svg#RobotoCondensed') format('svg'); /* Legacy iOS */
+}
+/* roboto-condensed-700 - latin */
+@font-face {
+  font-family: 'Roboto Condensed';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../fonts/roboto-condensed-v25-latin-700.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('../fonts/roboto-condensed-v25-latin-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../fonts/roboto-condensed-v25-latin-700.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../fonts/roboto-condensed-v25-latin-700.woff') format('woff'), /* Modern Browsers */
+       url('../fonts/roboto-condensed-v25-latin-700.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../fonts/roboto-condensed-v25-latin-700.svg#RobotoCondensed') format('svg'); /* Legacy iOS */
+}
+/* roboto-condensed-700italic - latin */
+@font-face {
+  font-family: 'Roboto Condensed';
+  font-style: italic;
+  font-weight: 700;
+  src: url('../fonts/roboto-condensed-v25-latin-700italic.eot'); /* IE9 Compat Modes */
+  src: local(''),
+       url('../fonts/roboto-condensed-v25-latin-700italic.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../fonts/roboto-condensed-v25-latin-700italic.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../fonts/roboto-condensed-v25-latin-700italic.woff') format('woff'), /* Modern Browsers */
+       url('../fonts/roboto-condensed-v25-latin-700italic.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../fonts/roboto-condensed-v25-latin-700italic.svg#RobotoCondensed') format('svg'); /* Legacy iOS */
+}
+
+/* CUSTOMISATIONS */
+/* Change the values in root for quick customisation. If you want even more fine grain... venture further. */
+
+:root{
+--maincolor:#FFFFFF;
+--primarycolor:#a90e22;
+--secondarycolor:#9f1d0b;
+--tertiarycolor: #ededed;
+--sidebarbackground:#CCC;
+--linkcolor:#b71c1c;
+--linkcoloralternate:#f44336;
+--white:#FFFFFF;
+--black:#000000;
+}
+
+/* Text styles */
+body{font-family: "Roboto Condensed",sans-serif;}
+
+h1,h2{color:var(--primarycolor) !important;font-family:"Roboto Condensed",sans-serif;}
+h3,h4,h5,h6{color:var(--secondarycolor);font-family: "Roboto Condensed",sans-serif; }
+.title{color:(--primarycolor) !important;font-family:"Roboto Condensed",sans-serif;font-style: normal; font-weight: normal;}
+p{font-family: "Roboto Condensed",sans-serif ! important}
+#toc.toc2 a{font-family:"Roboto Condensed",sans-serif;}
+/*#toc.toc2 a:link{color:(--linkcolor) !important}
+a:visited {color: #ffdbad;}
+a.bare:visited {color: #204f83;}
+a:hover {color: #317ed4;}
+#toc.toc2 a:hover {color: #f1b464;}*/
+/* code{background-color: var(--secondarycolor) !important;color:var(--white)} */
+code,kbd,pre,samp{font-family:"Consolas","Droid Sans Mono","DejaVu Sans Mono",monospace;monospace;font-size:1em}
+
+/* Table styles */
+th{background-color: var(--tertiarycolor);color:var(--black) !important;}
+
+#toctitle{color:var(--primarycolor);font-family: "Roboto Condensed",sans-serif;font-size: 1.6875em;}
+#toc.toc2{background-color:#f4f8fd;}
+/*#toc.toc2{background-color:#2C001E;color:white;}
+#toc.toc2.a{color:white;}
+*/
+
+/* Responsiveness fixes */
+video {
+  max-width: 100%;
+}
+
+@media all and (max-width: 600px) {
+table {
+  width: 55vw!important;
+  font-size: 3vw;
+}
+
+</style>
+<link rel="stylesheet" href="../css/font-awesome.css">
+</head>
+<body class="article toc2 toc-left">
+<div id="header">
+<h1>Dokumentation DWDWeatherDataConverter</h1>
+<div class="details">
+<span id="author" class="author">Stephan Hirth</span><br>
+<span id="email" class="email"><a href="https://github.com/hirseboy" class="bare">https://github.com/hirseboy</a></span><br>
+<span id="revnumber">version 1.1 (23.01.2024)</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#overview">1. Überblick</a></li>
+<li><a href="#Programm">2. Programm</a>
+<ul class="sectlevel2">
+<li><a href="#menu">2.1. Menü (1)</a></li>
+<li><a href="#Klimadateninformation">2.2. Klimadateninformation (2)</a></li>
+<li><a href="#Klimadateninteraktion">2.3. Klimadateninteraktion (3)</a></li>
+<li><a href="#tabs">2.4. Reiter (4)</a>
+<ul class="sectlevel3">
+<li><a href="#_einstellungen">2.4.1. Einstellungen</a></li>
+<li><a href="#_klimadaten_karte">2.4.2. Klimadaten-Karte</a></li>
+<li><a href="#_klimadaten_auswahl">2.4.3. Klimadaten-Auswahl</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="overview">1. Überblick</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Der <em>DWDWeatherDataConverter</em> dient dazu, die vom <a href="https://www.dwd.de/DE/Home/home_node.html">Deutschen Wetterdienst (DWD)</a> erzeugten Klima-Messdaten, die auf dem <a href="https://opendata.dwd.de/climate_environment/">FTP-Server</a> veröffentlicht werden, einfach zugänglich zu machen und Klimadaten für Simulationen (im EPW, C6B Format) zu erzeugen.</p>
+</div>
+<div class="imageblock text-center">
+<div class="content">
+<img src="./images/DWDWeatherDataConverterSplash.png" alt="DWDWeatherDataConverterSplash">
+</div>
+</div>
+<div class="paragraph">
+<p>Da der DWD nur unzusammenhängende Messdaten veröffentlicht, müssen die Messdaten nach Kategorie von dem/der Nutzer:in zusammengesetzt werden. Dabei sind die Kategorien der Messdaten folgende:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Lufttemperatur / relative Luftfeuchte</p>
+</li>
+<li>
+<p>Kurzwellige / langwellige Strahlung</p>
+</li>
+<li>
+<p>Windgeschwindigkeit</p>
+</li>
+<li>
+<p>Druck</p>
+</li>
+<li>
+<p>Niederschlag</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Je einzelner Kategorie können damit Messreihen selektiert und heruntergeladen werden. Dazu wird zunächst eine Zeitperiode gewählt, in der Messdaten benötigt werden und aus den Metadaten werden nur Messdaten angezeigt, die den benötigten Zeitraum benötigen. Die verfügbaren Messdaten werden einerseits in einer übersichtlichen Klimadatenkarte angezeigt, bei welcher je Datentyp eine andere Farbe angezeigt wird. Andererseits wird eine Tabelle anhand des aktuellen Standortes und der gewählten Filterung erzeugt, die alle möglichen Messdaten anzeigt. Damit können je Kategorie Messdaten selektiert und anschließend heruntergeladen werden. Nach dem Download wird automatisch eine Voransicht der Klimadaten erzeugt, um die Messdaten einfach visuell zu prüfen.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="Programm">2. Programm</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Bei Programmstart erscheint direkt das Programmfenster mit allen zentralen Elementen.</p>
+</div>
+<div class="paragraph">
+<p>Folgende Elemente sind im DWDWeatherDataConverter enthalten.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>(1) Menüleiste: Enthält alle zentralen Menüeintrage</p>
+</li>
+<li>
+<p>(2) Klimadateninformation: Zeigt die derzeitig gewählten Klimadaten</p>
+</li>
+<li>
+<p>(3) Klimadateninteraktion: Damit werden Klimadaten heruntergeladen, um sie anzuzeigen und in eine Klimadatei zu wandeln</p>
+</li>
+<li>
+<p>(4) Reitermenü: Diverse unterschiedliche Modi, um Einstellungen vorzunehmen und Klimadaten herunterzuladen und anzuzeigen</p>
+</li>
+<li>
+<p>(5) Reiterinhalt: Die aus der Reiterselektion entstehenden Konfigurationsmöglichkeiten werden angezeigt.</p>
+</li>
+</ul>
+</div>
+<div id="strartscreen" class="imageblock text-center">
+<div class="content">
+<img src="./images/startscreen.png" alt="startscreen">
+</div>
+<div class="title">Figure 1. Überblick Startbildschirm</div>
+</div>
+<div class="sect2">
+<h3 id="menu">2.1. Menü (1)</h3>
+<div class="paragraph">
+<p>Alle Menüeinträge werden angezeigt.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="Klimadateninformation">2.2. Klimadateninformation (2)</h3>
+<div class="paragraph">
+<p>In der Klimadateninformationsansicht werden die aktuell selektierten Klimadaten mit ihrem Standortnamen angezeigt.</p>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="./images/klimadateninformation.png" alt="klimadateninformation">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="Klimadateninteraktion">2.3. Klimadateninteraktion (3)</h3>
+<div class="paragraph">
+<p>In der Klimadateninformationsansicht werden die aktuell selektierten Klimadaten, die in der Klimadateninformation angezeigt werden, heruntergeladen bzw. in eine Klimadatei konvertiert.</p>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="./images/klimadateninteraktion.png" alt="klimadateninteraktion">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="tabs">2.4. Reiter (4)</h3>
+<div class="paragraph">
+<p>Im Reiter-Widget gibt es 4 verschiedene Reiter:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Einstellungen</strong>: Sie können allgemeine Einstellungen ändern, wie z.B. Klimadatenmodus, Zeitperiode, Metadaten für die Klimadatei</p>
+</li>
+<li>
+<p><strong>Klimadaten-Karte</strong>: Enthält eine Deutschlandkarte mit allen Messdaten, die für den gewählten Zeitraum vorliegen; es kann ein Standort und Suchradius gewählt werden</p>
+</li>
+<li>
+<p><strong>Klimadaten-Auswahl</strong>: Klimadaten werden anhand des aktuellen Standortes und der Filterung in Tabellenform angezeigt und durch den Nutzer selektiert.</p>
+</li>
+<li>
+<p><strong>Klimadaten-Vorschau</strong>: Nach Download der Klimadaten vom DWD Server werden die Klimadaten in Graphen vorangezeigt. Damit können die Messdaten leicht geprüft werden.</p>
+</li>
+</ul>
+</div>
+<div class="sect3">
+<h4 id="_einstellungen">2.4.1. Einstellungen</h4>
+<div class="paragraph">
+<p>Im Einstellung-Reiter können folgende Einstellungen vorgenommen werden:</p>
+</div>
+<div class="sect4">
+<h5 id="_haupteinstellungen">Haupteinstellungen</h5>
+<div class="paragraph">
+<p>Hier finden sich die Haupteinstellungen</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Cache-Ordner</strong>: Ordner, in welchem die Daten zwischengespeichert werden</p>
+</li>
+<li>
+<p><strong>Arbeitsmodus</strong>: Im Arbeitsmodus kann zwischen EPW und C6B Klimadaten umgeschaltet werden. EPW-Wetterdaten können nur Klimadaten für den Zeitraum von einem Jahr enthalten.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_zeitraum">Zeitraum</h5>
+<div class="paragraph">
+<p>Hier wird der Zeitraum für die Auswertung und Konvertierung der Messdaten gewählt</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Startdatum</strong>: Startdatum der Zeitperiode</p>
+</li>
+<li>
+<p><strong>Enddatum</strong>: Enddatum der Zeitperiode</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect4">
+<h5 id="_metadaten_für_erzeugung_der_klimadaten">Metadaten für Erzeugung der Klimadaten</h5>
+<div class="paragraph">
+<p>Hier werden die Meta-Daten für die erzeugten Klimadaten festgelegt.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>Stadt</strong>: Stadt</p>
+</li>
+<li>
+<p><strong>Bundeland</strong>: Bundesland</p>
+</li>
+<li>
+<p><strong>WMOCode</strong>: <a href="https://www.nodc.noaa.gov/archive/arc0021/0002199/1.1/data/0-data/HTML/WMO-CODE/WMO4677.HTM">WMOCode</a></p>
+</li>
+<li>
+<p><strong>Quelle</strong>: Quelle der Messdaten, z.Bsp. DWD</p>
+</li>
+<li>
+<p><strong>Höhe [m]</strong>: Höhe des Standortes über Null</p>
+</li>
+<li>
+<p><strong>Longitude [Deg]</strong>: Längengrad in Grad</p>
+</li>
+<li>
+<p><strong>Latitude [Deg]</strong>: Breitengrad in Grad</p>
+</li>
+<li>
+<p><strong>Zeitzone</strong>: Zeitzone</p>
+</li>
+<li>
+<p><strong>Startjahr</strong>: Startjahr</p>
+</li>
+</ul>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="./images/einstellungen.png" alt="einstellungen">
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_klimadaten_karte">2.4.2. Klimadaten-Karte</h4>
+<div class="paragraph">
+<p>In der Klimadaten-Karte</p>
+</div>
+<div class="imageblock text-left">
+<div class="content">
+<img src="./images/klimadatenauswahl.png" alt="klimadatenauswahl">
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_klimadaten_auswahl">2.4.3. Klimadaten-Auswahl</h4>
+<div class="imageblock text-left">
+<div class="content">
+<img src="./images/klimadatenselektierung.png" alt="klimadatenselektierung">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Version 1.1 (23.01.2024)<br>
+Last updated 2024-01-23 17:48:54 +0100
+</div>
+</div>
+</body>
+</html>
