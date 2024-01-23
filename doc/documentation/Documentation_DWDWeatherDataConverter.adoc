@@ -1,0 +1,126 @@
+Dokumentation DWDWeatherDataConverter
+=====================================
+Stephan Hirth <https://github.com/hirseboy>
+v1.1 (23.01.2024)
+// v1.1 date_on_line_above
+:Author Initials: AN
+:toc: left
+:toclevels: 3
+:toc-title: Table of Contents
+:icons: font
+:imagesdir: ./images
+:numbered:
+:website: https://github.com/ghorwin/SIM-VICUS
+:source-highlighter: rouge
+:rouge-style: custom
+:title-page:
+:stylesdir: ../css
+:stylesheet: roboto_ubuntu.css
+:title-logo-image: image:DWDWeatherDataConverterSplash.png[top=15%,align=center,pdfwidth=12cm]
+
+[[overview]]
+## Überblick
+
+Der __DWDWeatherDataConverter__ dient dazu, die vom https://www.dwd.de/DE/Home/home_node.html[Deutschen Wetterdienst (DWD)] erzeugten Klima-Messdaten, die auf dem https://opendata.dwd.de/climate_environment/[FTP-Server] veröffentlicht werden, einfach zugänglich zu machen und Klimadaten für Simulationen (im EPW, C6B Format) zu erzeugen. 
+
+image::DWDWeatherDataConverterSplash.png[align="center"]
+
+Da der DWD nur unzusammenhängende Messdaten veröffentlicht, müssen die Messdaten nach Kategorie von dem/der Nutzer:in zusammengesetzt werden. Dabei sind die Kategorien der Messdaten folgende:
+
+- Lufttemperatur / relative Luftfeuchte
+- Kurzwellige / langwellige Strahlung
+- Windgeschwindigkeit
+- Druck 
+- Niederschlag
+
+Je einzelner Kategorie können damit Messreihen selektiert und heruntergeladen werden. Dazu wird zunächst eine Zeitperiode gewählt, in der Messdaten benötigt werden und aus den Metadaten werden nur Messdaten angezeigt, die den benötigten Zeitraum benötigen. Die verfügbaren Messdaten werden einerseits in einer übersichtlichen Klimadatenkarte angezeigt, bei welcher je Datentyp eine andere Farbe angezeigt wird. Andererseits wird eine Tabelle anhand des aktuellen Standortes und der gewählten Filterung erzeugt, die alle möglichen Messdaten anzeigt. Damit können je Kategorie Messdaten selektiert und anschließend heruntergeladen werden. Nach dem Download wird automatisch eine Voransicht der Klimadaten erzeugt, um die Messdaten einfach visuell zu prüfen. 
+
+[[Programm]]
+## Programm
+
+Bei Programmstart erscheint direkt das Programmfenster mit allen zentralen Elementen.
+
+Folgende Elemente sind im DWDWeatherDataConverter enthalten.
+
+- (1) Menüleiste: Enthält alle zentralen Menüeintrage
+- (2) Klimadateninformation: Zeigt die derzeitig gewählten Klimadaten
+- (3) Klimadateninteraktion: Damit werden Klimadaten heruntergeladen, um sie anzuzeigen und in eine Klimadatei zu wandeln
+- (4) Reitermenü: Diverse unterschiedliche Modi, um Einstellungen vorzunehmen und Klimadaten herunterzuladen und anzuzeigen
+- (5) Reiterinhalt: Die aus der Reiterselektion entstehenden Konfigurationsmöglichkeiten werden angezeigt.
+
+[[strartscreen]]
+.Überblick Startbildschirm
+image::startscreen.png[align="center"]
+
+[[menu]]
+### Menü (1) 
+Alle Menüeinträge werden angezeigt.
+
+[[Klimadateninformation]]
+### Klimadateninformation (2)
+In der Klimadateninformationsansicht werden die aktuell selektierten Klimadaten mit ihrem Standortnamen angezeigt.
+
+image::klimadateninformation.png[align="left"]
+
+[[Klimadateninteraktion]]
+### Klimadateninteraktion (3)
+
+In der Klimadateninformationsansicht werden die aktuell selektierten Klimadaten, die in der Klimadateninformation angezeigt werden, heruntergeladen bzw. in eine Klimadatei konvertiert.
+
+image::klimadateninteraktion.png[align="left", pdfwidth="7cm"]
+
+[[tabs]]
+### Reiter (4)
+
+Im Reiter-Widget gibt es 4 verschiedene Reiter:
+
+- **Einstellungen**: Sie können allgemeine Einstellungen ändern, wie z.B. Klimadatenmodus, Zeitperiode, Metadaten für die Klimadatei
+- **Klimadaten-Karte**: Enthält eine Deutschlandkarte mit allen Messdaten, die für den gewählten Zeitraum vorliegen; es kann ein Standort und Suchradius gewählt werden
+- **Klimadaten-Auswahl**: Klimadaten werden anhand des aktuellen Standortes und der Filterung in Tabellenform angezeigt und durch den Nutzer selektiert.
+- **Klimadaten-Vorschau**: Nach Download der Klimadaten vom DWD Server werden die Klimadaten in Graphen vorangezeigt. Damit können die Messdaten leicht geprüft werden.
+
+
+#### Einstellungen
+
+Im Einstellung-Reiter können folgende Einstellungen vorgenommen werden:
+
+##### Haupteinstellungen
+
+Hier finden sich die Haupteinstellungen
+
+- **Cache-Ordner**: Ordner, in welchem die Daten zwischengespeichert werden
+- **Arbeitsmodus**: Im Arbeitsmodus kann zwischen EPW und C6B Klimadaten umgeschaltet werden. EPW-Wetterdaten können nur Klimadaten für den Zeitraum von einem Jahr enthalten.
+
+##### Zeitraum
+
+Hier wird der Zeitraum für die Auswertung und Konvertierung der Messdaten gewählt
+
+- **Startdatum**: Startdatum der Zeitperiode
+- **Enddatum**: Enddatum der Zeitperiode
+
+##### Metadaten für Erzeugung der Klimadaten
+
+Hier werden die Meta-Daten für die erzeugten Klimadaten festgelegt.
+
+- **Stadt**: Stadt
+- **Bundeland**: Bundesland
+- **WMOCode**: https://www.nodc.noaa.gov/archive/arc0021/0002199/1.1/data/0-data/HTML/WMO-CODE/WMO4677.HTM[WMOCode]
+- **Quelle**: Quelle der Messdaten, z.Bsp. DWD
+- **Höhe [m]**: Höhe des Standortes über Null
+- **Longitude [Deg]**: Längengrad in Grad
+- **Latitude [Deg]**: Breitengrad in Grad
+- **Zeitzone**: Zeitzone
+- **Startjahr**: Startjahr
+
+image::einstellungen.png[align="left"]
+
+#### Klimadaten-Karte
+
+In der Klimadaten-Karte 
+
+image::klimadatenauswahl.png[align="left"]
+
+#### Klimadaten-Auswahl
+
+image::klimadatenselektierung.png[align="left"]
+
