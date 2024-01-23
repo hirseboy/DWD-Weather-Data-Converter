@@ -3,7 +3,7 @@
 const char * const INSTITUTION = "IBK";
 const char * const PROGRAM_NAME = "DWDWeatherDataConverter";
 const char * const VERSION = "1.1";
-const char * const LONG_VERSION = "1.1.0";
+const char * const LONG_VERSION = "1.1.1";
 
 const int WRONG_NUMBER = -9999;
 
