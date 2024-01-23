@@ -25,13 +25,13 @@ DataMap.file = ../../externals/DataMap/projects/Qt/DataMap.pro
 
 DWDWeatherDataConverter.file = ../../DWDWeatherDataConverter/projects/Qt/DWDWeatherDataConverter.pro
 
-
 # dependencies
+DWDWeatherDataConverter.depends = IBK QtExt qtftp qwt DataMap
+
 #IBKMK.depends = IBK
 QtExt.depends = IBK
 QuaZIP.depends = IBK
 CCM.depends = IBK TiCPP
 TiCPP.depends = IBK
 DataMap.depends = IBK QtExt
-DWDWeatherDataConverter.depends = IBK QtExt qtftp qwt DataMap
 

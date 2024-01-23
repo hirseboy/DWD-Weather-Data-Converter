@@ -165,8 +165,6 @@ private slots:
 
 	void on_actionEPW_triggered();
 
-	void on_actionShow_log_widget_triggered();
-
 	void on_horizontalSliderDistance_valueChanged(int value);
 
 	void on_tabWidget_currentChanged(int index);
@@ -178,6 +176,8 @@ private slots:
 	void on_actionwhite_triggered();
 
 	void on_actionSaveAs_triggered();
+
+	void on_actionShowLogWidget_triggered(bool showLog);
 
 private:
 

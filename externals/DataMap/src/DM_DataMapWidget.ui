@@ -25,7 +25,7 @@
         <item>
          <widget class="QCheckBox" name="checkBoxAirTemp">
           <property name="text">
-           <string>Air Temperature</string>
+           <string>Temperature / Relative Humidity</string>
           </property>
           <property name="checked">
            <bool>true</bool>
@@ -35,7 +35,7 @@
         <item>
          <widget class="QCheckBox" name="checkBoxRadiation">
           <property name="text">
-           <string>Radiation</string>
+           <string>SW / LW Radiation</string>
           </property>
           <property name="checked">
            <bool>true</bool>

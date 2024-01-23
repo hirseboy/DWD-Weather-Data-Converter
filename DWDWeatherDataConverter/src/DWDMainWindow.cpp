@@ -902,21 +902,18 @@ bool DWDMainWindow::downloadAndConvertDwdData(bool showPreview, bool exportEPW) 
 		// data points
 		QPolygonF pointsTemp, pointsRelHum, pointsRad, pointsRadDiff, pointsWind, pointsPressure, pointsPrecipitation, pointsLongWaveRadiation;
 
-		QDateTime startUTC(m_ui->dateEditStart->date(), QTime(0,0,0,0), Qt::UTC);
-		QDateTime startLocal(m_ui->dateEditStart->date(), QTime(0,0,0,0), Qt::LocalTime);
+		QDate startDate(m_ui->dateEditStart->date());
+		QDate endDate(m_ui->dateEditEnd->date());
 
-		QDateTime start(m_ui->dateEditStart->date(), QTime(0,0,0,0), Qt::UTC);
-		QDateTime end(m_ui->dateEditEnd->date(), QTime(0,0,0,0), Qt::UTC);
-
-		start.setTimeSpec(Qt::UTC);
-		end.setTimeSpec(Qt::UTC);
+		QDateTime start(startDate, QTime(0,0,0,0), Qt::UTC);
+		QDateTime end(endDate, QTime(0,0,0,0), Qt::UTC);
 
 		progressDialog()->setLabelText("Updating plot charts");
 		// Updating plots
 		for ( size_t i=0; i<m_dwdData.m_data.size(); ++i ) {
 			size_t time = i*3600*1000;
 
-			size_t timeStep = (size_t)start.toMSecsSinceEpoch() /*+ (size_t)60*24*3600*1000*/ + time;
+			long long timeStep = (size_t)start.toMSecsSinceEpoch() /*+ (size_t)60*24*3600*1000*/ + time;
 			// qDebug() << time << "\t" << timeStep;
 
 			DWDData::IntervalData intVal = m_dwdData.m_data[i];
@@ -1434,7 +1431,7 @@ void DWDMainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDa
 		majorTicks.push_back(QwtDate::toDouble(start.addMonths(2*i) ) );
 
 	// Init Scale Divider
-	QwtScaleDiv scaleDiv(QwtDate::toDouble(start), QwtDate::toDouble(end), QList<double>(), QList<double>(), majorTicks);
+	QwtScaleDiv *scaleDiv = new QwtScaleDiv(QwtDate::toDouble(start), QwtDate::toDouble(end), QList<double>(), QList<double>(), majorTicks);
 
 	// inti plot title
 	QFont font;
@@ -1498,6 +1495,7 @@ void DWDMainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDa
 
 	// Init Grid
 	QwtPlotGrid *grid = new QwtPlotGrid;
+	grid->setXDiv(*scaleDiv);
 	grid->enableXMin(true);
 	grid->enableYMin(true);
 	grid->enableX(true);
@@ -1831,10 +1829,6 @@ void DWDMainWindow::on_actionEPW_triggered() {
 	m_ui->comboBoxMode->setCurrentIndex(EM_EPW);
 }
 
-void DWDMainWindow::on_actionShow_log_widget_triggered() {
-	m_logWidget->show();
-}
-
 
 void DWDMainWindow::on_horizontalSliderDistance_valueChanged(int value) {
 	m_ui->lineEditDistance->setText(QString::number(value) );
@@ -1878,5 +1872,10 @@ void DWDMainWindow::on_actionSaveAs_triggered() {
 	}
 
 	on_pushButtonDownload_clicked();
+}
+
+
+void DWDMainWindow::on_actionShowLogWidget_triggered(bool showLog) {
+	m_logWidget->setHidden(!showLog);
 }
 

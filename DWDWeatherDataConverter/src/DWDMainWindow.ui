@@ -768,6 +768,9 @@
    </property>
   </action>
   <action name="actionShowLogWidget">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Show log widget</string>
    </property>

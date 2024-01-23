@@ -391,7 +391,7 @@ Möchten Sie fortfahren?</translation>
     <message>
         <source>Distance
 [km]</source>
-        <translation type="unfinished">Entfernung
+        <translation>Entfernung
 [km]</translation>
     </message>
     <message>
