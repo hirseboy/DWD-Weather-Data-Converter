@@ -307,7 +307,7 @@ li.checked::marker { content: &quot;\2612&quot;; }
     </message>
     <message>
         <source>Save as...</source>
-        <translation>Speichere unter...</translation>
+        <translation type="vanished">Speichere unter...</translation>
     </message>
     <message>
         <source>Temperature</source>
@@ -380,6 +380,10 @@ Möchten Sie fortfahren?</translation>
     <message>
         <source>Filter</source>
         <translation>Filter</translation>
+    </message>
+    <message>
+        <source>Save as climate file ...</source>
+        <translation type="unfinished">Speichere als Klimadatei ...</translation>
     </message>
 </context>
 <context>
