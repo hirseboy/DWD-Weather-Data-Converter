@@ -1427,7 +1427,7 @@ void DWDMainWindow::formatQwtPlot(bool init, QwtPlot &plot, QDate startDate, QDa
 	// assume an average month has 30 days
 	unsigned int months = days / 30;
 
-	for(unsigned int i=0; i<months/2; ++i)
+	for(unsigned int i=1; i<months/2; ++i)
 		majorTicks.push_back(QwtDate::toDouble(start.addMonths(2*i) ) );
 
 	// Init Scale Divider
