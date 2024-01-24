@@ -88,15 +88,15 @@ Im Einstellung-Reiter können folgende Einstellungen vorgenommen werden:
 
 Hier finden sich die Haupteinstellungen
 
-- **Cache-Ordner**: Ordner, in welchem die Daten zwischengespeichert werden
-- **Arbeitsmodus**: Im Arbeitsmodus kann zwischen EPW und C6B Klimadaten umgeschaltet werden. EPW-Wetterdaten können nur Klimadaten für den Zeitraum von einem Jahr enthalten.
+- **Cache-Ordner**: Ordner, in welchem die heruntergeladenen DWD-Daten zwischengespeichert werden.
+- **Arbeitsmodus**: Im Arbeitsmodus kann zwischen EPW und C6B Klimadaten umgeschaltet werden. EPW-Wetterdaten können nur Klimadaten für den Zeitraum von einem Jahr enthalten. C6B-Daten können einen beliebig langen Zeitraum enthalten. Im EPW-Modus kann nur das Startdatum gesetzt werden.
 
 ##### Zeitraum
 
 Hier wird der Zeitraum für die Auswertung und Konvertierung der Messdaten gewählt
 
-- **Startdatum**: Startdatum der Zeitperiode
-- **Enddatum**: Enddatum der Zeitperiode
+- **Startdatum**: Startdatum der Zeitperiode, kann immer gewählt werden
+- **Enddatum**: Enddatum der Zeitperiode, kann nur im C6B-Modus gewählt werden. Im EPW-Modus entspricht das Enddatum = Startdatum + 1a 
 
 ##### Metadaten für Erzeugung der Klimadaten
 
@@ -106,17 +106,17 @@ Hier werden die Meta-Daten für die erzeugten Klimadaten festgelegt.
 - **Bundeland**: Bundesland
 - **WMOCode**: https://www.nodc.noaa.gov/archive/arc0021/0002199/1.1/data/0-data/HTML/WMO-CODE/WMO4677.HTM[WMOCode]
 - **Quelle**: Quelle der Messdaten, z.Bsp. DWD
-- **Höhe [m]**: Höhe des Standortes über Null
+- **Höhe [m]**: Höhe des Standortes über NN
 - **Longitude [Deg]**: Längengrad in Grad
 - **Latitude [Deg]**: Breitengrad in Grad
-- **Zeitzone**: Zeitzone
-- **Startjahr**: Startjahr
+- **Zeitzone**: Zeitzone der Messung
+- **Startjahr**: Startjahr der Messung
 
 image::einstellungen.png[align="left"]
 
 #### Klimadaten-Karte
 
-In der Klimadaten-Karte 
+In der __Klimadaten-Karte__ werden allen Messdaten je Kategorie angezeigt. Auf der rechten Seite des Fensters können über den __Datenfilter__ alle Datenkategorien ein- und ausgeblendet werden. Weiterhin wird der __Standort__ angezeigt, der über Längen- und Breitengrad geändert werden kann. Weiterhin kann durch klicken auf die Karte der Standort selektiert werden. Anhand der maximal gewählten Entfernung wird ein Umkreis um den aktuellen Standort angezeigt, alle Messdaten in dieser Entfernung werden in der __Klimadaten-Auswahl__ tabellarisch gelistet. 
 
 image::klimadatenauswahl.png[align="left"]
 
