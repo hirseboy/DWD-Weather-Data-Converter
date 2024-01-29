@@ -21,6 +21,7 @@ public:
 		ColDistance,
 		ColLongitude,
 		ColLatitude,
+		ColHeight,
 		ColName,
 		ColCountry,
 		ColMinDate,

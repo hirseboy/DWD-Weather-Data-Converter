@@ -27,7 +27,7 @@ int DWDTableModel::rowCount(const QModelIndex & parent) const {
 }
 
 int DWDTableModel::columnCount(const QModelIndex & parent) const {
-	return 13;
+	return 14;
 }
 
 QVariant DWDTableModel::data(const QModelIndex & index, int role) const {
@@ -70,6 +70,8 @@ QVariant DWDTableModel::data(const QModelIndex & index, int role) const {
 					return (double)(int)(100*dwdData.m_latitude)/100;
 				case ColLongitude :
 					return (double)(int)(100*dwdData.m_longitude)/100;
+				case ColHeight :
+					return (double)(dwdData.m_height);
 				case ColName :
 					return QString::fromLatin1(dwdData.m_name.c_str());
 				case ColMinDate :
@@ -134,6 +136,7 @@ QVariant DWDTableModel::data(const QModelIndex & index, int role) const {
 				case ColId:
 				case ColLatitude:
 				case ColLongitude:
+				case ColHeight:
 				case ColDistance:
 				case ColMinDate:
 				case ColMaxDate:
@@ -158,8 +161,9 @@ QVariant DWDTableModel::headerData(int section, Qt::Orientation orientation, int
 
 			<< tr("Station Id")
 			<< tr("Distance\n[km]")
-			<< tr("Longitude")
-			<< tr("Latitude")
+			<< tr("Longitude\n[Deg]")
+			<< tr("Latitude\n[Deg]")
+			<< tr("Height\n[m]")
 			<< tr("Name")
 			<< tr("Country")
 			<< tr("Minimum\nDate")
