@@ -8,7 +8,7 @@ It is accessing measurement data stored on the ftp server and all data can be co
 
 # Build-status
 
-Current version is working with Qt v. 5.15.5 in linux and in windows v. 5.15.12 
+Current version is beeing built with Qt v. 5.15.5 in linux and in windows v. 5.15.12 
 
 | Test | Result|
 |-----|-----|
