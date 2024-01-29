@@ -30,18 +30,18 @@ void qDebugMsgHandler(QtMsgType type, const QMessageLogContext &context, const Q
 int main(int argc, char* argv[]) {
 	FUNCID(main);
 
+	// *** QApplication ***
 	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 	QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 
 	QtExt::Directories::appname = "DWDWeatherDataConverter";
 	QtExt::Directories::devdir = "DWDWeatherDataConverter";
 
-
 	QFile styleDark(":/style/style.qss");
 	styleDark.open(QFile::ReadOnly);
 	QString style = QLatin1String(styleDark.readAll());
 
-
+	// *** Settings ***
 	const QString ProgramVersionName = QString("DWDWeatherDataConverter %1").arg(LONG_VERSION);
 	QApplication a( argc, argv );
 
@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
 	settings.setDefaults();
 	settings.read();
 
-
+	// *** Init Language handler ***
 	QtExt::LanguageHandler::instance().setup(DWDSettings::instance().m_organization,
 											 DWDSettings::instance().m_appName,
 											 PROGRAM_NAME );
@@ -62,17 +62,15 @@ int main(int argc, char* argv[]) {
 	qInstallMessageHandler(qDebugMsgHandler);
 
 	// *** Create log file directory and setup message handler ***
-	QDir baseDir;
 	QtExt::Directories::appname = PROGRAM_NAME;
+	QDir baseDir;
 	baseDir.mkpath(QtExt::Directories::userDataDir());
 
 	DWDMessageHandler messageHandler;
 	IBK::MessageHandlerRegistry::instance().setMessageHandler( &messageHandler );
 
-
 	std::string errmsg;
 	messageHandler.openLogFile(QtExt::Directories::globalLogFile().toUtf8().data(), false, errmsg);
-
 
 	// *** Create and show splash-screen ***
 	std::unique_ptr<QSplashScreen> splash;
