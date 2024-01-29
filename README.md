@@ -6,7 +6,7 @@ This repository holds all data concerning the weather data converter for generat
 
 It is accessing measurement data stored on the ftp server and all data can be combined into weather-files (epw, c6b) needed for simulation tools (SIM-VICUS, DELPHIN, etc.)
 
-# Status
+# Build-status
 
 | Test | Result|
 |-----|-----|
