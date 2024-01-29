@@ -1092,6 +1092,7 @@ void DWDMainWindow::convertDwdData() {
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColDistance, defWidth);
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColLongitude, defWidth);
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColLatitude, defWidth);
+	m_ui->tableView->setColumnWidth(DWDTableModel::ColHeight, defWidth);
 
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColMinDate, defWidth);
 	m_ui->tableView->setColumnWidth(DWDTableModel::ColMaxDate, defWidth);
