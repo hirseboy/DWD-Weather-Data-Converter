@@ -166,7 +166,7 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	v->setSelectionMode(QAbstractItemView::NoSelection);
 	v->setAlternatingRowColors(true);
 	v->setSortingEnabled(false);
-	v->sortByColumn(0, Qt::AscendingOrder);
+	v->sortByColumn(DWDTableModel::ColDistance, Qt::AscendingOrder);
 	// smaller font for entire table
 	QFont f;
 #ifdef Q_OS_LINUX
@@ -515,7 +515,7 @@ bool DWDMainWindow::downloadAndConvertDwdData(bool showPreview, bool exportEPW) 
 				dataInRows[j] = i;
 
 				// Set current location name
-				m_currentLocation[j] = QString::fromLocal8Bit(dwdData.m_name.c_str());
+				m_currentLocation[j] = QString::fromLatin1(dwdData.m_name.c_str());
 
 				switch (j) {
 				case DWDDescriptonData::D_TemperatureAndHumidity:
@@ -1306,6 +1306,7 @@ void DWDMainWindow::calculateDistances() {
 	m_proxyModel->setFilterKeyColumn(1);
 
 	// dwdTableModel->reset();
+	m_ui->tableView->sortByColumn(DWDTableModel::ColDistance, Qt::AscendingOrder);
 }
 
 void DWDMainWindow::formatPlots(bool init) {

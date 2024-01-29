@@ -75,9 +75,9 @@ QVariant DWDTableModel::data(const QModelIndex & index, int role) const {
 				case ColName :
 					return QString::fromLatin1(dwdData.m_name.c_str());
 				case ColMinDate :
-					return convertIBKTimeToQDate(dwdData.m_minDate);
+					return convertIBKTimeToQDate(dwdData.m_minDate).toString("dd.MM.yyyy");
 				case ColMaxDate :
-					return convertIBKTimeToQDate(dwdData.m_maxDate);
+					return convertIBKTimeToQDate(dwdData.m_maxDate).toString("dd.MM.yyyy");
 		}
 		break;
 
@@ -229,7 +229,7 @@ bool DWDTableModel::setData(const QModelIndex & index, const QVariant & value, i
 			}
 
 			checkBox.m_data[dataType].m_isChecked = true;
-			location = QString::fromLocal8Bit(checkBox.m_name.c_str());
+			location = QString::fromLatin1(checkBox.m_name.c_str());
 		}
 		else {
 			checkBox.m_data[dataType].m_isChecked = false; //user has unchecked item

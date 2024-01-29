@@ -27,8 +27,11 @@ bool DWDSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex 
 	QModelIndex maxDate = sourceModel()->index(sourceRow, DWDTableModel::ColMaxDate, sourceParent);
 	QModelIndex name = sourceModel()->index(sourceRow, DWDTableModel::ColName, sourceParent);
 
+	QDate minQDate = QDate::fromString(sourceModel()->data(minDate).toString(), "dd.MM.yyyy");
+	QDate maxQDate = QDate::fromString(sourceModel()->data(maxDate).toString(), "dd.MM.yyyy");
+
 	return (m_maxdistance > sourceModel()->data(maxDistance).toDouble()) &&
-			dateInRange(sourceModel()->data(minDate).toDate(), sourceModel()->data(maxDate).toDate() ) &&
+			dateInRange(minQDate, maxQDate) &&
 			sourceModel()->data(name).toString().contains(filterRegExp());
 }
 

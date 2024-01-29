@@ -5,6 +5,7 @@
 #include <QMessageBox>
 
 #include "QtExt_Directories.h"
+#include "qdebug.h"
 #include "qtextcodec.h"
 
 QStringList DWDDescriptonData::downloadDescriptionFiles(bool isRecent){
@@ -166,7 +167,7 @@ void DWDDescriptonData::readDescription(const IBK::Path &filepath, std::vector<D
 			dwd.m_name = IBK::trim_copy(line.substr(61,100-61));
 			dwd.m_country = IBK::trim_copy(line.substr(101,500));
 
-
+			// qDebug() << "Name: " << QString::fromLocal8Bit(dwd.m_name.c_str());
 		}  catch (IBK::Exception &ex) {
 			QMessageBox::warning(nullptr, QString(), QString("Got an exception while reading lines. In line %1\n").arg(i)
 								 + QString("%1\n").arg(dwd.m_idStation)
