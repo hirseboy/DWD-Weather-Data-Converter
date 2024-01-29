@@ -1,4 +1,5 @@
 #include "DWDSortFilterProxyModel.h"
+#include "DWDTableModel.h"
 
 
 DWDSortFilterProxyModel::DWDSortFilterProxyModel(QObject *parent)
@@ -21,10 +22,10 @@ void DWDSortFilterProxyModel::setFilterMaximumDistance(double maxDistance){
 }
 
 bool DWDSortFilterProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const{
-	QModelIndex maxDistance = sourceModel()->index(sourceRow, 1, sourceParent);
-	QModelIndex minDate = sourceModel()->index(sourceRow, 6, sourceParent);
-	QModelIndex maxDate = sourceModel()->index(sourceRow, 7, sourceParent);
-	QModelIndex name = sourceModel()->index(sourceRow, 4, sourceParent);
+	QModelIndex maxDistance = sourceModel()->index(sourceRow, DWDTableModel::ColDistance, sourceParent);
+	QModelIndex minDate = sourceModel()->index(sourceRow, DWDTableModel::ColMinDate, sourceParent);
+	QModelIndex maxDate = sourceModel()->index(sourceRow, DWDTableModel::ColMaxDate, sourceParent);
+	QModelIndex name = sourceModel()->index(sourceRow, DWDTableModel::ColName, sourceParent);
 
 	return (m_maxdistance > sourceModel()->data(maxDistance).toDouble()) &&
 			dateInRange(sourceModel()->data(minDate).toDate(), sourceModel()->data(maxDate).toDate() ) &&
