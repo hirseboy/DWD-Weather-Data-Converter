@@ -8,6 +8,8 @@ It is accessing measurement data stored on the ftp server and all data can be co
 
 # Build-status
 
+Current version is working with Qt v. 5.15.5 in linux and in windows v. 5.15.12 
+
 | Test | Result|
 |-----|-----|
 | CI - Linux 64-bit (Ubuntu 20.04.3 LTS; Qt 5.12.9) |  [![CMake](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake.yml/badge.svg)](https://github.com/hirseboy/DWD-Weather-Data-Converter/actions/workflows/cmake.yml)   |
