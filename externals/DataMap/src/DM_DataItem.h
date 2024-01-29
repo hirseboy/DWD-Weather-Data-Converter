@@ -55,7 +55,7 @@ private:
 	/*! Data of graphics item. */
 	Data		m_data;
 
-	double		m_width = 3;
+	double		m_width = 2;
 
 };
 

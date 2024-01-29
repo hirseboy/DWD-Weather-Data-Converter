@@ -20,7 +20,7 @@ QRectF DataItem::boundingRect() const {
 	return rect;
 }
 
-void DataItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void DataItem::paint(QPainter *painter, const QStyleOptionGraphicsItem */*option*/, QWidget */*widget*/) {
 
 	if (m_data.m_minDate.secondsUntil(*m_minDate) < 0)
 		return;
@@ -33,15 +33,14 @@ void DataItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 	QPen pen(m_color);
 
 	painter->setPen(pen);
-	//painter->drawRect(boundingRect());
 	pen.setWidth(m_width);
 	painter->setPen(pen);
-//	painter->setPen(Qt::NoPen);
-//	painter->setBrush(m_color);
 
 	double currentOpacity = opacity();
 	double newOpacity = m_data.m_currentDistance > *m_maximumDistance ? 0.2 : 1.0;
 
+	// only set opacity to changed objects
+	// creatly speeds up drawing objects
 	if (newOpacity != currentOpacity)
 		setOpacity(newOpacity);
 
