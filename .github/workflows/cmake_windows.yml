@@ -10,7 +10,7 @@ env:
   BUILD_TYPE: Release
   QT_VERSION: "5.15.2"
   VERSION: "1.1"
-  LONG_VERSION: "1.1.1"
+  LONG_VERSION: "1.1.2"
   CURRENT_YEAR: "2024"
   FILE_BASENAME: "DWDWeatherDataConverter_Win64"
   INNOSETUP_VERSION: "6.2.0"
