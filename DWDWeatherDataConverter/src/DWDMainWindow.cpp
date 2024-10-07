@@ -289,7 +289,7 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	m_ui->graphicsViewMap->setScene(m_mapWidget->m_scene);
 	onUpdateDistances();
 
-//	m_ui->plotLayoutPreview->setSizeConstraint(QLayout::SetFixedSize);
+	//	m_ui->plotLayoutPreview->setSizeConstraint(QLayout::SetFixedSize);
 
 	// *** Add Checkboxes ***
 
@@ -312,6 +312,8 @@ DWDMainWindow::DWDMainWindow(QWidget *parent) :
 	m_ui->plotRain->setMinimumHeight(50);
 	m_ui->plotWind->setMinimumHeight(50);
 	m_ui->plotRelHum->setMinimumHeight(50);
+
+	m_ui->menuTheme->setVisible(false);
 }
 
 
@@ -1072,11 +1074,11 @@ void DWDMainWindow::convertDwdData() {
 	m_ui->tableView->setItemDelegateForColumn(DWDTableModel::ColWind, new DWDDelegate);
 
 	QHeaderView *headerView = m_ui->tableView->horizontalHeader();
-//	headerView->setSectionResizeMode(DWDTableModel::ColPrecipitation, QHeaderView::Fixed);
-//	headerView->setSectionResizeMode(DWDTableModel::ColRadiation, QHeaderView::Fixed);
-//	headerView->setSectionResizeMode(DWDTableModel::ColRadiation, QHeaderView::Fixed);
-//	headerView->setSectionResizeMode(DWDTableModel::ColWind, QHeaderView::Fixed);
-//	headerView->setSectionResizeMode(DWDTableModel::ColPressure, QHeaderView::Fixed);
+	//	headerView->setSectionResizeMode(DWDTableModel::ColPrecipitation, QHeaderView::Fixed);
+	//	headerView->setSectionResizeMode(DWDTableModel::ColRadiation, QHeaderView::Fixed);
+	//	headerView->setSectionResizeMode(DWDTableModel::ColRadiation, QHeaderView::Fixed);
+	//	headerView->setSectionResizeMode(DWDTableModel::ColWind, QHeaderView::Fixed);
+	//	headerView->setSectionResizeMode(DWDTableModel::ColPressure, QHeaderView::Fixed);
 
 	m_ui->tableView->reset();
 
@@ -1843,8 +1845,8 @@ void DWDMainWindow::on_horizontalSliderDistance_valueChanged(int value) {
 
 void DWDMainWindow::on_tabWidget_currentChanged(int index) {
 	m_ui->graphicsViewMap->fitInView(m_mapWidget->m_scene->sceneRect(), Qt::KeepAspectRatio);
-//	if (index == T_Plots)
-//		m_ui->plotLayoutPreview->setSizeConstraint(QLayout::SetDefaultConstraint);
+	//	if (index == T_Plots)
+	//		m_ui->plotLayoutPreview->setSizeConstraint(QLayout::SetDefaultConstraint);
 }
 
 

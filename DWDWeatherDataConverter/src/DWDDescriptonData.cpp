@@ -165,7 +165,7 @@ void DWDDescriptonData::readDescription(const IBK::Path &filepath, std::vector<D
 			dwd.m_latitude = IBK::string2val<double>(line.substr(39,50-39));
 			dwd.m_longitude = IBK::string2val<double>(line.substr(51,60-51));
 			dwd.m_name = IBK::trim_copy(line.substr(61,100-61));
-			dwd.m_country = IBK::trim_copy(line.substr(101,500));
+			dwd.m_country = IBK::trim_copy(line.substr(101,143-101));
 
 			// qDebug() << "Name: " << QString::fromLocal8Bit(dwd.m_name.c_str());
 		}  catch (IBK::Exception &ex) {
